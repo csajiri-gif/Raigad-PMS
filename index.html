@@ -8,7 +8,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a1a1a}
   .topbar{background:#1F4E79;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-  .topbar h1{color:#fff;font-size:15px;font-weight:600;letter-spacing:0.01em}
+  .topbar h1{color:#fff;font-size:15px;font-weight:600}
   .topbar .right{display:flex;align-items:center;gap:12px}
   .topbar .sup-badge{background:rgba(255,255,255,0.15);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px}
   .logout-btn{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
@@ -29,26 +29,25 @@
   .sup-btn.selected{border-color:#1F4E79;background:#D6E4F0}
   .sup-btn .name{font-size:13px;font-weight:600;color:#1F4E79}
   .sup-btn .team{font-size:11px;color:#888;margin-top:3px}
-  .login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s}
+  .login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
   .login-btn:hover{background:#16396b}
-  .login-btn:disabled{background:#aaa;cursor:not-allowed}
   .emp-search{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:12px}
   .emp-search:focus{outline:none;border-color:#2E75B6}
   .emp-list{max-height:320px;overflow-y:auto}
-  .emp-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:8px;cursor:pointer;transition:background 0.12s;border:1.5px solid transparent;margin-bottom:6px}
+  .emp-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;margin-bottom:6px}
   .emp-item:hover{background:#f0f4f8}
   .emp-item.selected{background:#D6E4F0;border-color:#2E75B6}
   .emp-item .emp-name{font-size:13px;font-weight:600;color:#1a1a1a}
   .emp-item .emp-meta{font-size:11px;color:#888;margin-top:2px}
   .emp-item .emp-code{font-size:11px;color:#2E75B6;font-weight:600}
   .step-bar{display:flex;border-bottom:1px solid #e8edf2;background:#fafbfc}
-  .step-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;color:#999;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s}
+  .step-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;color:#999;cursor:pointer;border-bottom:2px solid transparent}
   .step-tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600;background:#fff}
   .step-tab.done{color:#375623}
   .field{margin-bottom:14px}
   .field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
-  .field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff;transition:border 0.15s}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#2E75B6}
+  .field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff}
+  .field input:focus,.field select:focus{outline:none;border-color:#2E75B6}
   .field input[readonly]{background:#f5f7fa;color:#888}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
@@ -56,7 +55,7 @@
   .prog-label{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
   .prog-track{height:6px;background:#e8edf2;border-radius:3px;overflow:hidden}
   .prog-fill{height:100%;background:#1F4E79;border-radius:3px;transition:width 0.3s}
-  .crit-card{border:1.5px solid #e8edf2;border-radius:10px;padding:14px 16px;margin-bottom:10px;transition:border-color 0.15s}
+  .crit-card{border:1.5px solid #e8edf2;border-radius:10px;padding:14px 16px;margin-bottom:10px}
   .crit-card.scored{border-color:#2E75B6;background:#fafcff}
   .crit-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
   .pills{margin-bottom:10px;display:flex;flex-wrap:wrap;gap:5px}
@@ -66,35 +65,32 @@
   .pill-B{background:#E2EFDA;color:#375623}
   .pill-D{background:#EAE0F0;color:#7030A0}
   .score-row{display:flex;gap:7px}
-  .score-btn{flex:1;padding:10px 4px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;transition:all 0.12s;min-width:0}
+  .score-btn{flex:1;padding:10px 4px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;min-width:0}
   .score-btn:hover{border-color:#2E75B6;background:#EBF4FB}
   .score-btn .snum{font-size:18px;font-weight:700;display:block}
-  .score-btn .slbl{font-size:9px;display:block;margin-top:2px;color:#888;line-height:1.3}
+  .score-btn .slbl{font-size:9px;display:block;margin-top:2px;color:#888}
   .score-btn.s1{background:#FCE4D6;border-color:#C00000}.score-btn.s1 .snum{color:#C00000}.score-btn.s1 .slbl{color:#C00000}
   .score-btn.s2{background:#FEF0E0;border-color:#B8560A}.score-btn.s2 .snum{color:#B8560A}.score-btn.s2 .slbl{color:#B8560A}
   .score-btn.s3{background:#FFF2CC;border-color:#7F6000}.score-btn.s3 .snum{color:#7F6000}.score-btn.s3 .slbl{color:#7F6000}
   .score-btn.s4{background:#E2EFDA;border-color:#375623}.score-btn.s4 .snum{color:#375623}.score-btn.s4 .slbl{color:#375623}
   .score-btn.s5{background:#DEEAF1;border-color:#1F4E79}.score-btn.s5 .snum{color:#1F4E79}.score-btn.s5 .slbl{color:#1F4E79}
   .note-area{width:100%;margin-top:10px;padding:8px 10px;border:1.5px solid #e8edf2;border-radius:7px;font-size:12px;resize:vertical;min-height:44px;font-family:inherit;color:#333}
-  .note-area:focus{outline:none;border-color:#2E75B6}
   .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e8edf2}
-  .btn{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333;transition:all 0.12s}
+  .btn{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333}
   .btn:hover{background:#f5f5f5}
   .btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
   .btn-primary:hover{background:#16396b}
   .btn-success{background:#375623;color:#fff;border-color:#375623}
   .btn-success:hover{background:#2a4119}
-  .btn:disabled{opacity:0.5;cursor:not-allowed}
   .summary-hero{padding:20px;border-radius:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
   .summary-hero .left .emp{font-size:17px;font-weight:700}
   .summary-hero .left .meta{font-size:12px;opacity:0.8;margin-top:3px}
   .summary-hero .right .big{font-size:30px;font-weight:700;text-align:right}
-  .summary-hero .right .band{font-size:13px;text-align:right;margin-top:2px;font-weight:600}
+  .summary-hero .right .band{font-size:13px;text-align:right;font-weight:600}
   .summary-hero .right .pct{font-size:12px;text-align:right;opacity:0.8}
   .crit-table{width:100%;border-collapse:collapse;font-size:12px}
   .crit-table th{text-align:left;padding:8px 10px;color:#666;font-weight:600;border-bottom:1px solid #e8edf2}
   .crit-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;color:#1a1a1a}
-  .crit-table tr:last-child td{border-bottom:none}
   .score-chip{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
   .submitting{text-align:center;padding:32px}
   .submitting .spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1F4E79;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
@@ -107,11 +103,7 @@
   .error-msg{background:#FCE4D6;color:#C00000;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
   .toast.show{opacity:1}
-  @media(max-width:500px){
-    .two-col,.three-col{grid-template-columns:1fr}
-    .sup-grid{grid-template-columns:1fr}
-    .score-btn .slbl{display:none}
-  }
+  @media(max-width:500px){.two-col,.three-col{grid-template-columns:1fr}.sup-grid{grid-template-columns:1fr}.score-btn .slbl{display:none}}
 </style>
 </head>
 <body>
@@ -138,7 +130,7 @@
       <div class="card-body">
         <div class="sup-grid" id="sup-grid"></div>
         <div class="error-msg" id="login-error">Please select your name to continue.</div>
-        <button class="login-btn" id="login-btn" onclick="doLogin()">Continue →</button>
+        <button class="login-btn" onclick="doLogin()">Continue →</button>
       </div>
     </div>
     <p style="text-align:center;font-size:11px;color:#aaa;margin-top:16px">Raigad Ropeways Pvt. Ltd. · Confidential</p>
@@ -218,7 +210,7 @@
       <div id="summary-content"></div>
       <div class="nav-row">
         <button class="btn" onclick="goFormStep(2)">← Edit scores</button>
-        <button class="btn btn-success" onclick="submitReview()" id="submit-btn">Submit Review</button>
+        <button class="btn btn-success" onclick="submitReview()">Submit Review</button>
       </div>
     </div>
     <div class="card-body submitting" id="form-submitting" style="display:none">
@@ -244,13 +236,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsDSICxI2sGZSMdqRJc5VBZZayrJTLt7QlU2aEMSipB5iTicOuYKdF6cEAEVIp_HuQtw/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBvATq_BwegNdxfL4PUjZgEOUKR0VfudpYoV-d5v9_aLkaMrwGTsjwhF3mB71QkUaQOQ/exec";
 
 const SUPERVISORS = {
-  "Khatu Rajendra": {title:"In-Charge (Lower Station)",team:[101,134,407,410,509,512,514,606,125,137,115,117,113,129,412,510,413,112,116,611,109,120,507,519,511,505,524,103,138,144,104,105,133,106,515,616,617,13]},
-  "Salunkhe Pratik": {title:"In-Charge (Upper Station)",team:[136,110,118,415,111,119,132,127,114,128,107,520,618,522,130,131,142,518,619,126,521,411,414,124]},
-  "Umaratkar Santosh": {title:"Foreman Mechanical",team:[102,523,143,503,614,615]},
-  "Bendugade Mahesh": {title:"Restaurant Supervisor",team:[113,129,107,412,510,522,413,112,116,611,121,109,120,507,519,130,131,511,142,518,619,618]}
+  "Khatu Rajendra":{title:"In-Charge (Lower Station)",team:[101,134,407,410,509,512,514,606,125,137,115,117,113,129,412,510,413,112,116,611,109,120,507,519,511,505,524,103,138,144,104,105,133,106,515,616,617,13]},
+  "Salunkhe Pratik":{title:"In-Charge (Upper Station)",team:[136,110,118,415,111,119,132,127,114,128,107,520,618,522,130,131,142,518,619,126,521,411,414,124]},
+  "Umaratkar Santosh":{title:"Foreman Mechanical",team:[102,523,143,503,614,615]},
+  "Bendugade Mahesh":{title:"Restaurant Supervisor",team:[113,129,107,412,510,522,413,112,116,611,121,109,120,507,519,130,131,511,142,518,619,618]}
 };
 
 const EMPLOYEES = [
@@ -532,11 +524,12 @@ function submitReview(){
   };
   [1,2,3].forEach(i=>document.getElementById('form-step-'+i).style.display='none');
   document.getElementById('form-submitting').style.display='block';
-  const formData=new FormData();
-  formData.append('data',JSON.stringify(payload));
-  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:formData})
-    .then(()=>showDone(payload,band,pct,total,maxScore))
-    .catch(()=>{showDone(payload,band,pct,total,maxScore);showToast('Check your network connection.');});
+  const encoded=encodeURIComponent(JSON.stringify(payload));
+  const url=APPS_SCRIPT_URL+'?data='+encoded;
+  const img=new Image();
+  img.onload=img.onerror=function(){showDone(payload,band,pct,total,maxScore);};
+  img.src=url;
+  setTimeout(function(){showDone(payload,band,pct,total,maxScore);},3000);
 }
 
 function showDone(payload,band,pct,total,maxScore){
