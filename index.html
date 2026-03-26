@@ -7,27 +7,19 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a1a1a}
-
-  /* ── TOP BAR ── */
   .topbar{background:#1F4E79;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
   .topbar h1{color:#fff;font-size:15px;font-weight:600;letter-spacing:0.01em}
   .topbar .right{display:flex;align-items:center;gap:12px}
   .topbar .sup-badge{background:rgba(255,255,255,0.15);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px}
   .logout-btn{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
   .logout-btn:hover{background:rgba(255,255,255,0.1)}
-
-  /* ── SCREEN WRAPPER ── */
   .screen{display:none;max-width:680px;margin:32px auto;padding:0 16px 48px}
   .screen.active{display:block}
-
-  /* ── CARD ── */
   .card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px}
   .card-header{background:#1F4E79;padding:16px 20px}
   .card-header h2{color:#fff;font-size:16px;font-weight:600}
   .card-header p{color:rgba(255,255,255,0.7);font-size:12px;margin-top:4px}
   .card-body{padding:20px}
-
-  /* ── LOGIN ── */
   .login-logo{text-align:center;margin-bottom:24px}
   .login-logo .org{font-size:22px;font-weight:700;color:#1F4E79}
   .login-logo .sub{font-size:13px;color:#666;margin-top:4px}
@@ -40,8 +32,6 @@
   .login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s}
   .login-btn:hover{background:#16396b}
   .login-btn:disabled{background:#aaa;cursor:not-allowed}
-
-  /* ── EMPLOYEE SELECT ── */
   .emp-search{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:12px}
   .emp-search:focus{outline:none;border-color:#2E75B6}
   .emp-list{max-height:320px;overflow-y:auto}
@@ -51,14 +41,10 @@
   .emp-item .emp-name{font-size:13px;font-weight:600;color:#1a1a1a}
   .emp-item .emp-meta{font-size:11px;color:#888;margin-top:2px}
   .emp-item .emp-code{font-size:11px;color:#2E75B6;font-weight:600}
-
-  /* ── STEP BAR ── */
   .step-bar{display:flex;border-bottom:1px solid #e8edf2;background:#fafbfc}
   .step-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;color:#999;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s}
   .step-tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600;background:#fff}
   .step-tab.done{color:#375623}
-
-  /* ── FORM FIELDS ── */
   .field{margin-bottom:14px}
   .field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
   .field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff;transition:border 0.15s}
@@ -66,14 +52,10 @@
   .field input[readonly]{background:#f5f7fa;color:#888}
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-
-  /* ── PROGRESS ── */
   .prog-wrap{margin-bottom:16px}
   .prog-label{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
   .prog-track{height:6px;background:#e8edf2;border-radius:3px;overflow:hidden}
   .prog-fill{height:100%;background:#1F4E79;border-radius:3px;transition:width 0.3s}
-
-  /* ── CRITERIA CARDS ── */
   .crit-card{border:1.5px solid #e8edf2;border-radius:10px;padding:14px 16px;margin-bottom:10px;transition:border-color 0.15s}
   .crit-card.scored{border-color:#2E75B6;background:#fafcff}
   .crit-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
@@ -83,8 +65,6 @@
   .pill-WR{background:#DEEAF1;color:#1F4E79}
   .pill-B{background:#E2EFDA;color:#375623}
   .pill-D{background:#EAE0F0;color:#7030A0}
-
-  /* ── SCORE BUTTONS ── */
   .score-row{display:flex;gap:7px}
   .score-btn{flex:1;padding:10px 4px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;transition:all 0.12s;min-width:0}
   .score-btn:hover{border-color:#2E75B6;background:#EBF4FB}
@@ -95,11 +75,8 @@
   .score-btn.s3{background:#FFF2CC;border-color:#7F6000}.score-btn.s3 .snum{color:#7F6000}.score-btn.s3 .slbl{color:#7F6000}
   .score-btn.s4{background:#E2EFDA;border-color:#375623}.score-btn.s4 .snum{color:#375623}.score-btn.s4 .slbl{color:#375623}
   .score-btn.s5{background:#DEEAF1;border-color:#1F4E79}.score-btn.s5 .snum{color:#1F4E79}.score-btn.s5 .slbl{color:#1F4E79}
-
   .note-area{width:100%;margin-top:10px;padding:8px 10px;border:1.5px solid #e8edf2;border-radius:7px;font-size:12px;resize:vertical;min-height:44px;font-family:inherit;color:#333}
   .note-area:focus{outline:none;border-color:#2E75B6}
-
-  /* ── NAV BUTTONS ── */
   .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e8edf2}
   .btn{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333;transition:all 0.12s}
   .btn:hover{background:#f5f5f5}
@@ -108,8 +85,6 @@
   .btn-success{background:#375623;color:#fff;border-color:#375623}
   .btn-success:hover{background:#2a4119}
   .btn:disabled{opacity:0.5;cursor:not-allowed}
-
-  /* ── SUMMARY ── */
   .summary-hero{padding:20px;border-radius:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
   .summary-hero .left .emp{font-size:17px;font-weight:700}
   .summary-hero .left .meta{font-size:12px;opacity:0.8;margin-top:3px}
@@ -121,8 +96,6 @@
   .crit-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;color:#1a1a1a}
   .crit-table tr:last-child td{border-bottom:none}
   .score-chip{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
-
-  /* ── SUBMIT STATE ── */
   .submitting{text-align:center;padding:32px}
   .submitting .spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1F4E79;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
   @keyframes spin{to{transform:rotate(360deg)}}
@@ -131,12 +104,9 @@
   .done-state h2{font-size:18px;font-weight:700;color:#375623;margin-bottom:8px}
   .done-state p{font-size:13px;color:#666;margin-bottom:24px;line-height:1.6}
   .done-state .score-summary{display:inline-block;padding:12px 24px;border-radius:10px;margin-bottom:20px}
-
-  /* ── ERROR ── */
   .error-msg{background:#FCE4D6;color:#C00000;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
   .toast.show{opacity:1}
-
   @media(max-width:500px){
     .two-col,.three-col{grid-template-columns:1fr}
     .sup-grid{grid-template-columns:1fr}
@@ -154,7 +124,6 @@
   </div>
 </div>
 
-<!-- ══════════════ LOGIN SCREEN ══════════════ -->
 <div class="screen active" id="screen-login">
   <div style="max-width:460px;margin:0 auto">
     <div class="login-logo">
@@ -176,7 +145,6 @@
   </div>
 </div>
 
-<!-- ══════════════ EMPLOYEE SELECT SCREEN ══════════════ -->
 <div class="screen" id="screen-employees">
   <div class="card">
     <div class="card-header">
@@ -194,7 +162,6 @@
   </div>
 </div>
 
-<!-- ══════════════ REVIEW FORM SCREEN ══════════════ -->
 <div class="screen" id="screen-form">
   <div class="card">
     <div class="card-header">
@@ -206,8 +173,6 @@
       <div class="step-tab" id="tab-2">2. Criteria</div>
       <div class="step-tab" id="tab-3">3. Summary</div>
     </div>
-
-    <!-- Step 1 -->
     <div class="card-body" id="form-step-1">
       <div class="two-col">
         <div class="field"><label>Employee Name</label><input type="text" id="ff-name" readonly></div>
@@ -238,8 +203,6 @@
         <button class="btn btn-primary" onclick="goFormStep(2)">Next: Score Criteria →</button>
       </div>
     </div>
-
-    <!-- Step 2 -->
     <div class="card-body" id="form-step-2" style="display:none">
       <div class="prog-wrap">
         <div class="prog-label"><span id="prog-text">0 of 0 scored</span><span id="prog-pct">0%</span></div>
@@ -251,8 +214,6 @@
         <button class="btn btn-primary" onclick="goFormStep(3)">Next: Review & Submit →</button>
       </div>
     </div>
-
-    <!-- Step 3 -->
     <div class="card-body" id="form-step-3" style="display:none">
       <div id="summary-content"></div>
       <div class="nav-row">
@@ -260,8 +221,6 @@
         <button class="btn btn-success" onclick="submitReview()" id="submit-btn">Submit Review</button>
       </div>
     </div>
-
-    <!-- Submitting -->
     <div class="card-body submitting" id="form-submitting" style="display:none">
       <div class="spinner"></div>
       <p style="color:#666;font-size:13px">Saving to Google Sheets...</p>
@@ -269,7 +228,6 @@
   </div>
 </div>
 
-<!-- ══════════════ DONE SCREEN ══════════════ -->
 <div class="screen" id="screen-done">
   <div class="card">
     <div class="card-body done-state">
@@ -286,36 +244,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════
-// CONFIG — UPDATE THIS URL AFTER DEPLOYING GOOGLE APPS SCRIPT
-// ══════════════════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxowkgG_lBGl0GAeKrAogPL2CDXYe8EPx2Bl_muaDtp6Q9NCPKOhKLC-peh_dlAJwTNqA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsDSICxI2sGZSMdqRJc5VBZZayrJTLt7QlU2aEMSipB5iTicOuYKdF6cEAEVIp_HuQtw/exec";
 
-// ══════════════════════════════════════════════════════════════════
-// SUPERVISORS & THEIR TEAMS
-// ══════════════════════════════════════════════════════════════════
 const SUPERVISORS = {
-  "Khatu Rajendra": {
-    title: "In-Charge (Lower Station)",
-    team: [101,134,407,410,509,512,514,606,125,137,115,117,113,129,412,510,413,112,116,611,109,120,507,519,511,505,524,103,138,144,104,105,133,106,515,616,617,13]
-  },
-  "Salunkhe Pratik": {
-    title: "In-Charge (Upper Station)",
-    team: [136,110,118,415,111,119,132,127,114,128,107,520,618,522,130,131,142,518,619,126,521,411,414,124]
-  },
-  "Umaratkar Santosh": {
-    title: "Foreman Mechanical",
-    team: [102,523,143,503,614,615]
-  },
-  "Bendugade Mahesh": {
-    title: "Restaurant Supervisor",
-    team: [113,129,107,412,510,522,413,112,116,611,121,109,120,507,519,130,131,511,142,518,619,618]
-  }
+  "Khatu Rajendra": {title:"In-Charge (Lower Station)",team:[101,134,407,410,509,512,514,606,125,137,115,117,113,129,412,510,413,112,116,611,109,120,507,519,511,505,524,103,138,144,104,105,133,106,515,616,617,13]},
+  "Salunkhe Pratik": {title:"In-Charge (Upper Station)",team:[136,110,118,415,111,119,132,127,114,128,107,520,618,522,130,131,142,518,619,126,521,411,414,124]},
+  "Umaratkar Santosh": {title:"Foreman Mechanical",team:[102,523,143,503,614,615]},
+  "Bendugade Mahesh": {title:"Restaurant Supervisor",team:[113,129,107,412,510,522,413,112,116,611,121,109,120,507,519,130,131,511,142,518,619,618]}
 };
 
-// ══════════════════════════════════════════════════════════════════
-// ALL EMPLOYEES
-// ══════════════════════════════════════════════════════════════════
 const EMPLOYEES = [
   {code:101,name:"Khatu Rajendra",role:"In-Charge (Lower Station)",group:"Management & Supervision",station:"Lower"},
   {code:134,name:"Phondke Uday",role:"Joint In-Charge",group:"Management & Supervision",station:"Lower"},
@@ -389,9 +326,6 @@ const EMPLOYEES = [
   {code:617,name:"Sakpal Riya",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
 ];
 
-// ══════════════════════════════════════════════════════════════════
-// ROLE CRITERIA
-// ══════════════════════════════════════════════════════════════════
 const ROLES = {
   "Operator":[["Pre-Shift Safety Checks",["S","D"]],["Signal Discipline",["S","WR"]],["Operational Log Accuracy",["WR","D"]],["Communication with Stations",["WR","B"]],["Composure During Peak Hours",["B","WR"]],["Attendance & Punctuality",["D"]]],
   "Cabin Boy":[["Passenger Assistance",["B","WR"]],["Signal to Operator",["S","WR"]],["Station Discipline",["D","S"]],["Behaviour with Visitors",["B"]],["Rush Hour Contribution",["WR","B"]],["Attendance & Punctuality",["D"]]],
@@ -426,27 +360,17 @@ const ROLES = {
 };
 
 const SCORE_LABELS={1:"Poor",2:"Needs Impr.",3:"Good",4:"Very Good",5:"Excellent"};
-const BAND_CONFIG={
-  "Top Increment":{bg:"#DEEAF1",color:"#1F4E79"},
-  "Higher Increment":{bg:"#E2EFDA",color:"#375623"},
-  "Standard Increment":{bg:"#FFF2CC",color:"#7F6000"},
-  "No Increment":{bg:"#FCE4D6",color:"#C00000"}
-};
+const BAND_CONFIG={"Top Increment":{bg:"#DEEAF1",color:"#1F4E79"},"Higher Increment":{bg:"#E2EFDA",color:"#375623"},"Standard Increment":{bg:"#FFF2CC",color:"#7F6000"},"No Increment":{bg:"#FCE4D6",color:"#C00000"}};
 
-let currentSup=null, selectedEmp=null, scores={}, notes={}, filteredEmps=[];
+let currentSup=null,selectedEmp=null,scores={},notes={};
 
-// ── LOGIN ──────────────────────────────────────────────────────────
 (function buildLogin(){
   const grid=document.getElementById('sup-grid');
   Object.entries(SUPERVISORS).forEach(([name,info])=>{
     const div=document.createElement('div');
     div.className='sup-btn';
     div.innerHTML=`<div class="name">${name}</div><div class="team">${info.title}</div>`;
-    div.onclick=()=>{
-      document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));
-      div.classList.add('selected');
-      currentSup=name;
-    };
+    div.onclick=()=>{document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));div.classList.add('selected');currentSup=name;};
     grid.appendChild(div);
   });
 })();
@@ -462,58 +386,46 @@ function doLogin(){
 }
 
 function logout(){
-  currentSup=null; selectedEmp=null; scores={}; notes={};
+  currentSup=null;selectedEmp=null;scores={};notes={};
   document.getElementById('sup-badge').style.display='none';
   document.getElementById('logout-btn').style.display='none';
   document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));
   showScreen('screen-login');
 }
 
-// ── EMPLOYEE LIST ──────────────────────────────────────────────────
 function buildEmpList(){
   const teamCodes=SUPERVISORS[currentSup].team;
-  filteredEmps=EMPLOYEES.filter(e=>teamCodes.includes(e.code));
-  document.getElementById('emp-screen-sub').textContent=
-    `${filteredEmps.length} team members — ${SUPERVISORS[currentSup].title}`;
-  renderEmpList(filteredEmps);
+  const emps=EMPLOYEES.filter(e=>teamCodes.includes(e.code));
+  document.getElementById('emp-screen-sub').textContent=`${emps.length} team members — ${SUPERVISORS[currentSup].title}`;
+  renderEmpList(emps);
 }
 
 function renderEmpList(emps){
-  const list=document.getElementById('emp-list');
-  list.innerHTML=emps.map(e=>`
+  document.getElementById('emp-list').innerHTML=emps.map(e=>`
     <div class="emp-item" id="emp-${e.code}" onclick="selectEmp(${e.code})">
-      <div>
-        <div class="emp-name">${e.name}</div>
-        <div class="emp-meta">${e.role} · ${e.station} Station</div>
-      </div>
+      <div><div class="emp-name">${e.name}</div><div class="emp-meta">${e.role} · ${e.station} Station</div></div>
       <span class="emp-code">${e.code}</span>
     </div>`).join('');
 }
 
 function filterEmps(q){
   const v=q.toLowerCase();
-  const res=EMPLOYEES.filter(e=>
-    SUPERVISORS[currentSup].team.includes(e.code)&&
-    (e.name.toLowerCase().includes(v)||e.role.toLowerCase().includes(v))
-  );
+  const res=EMPLOYEES.filter(e=>SUPERVISORS[currentSup].team.includes(e.code)&&(e.name.toLowerCase().includes(v)||e.role.toLowerCase().includes(v)));
   renderEmpList(res);
-  if(selectedEmp&&!res.find(e=>e.code===selectedEmp.code)){
-    selectedEmp=null;
-    document.getElementById('start-form-btn').disabled=true;
-  }
+  if(selectedEmp&&!res.find(e=>e.code===selectedEmp.code)){selectedEmp=null;document.getElementById('start-form-btn').disabled=true;}
 }
 
 function selectEmp(code){
   document.querySelectorAll('.emp-item').forEach(el=>el.classList.remove('selected'));
   const el=document.getElementById('emp-'+code);
-  if(el) el.classList.add('selected');
+  if(el)el.classList.add('selected');
   selectedEmp=EMPLOYEES.find(e=>e.code===code);
   document.getElementById('start-form-btn').disabled=false;
 }
 
 function goToForm(){
-  if(!selectedEmp) return;
-  scores={}; notes={};
+  if(!selectedEmp)return;
+  scores={};notes={};
   document.getElementById('ff-name').value=selectedEmp.name;
   document.getElementById('ff-code').value=selectedEmp.code;
   document.getElementById('ff-role').value=selectedEmp.role;
@@ -521,15 +433,12 @@ function goToForm(){
   document.getElementById('ff-station').value=selectedEmp.station+' Station';
   document.getElementById('ff-supervisor').value=currentSup;
   document.getElementById('ff-quarter').value='';
-  document.getElementById('form-role-title').textContent=
-    'Performance Review — '+selectedEmp.role;
-  document.getElementById('form-emp-sub').textContent=
-    selectedEmp.name+' · '+selectedEmp.station+' Station · '+selectedEmp.group;
+  document.getElementById('form-role-title').textContent='Performance Review — '+selectedEmp.role;
+  document.getElementById('form-emp-sub').textContent=selectedEmp.name+' · '+selectedEmp.station+' Station · '+selectedEmp.group;
   goFormStep(1);
   showScreen('screen-form');
 }
 
-// ── FORM STEPS ────────────────────────────────────────────────────
 function goFormStep(n){
   [1,2,3].forEach(i=>{
     document.getElementById('form-step-'+i).style.display=i===n?'block':'none';
@@ -537,54 +446,30 @@ function goFormStep(n){
     tab.className='step-tab'+(i===n?' active':i<n?' done':'');
   });
   document.getElementById('form-submitting').style.display='none';
-  if(n===2) buildCriteria();
-  if(n===3) buildSummary();
+  if(n===2)buildCriteria();
+  if(n===3)buildSummary();
 }
 
 function buildCriteria(){
   const criteria=ROLES[selectedEmp.role]||[];
   const total=criteria.length;
-  const container=document.getElementById('criteria-list');
-  container.innerHTML=criteria.map(([name,pillars],i)=>{
-    const pills=pillars.map(p=>`<span class="pill pill-${p}">${
-      p==='WR'?'Work Reliability':p==='S'?'Safety':p==='B'?'Behaviour':'Discipline'
-    }</span>`).join('');
-    const btns=[1,2,3,4,5].map(s=>`
-      <div class="score-btn" id="sb-${i}-${s}" onclick="setScore(${i},'${name.replace(/'/g,"\\'")}',${s},${total})">
-        <span class="snum">${s}</span>
-        <span class="slbl">${SCORE_LABELS[s]}</span>
-      </div>`).join('');
-    const curScore=scores[name];
-    if(curScore) setTimeout(()=>highlightBtn(i,curScore),0);
-    return `
-      <div class="crit-card${scores[name]?' scored':''}" id="cc-${i}">
-        <div class="crit-name">${name}</div>
-        <div class="pills">${pills}</div>
-        <div class="score-row">${btns}</div>
-        <textarea class="note-area" placeholder="Optional notes..." id="note-${i}"
-          onchange="notes['${name.replace(/'/g,"\\'")}'] = this.value"
-        >${notes[name]||''}</textarea>
-      </div>`;
+  document.getElementById('criteria-list').innerHTML=criteria.map(([name,pillars],i)=>{
+    const pills=pillars.map(p=>`<span class="pill pill-${p}">${p==='WR'?'Work Reliability':p==='S'?'Safety':p==='B'?'Behaviour':'Discipline'}</span>`).join('');
+    const btns=[1,2,3,4,5].map(s=>`<div class="score-btn" id="sb-${i}-${s}" onclick="setScore(${i},'${name.replace(/'/g,"\\'")}',${s},${total})"><span class="snum">${s}</span><span class="slbl">${SCORE_LABELS[s]}</span></div>`).join('');
+    return `<div class="crit-card${scores[name]?' scored':''}" id="cc-${i}"><div class="crit-name">${name}</div><div class="pills">${pills}</div><div class="score-row">${btns}</div><textarea class="note-area" placeholder="Optional notes..." id="note-${i}" onchange="notes['${name.replace(/'/g,"\\'")}'] = this.value">${notes[name]||''}</textarea></div>`;
   }).join('');
   updateProgress(total);
-  Object.entries(scores).forEach(([name,s])=>{
-    const i=criteria.findIndex(([n])=>n===name);
-    if(i>=0) highlightBtn(i,s);
-  });
+  Object.entries(scores).forEach(([name,s])=>{const i=criteria.findIndex(([n])=>n===name);if(i>=0)highlightBtn(i,s);});
 }
 
 function setScore(idx,name,score,total){
-  scores[name]=score;
-  highlightBtn(idx,score);
+  scores[name]=score;highlightBtn(idx,score);
   document.getElementById('cc-'+idx).classList.add('scored');
   updateProgress(total);
 }
 
 function highlightBtn(idx,score){
-  [1,2,3,4,5].forEach(s=>{
-    const btn=document.getElementById(`sb-${idx}-${s}`);
-    if(btn) btn.className='score-btn'+(s===score?' s'+s:'');
-  });
+  [1,2,3,4,5].forEach(s=>{const btn=document.getElementById(`sb-${idx}-${s}`);if(btn)btn.className='score-btn'+(s===score?' s'+s:'');});
 }
 
 function updateProgress(total){
@@ -597,9 +482,9 @@ function updateProgress(total){
 }
 
 function getBand(pct){
-  if(pct>=85) return "Top Increment";
-  if(pct>=70) return "Higher Increment";
-  if(pct>=50) return "Standard Increment";
+  if(pct>=85)return "Top Increment";
+  if(pct>=70)return "Higher Increment";
+  if(pct>=50)return "Standard Increment";
   return "No Increment";
 }
 
@@ -613,113 +498,57 @@ function buildSummary(){
   const bc=BAND_CONFIG[band];
   const q=document.getElementById('ff-quarter');
   const qLabel=q.options[q.selectedIndex]?.text||'';
-
   document.getElementById('summary-content').innerHTML=`
     <div class="summary-hero" style="background:${bc.bg}">
-      <div class="left">
-        <div class="emp" style="color:${bc.color}">${selectedEmp.name}</div>
-        <div class="meta" style="color:${bc.color}">${selectedEmp.role} · ${selectedEmp.station} Station</div>
-        <div class="meta" style="color:${bc.color};margin-top:4px">${qLabel} · ${document.getElementById('ff-year').value} · ${currentSup}</div>
-      </div>
-      <div class="right">
-        <div class="big" style="color:${bc.color}">${total}<span style="font-size:16px;font-weight:400"> / ${maxScore}</span></div>
-        <div class="band" style="color:${bc.color}">${band}</div>
-        <div class="pct" style="color:${bc.color}">${pct}%</div>
-      </div>
+      <div class="left"><div class="emp" style="color:${bc.color}">${selectedEmp.name}</div><div class="meta" style="color:${bc.color}">${selectedEmp.role} · ${selectedEmp.station} Station</div><div class="meta" style="color:${bc.color};margin-top:4px">${qLabel} · ${document.getElementById('ff-year').value} · ${currentSup}</div></div>
+      <div class="right"><div class="big" style="color:${bc.color}">${total}<span style="font-size:16px;font-weight:400"> / ${maxScore}</span></div><div class="band" style="color:${bc.color}">${band}</div><div class="pct" style="color:${bc.color}">${pct}%</div></div>
     </div>
-    <table class="crit-table">
-      <thead><tr><th>Criterion</th><th>Score</th><th>Notes</th></tr></thead>
-      <tbody>${scored.map(({name:n,score:s})=>{
-        const bg=s>=4?'#E2EFDA':s===3?'#FFF2CC':s<=2&&s>0?'#FCE4D6':'#f5f5f5';
-        const fg=s>=4?'#375623':s===3?'#7F6000':s<=2&&s>0?'#C00000':'#888';
-        return `<tr>
-          <td>${n}</td>
-          <td><span class="score-chip" style="background:${bg};color:${fg}">${s||'—'} · ${SCORE_LABELS[s]||'Not scored'}</span></td>
-          <td style="color:#888;font-size:11px">${notes[n]||''}</td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table>`;
+    <table class="crit-table"><thead><tr><th>Criterion</th><th>Score</th><th>Notes</th></tr></thead>
+    <tbody>${scored.map(({name:n,score:s})=>{
+      const bg=s>=4?'#E2EFDA':s===3?'#FFF2CC':s<=2&&s>0?'#FCE4D6':'#f5f5f5';
+      const fg=s>=4?'#375623':s===3?'#7F6000':s<=2&&s>0?'#C00000':'#888';
+      return `<tr><td>${n}</td><td><span class="score-chip" style="background:${bg};color:${fg}">${s||'—'} · ${SCORE_LABELS[s]||'Not scored'}</span></td><td style="color:#888;font-size:11px">${notes[n]||''}</td></tr>`;
+    }).join('')}</tbody></table>`;
 }
 
-// ── SUBMIT ────────────────────────────────────────────────────────
 function submitReview(){
   const qEl=document.getElementById('ff-quarter');
-  if(!qEl.value){
-    showToast('Please go back and select a quarter.');
-    goFormStep(1);
-    document.getElementById('step1-error').style.display='block';
-    return;
-  }
+  if(!qEl.value){showToast('Please go back and select a quarter.');goFormStep(1);document.getElementById('step1-error').style.display='block';return;}
   const criteria=ROLES[selectedEmp.role]||[];
   const unscored=criteria.filter(([n])=>scores[n]===undefined);
-  if(unscored.length>0){
-    if(!confirm(`${unscored.length} criterion not yet scored. Submit anyway?`)) return;
-  }
-
+  if(unscored.length>0){if(!confirm(`${unscored.length} criterion not yet scored. Submit anyway?`))return;}
   const scored=criteria.map(([n])=>({name:n,score:scores[n]||0,note:notes[n]||''}));
   const total=scored.reduce((a,b)=>a+b.score,0);
   const maxScore=criteria.length*5;
   const pct=maxScore>0?Math.round(total/maxScore*100):0;
   const band=getBand(pct);
-  const qEl2=document.getElementById('ff-quarter');
-  const qLabel=qEl2.options[qEl2.selectedIndex]?.text||qEl2.value;
-
+  const qLabel=qEl.options[qEl.selectedIndex]?.text||qEl.value;
   const payload={
-    timestamp: new Date().toISOString(),
-    supervisor: currentSup,
-    empCode: selectedEmp.code,
-    empName: selectedEmp.name,
-    role: selectedEmp.role,
-    group: selectedEmp.group,
-    station: selectedEmp.station,
-    quarter: qEl2.value,
-    quarterLabel: qLabel,
-    year: document.getElementById('ff-year').value,
-    criteria: scored,
-    totalScore: total,
-    maxScore: maxScore,
-    percentScore: pct,
-    incrementBand: band
+    timestamp:new Date().toISOString(),supervisor:currentSup,empCode:selectedEmp.code,
+    empName:selectedEmp.name,role:selectedEmp.role,group:selectedEmp.group,
+    station:selectedEmp.station,quarter:qEl.value,quarterLabel:qLabel,
+    year:document.getElementById('ff-year').value,criteria:scored,
+    totalScore:total,maxScore:maxScore,percentScore:pct,incrementBand:band
   };
-
   [1,2,3].forEach(i=>document.getElementById('form-step-'+i).style.display='none');
   document.getElementById('form-submitting').style.display='block';
-
-  if(APPS_SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxowkgG_lBGl0GAeKrAogPL2CDXYe8EPx2Bl_muaDtp6Q9NCPKOhKLC-peh_dlAJwTNqA/exec"){
-    setTimeout(()=>{
-      showDone(payload,band,pct,total,maxScore);
-    },1200);
-    return;
-  }
-
-  fetch(APPS_SCRIPT_URL,{
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
-  }).then(()=>{
-    showDone(payload,band,pct,total,maxScore);
-  }).catch(()=>{
-    showDone(payload,band,pct,total,maxScore);
-    showToast('Saved locally — check your network and resubmit if needed.');
-  });
+  const formData=new FormData();
+  formData.append('data',JSON.stringify(payload));
+  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body:formData})
+    .then(()=>showDone(payload,band,pct,total,maxScore))
+    .catch(()=>{showDone(payload,band,pct,total,maxScore);showToast('Check your network connection.');});
 }
 
 function showDone(payload,band,pct,total,maxScore){
   document.getElementById('form-submitting').style.display='none';
   const bc=BAND_CONFIG[band];
-  document.getElementById('done-detail').innerHTML=
-    `<strong>${payload.empName}</strong> · ${payload.role}<br>${payload.quarterLabel} ${payload.year} · Reviewed by ${payload.supervisor}`;
-  document.getElementById('done-band').innerHTML=
-    `<span style="padding:10px 24px;border-radius:8px;font-size:15px;font-weight:700;background:${bc.bg};color:${bc.color}">
-      ${total}/${maxScore} · ${pct}% · ${band}
-    </span>`;
+  document.getElementById('done-detail').innerHTML=`<strong>${payload.empName}</strong> · ${payload.role}<br>${payload.quarterLabel} ${payload.year} · Reviewed by ${payload.supervisor}`;
+  document.getElementById('done-band').innerHTML=`<span style="padding:10px 24px;border-radius:8px;font-size:15px;font-weight:700;background:${bc.bg};color:${bc.color}">${total}/${maxScore} · ${pct}% · ${band}</span>`;
   showScreen('screen-done');
 }
 
 function reviewAnother(){
-  selectedEmp=null;
-  scores={}; notes={};
+  selectedEmp=null;scores={};notes={};
   document.querySelectorAll('.emp-item').forEach(el=>el.classList.remove('selected'));
   document.getElementById('start-form-btn').disabled=true;
   document.getElementById('emp-search').value='';
@@ -727,7 +556,6 @@ function reviewAnother(){
   showScreen('screen-employees');
 }
 
-// ── UTILITIES ─────────────────────────────────────────────────────
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -736,7 +564,7 @@ function showScreen(id){
 
 function showToast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 </script>
