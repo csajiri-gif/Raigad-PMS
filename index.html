@@ -207,14 +207,9 @@
       <div id="summary-content"></div>
       <div class="attach-section">
         <div class="attach-title">Attach a supporting document</div>
-        <div class="attach-sub">Photo, observation note, incident report, etc. &mdash; Optional</div>
-        <label class="attach-btn" for="file-upload">Choose File</label>
-        <input type="file" id="file-upload" style="display:none" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="handleFileSelect(this)">
-        <div class="attach-preview" id="attach-preview" style="display:none">
-          <span id="attach-filename"></span>
-          <span class="remove-file" onclick="removeFile()">&#10005; Remove</span>
-        </div>
-        <p style="font-size:11px;color:#bbb;margin-top:8px">PDF, Word or Image &middot; Max 10MB</p>
+        <div class="attach-sub">Photo, observation note, incident report &mdash; Optional</div>
+        <button class="attach-btn" id="email-attach-btn" onclick="openEmailAttach()" style="display:none">Send attachment by email</button>
+        <p style="font-size:11px;color:#bbb;margin-top:8px" id="attach-hint">Click Submit to generate the email link</p>
       </div>
       <div class="nav-row">
         <button class="btn" onclick="goFormStep(2)">&larr; Edit scores</button>
@@ -234,7 +229,8 @@
       <div class="check">&#10003;</div>
       <h2>Review submitted</h2>
       <p id="done-detail"></p>
-      <button class="btn btn-primary" onclick="reviewAnother()">Review another employee</button>
+      <a id="done-email-btn" class="btn" style="display:none;margin-bottom:12px;text-decoration:none;background:#D6E4F0;color:#1F4E79;border-color:#2E75B6;">Attach a document via email</a><br>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="reviewAnother()">Review another employee</button>
     </div>
   </div>
 </div>
@@ -361,7 +357,7 @@ const ROLES={
 const SL={1:"Poor",2:"Needs Impr.",3:"Good",4:"Very Good",5:"Excellent"};
 const SC={1:{bg:"#FCE4D6",fg:"#C00000"},2:{bg:"#FEF0E0",fg:"#B8560A"},3:{bg:"#FFF2CC",fg:"#7F6000"},4:{bg:"#E2EFDA",fg:"#375623"},5:{bg:"#DEEAF1",fg:"#1F4E79"}};
  
-let currentSup=null,selectedEmp=null,scores={},notes={},attachedFile=null;
+let currentSup=null,selectedEmp=null,scores={},notes={};
  
 (function(){
   const g=document.getElementById('sup-grid');
@@ -383,7 +379,7 @@ function doLogin(){
 }
  
 function logout(){
-  currentSup=null;selectedEmp=null;scores={};notes={};attachedFile=null;
+  currentSup=null;selectedEmp=null;scores={};notes={};
   document.getElementById('sup-badge').style.display='none';
   document.getElementById('logout-btn').style.display='none';
   document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));
@@ -417,7 +413,7 @@ function selectEmp(code){
  
 function goToForm(){
   if(!selectedEmp)return;
-  scores={};notes={};attachedFile=null;
+  scores={};notes={};
   document.getElementById('ff-name').value=selectedEmp.name;
   document.getElementById('ff-code').value=selectedEmp.code;
   document.getElementById('ff-role').value=selectedEmp.role;
@@ -526,18 +522,13 @@ function buildSummary(){
   attachedFile=null;
 }
  
-function handleFileSelect(input){
-  const file=input.files[0];if(!file)return;
-  if(file.size>10*1024*1024){showToast('File too large. Max 10MB.');input.value='';return;}
-  attachedFile=file;
-  document.getElementById('attach-filename').textContent=file.name;
-  document.getElementById('attach-preview').style.display='block';
-}
- 
-function removeFile(){
-  attachedFile=null;
-  document.getElementById('file-upload').value='';
-  document.getElementById('attach-preview').style.display='none';
+function openEmailAttach(){
+  const qEl=document.getElementById('ff-quarter');
+  const qLabel=qEl.options[qEl.selectedIndex]?qEl.options[qEl.selectedIndex].text:qEl.value;
+  const year=document.getElementById('ff-year').value;
+  const subject=encodeURIComponent('PMS Attachment: '+selectedEmp.name+' | '+selectedEmp.role+' | '+qLabel+' '+year);
+  const body=encodeURIComponent('Please find attached the supporting document for the performance review of:\n\nEmployee: '+selectedEmp.name+'\nRole: '+selectedEmp.role+'\nQuarter: '+qLabel+' '+year+'\nReviewed by: '+currentSup+'\n\nPlease attach your file to this email before sending.');
+  window.open('mailto:?subject='+subject+'&body='+body);
 }
  
 function submitReview(){
@@ -553,23 +544,11 @@ function submitReview(){
     empName:selectedEmp.name,role:selectedEmp.role,group:selectedEmp.group,
     station:selectedEmp.station,quarter:qEl.value,quarterLabel:qLabel,
     year:document.getElementById('ff-year').value,criteria:scored,
-    totalScore:total,maxScore:maxScore,percentScore:pct,
-    hasAttachment:!!attachedFile,attachmentName:attachedFile?attachedFile.name:''
+    totalScore:total,maxScore:maxScore,percentScore:pct
   };
   [1,2,3].forEach(i=>document.getElementById('form-step-'+i).style.display='none');
   document.getElementById('form-submitting').style.display='block';
-  if(attachedFile){
-    document.getElementById('submit-status').textContent='Uploading attachment...';
-    const reader=new FileReader();
-    reader.onload=function(e){
-      const b64=e.target.result.split(',')[1];
-      const fp={action:'uploadFile',fileName:attachedFile.name,mimeType:attachedFile.type,fileData:b64,folderId:DRIVE_FOLDER_ID,empName:selectedEmp.name,quarter:qEl.value,year:document.getElementById('ff-year').value};
-      const img1=new Image();
-      img1.onload=img1.onerror=function(){document.getElementById('submit-status').textContent='Saving review data...';sendData(payload);};
-      img1.src=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(fp));
-    };
-    reader.readAsDataURL(attachedFile);
-  } else {sendData(payload);}
+  sendData(payload);
 }
  
 function sendData(payload){
@@ -581,12 +560,16 @@ function sendData(payload){
  
 function showDone(payload){
   document.getElementById('form-submitting').style.display='none';
-  document.getElementById('done-detail').innerHTML='<strong>'+payload.empName+'</strong> \u00b7 '+payload.role+'<br>'+payload.quarterLabel+' '+payload.year+' \u00b7 Reviewed by '+payload.supervisor;
+  document.getElementById('done-detail').innerHTML='<strong>'+payload.empName+'</strong> · '+payload.role+'<br>'+payload.quarterLabel+' '+payload.year+' · Reviewed by '+payload.supervisor;
+  const subject=encodeURIComponent('PMS Attachment: '+payload.empName+' | '+payload.role+' | '+payload.quarterLabel+' '+payload.year);
+  const body=encodeURIComponent('Supporting document for performance review:\n\nEmployee: '+payload.empName+'\nRole: '+payload.role+'\nQuarter: '+payload.quarterLabel+' '+payload.year+'\nReviewed by: '+payload.supervisor+'\n\nPlease attach your file to this email before sending.');
+  const emailBtn=document.getElementById('done-email-btn');
+  if(emailBtn){emailBtn.href='mailto:?subject='+subject+'&body='+body;emailBtn.style.display='inline-block';}
   showScreen('screen-done');
 }
  
 function reviewAnother(){
-  selectedEmp=null;scores={};notes={};attachedFile=null;
+  selectedEmp=null;scores={};notes={};
   document.querySelectorAll('.emp-item').forEach(el=>el.classList.remove('selected'));
   document.getElementById('start-form-btn').disabled=true;
   document.getElementById('emp-search').value='';
