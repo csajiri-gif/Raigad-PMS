@@ -205,12 +205,7 @@
     </div>
     <div class="card-body" id="form-step-3" style="display:none">
       <div id="summary-content"></div>
-      <div class="attach-section">
-        <div class="attach-title">Attach a supporting document</div>
-        <div class="attach-sub">Photo, observation note, incident report &mdash; Optional</div>
-        <button class="attach-btn" id="email-attach-btn" onclick="openEmailAttach()" style="display:none">Send attachment by email</button>
-        <p style="font-size:11px;color:#bbb;margin-top:8px" id="attach-hint">Click Submit to generate the email link</p>
-      </div>
+ 
       <div class="nav-row">
         <button class="btn" onclick="goFormStep(2)">&larr; Edit scores</button>
         <button class="btn btn-success" onclick="submitReview()">Submit Review</button>
@@ -522,14 +517,7 @@ function buildSummary(){
   attachedFile=null;
 }
  
-function openEmailAttach(){
-  const qEl=document.getElementById('ff-quarter');
-  const qLabel=qEl.options[qEl.selectedIndex]?qEl.options[qEl.selectedIndex].text:qEl.value;
-  const year=document.getElementById('ff-year').value;
-  const subject=encodeURIComponent('PMS Attachment: '+selectedEmp.name+' | '+selectedEmp.role+' | '+qLabel+' '+year);
-  const body=encodeURIComponent('Please find attached the supporting document for the performance review of:\n\nEmployee: '+selectedEmp.name+'\nRole: '+selectedEmp.role+'\nQuarter: '+qLabel+' '+year+'\nReviewed by: '+currentSup+'\n\nPlease attach your file to this email before sending.');
-  window.open('mailto:?subject='+subject+'&body='+body);
-}
+ 
  
 function submitReview(){
   const criteria=ROLES[selectedEmp.role]||[];
@@ -564,7 +552,12 @@ function showDone(payload){
   const subject=encodeURIComponent('PMS Attachment: '+payload.empName+' | '+payload.role+' | '+payload.quarterLabel+' '+payload.year);
   const body=encodeURIComponent('Supporting document for performance review:\n\nEmployee: '+payload.empName+'\nRole: '+payload.role+'\nQuarter: '+payload.quarterLabel+' '+payload.year+'\nReviewed by: '+payload.supervisor+'\n\nPlease attach your file to this email before sending.');
   const emailBtn=document.getElementById('done-email-btn');
-  if(emailBtn){emailBtn.href='mailto:?subject='+subject+'&body='+body;emailBtn.style.display='inline-block';}
+  if(emailBtn){
+    const gmailUrl='https://mail.google.com/mail/?view=cm&fs=1&su='+subject+'&body='+body;
+    emailBtn.href=gmailUrl;
+    emailBtn.target='_blank';
+    emailBtn.style.display='inline-block';
+  }
   showScreen('screen-done');
 }
  
