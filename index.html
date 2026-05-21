@@ -134,11 +134,11 @@
       <div class="card-header"><h2>Supervisor Login</h2><p>Select your name to begin reviewing your team</p></div>
       <div class="card-body">
         <div class="sup-grid" id="sup-grid"></div>
-        <div class="field" style="margin-top:4px">
+        <div class="field" style="margin-top:8px">
           <label>Password</label>
-          <input type="password" id="login-pwd" placeholder="Enter your password" style="font-size:14px;padding:11px 14px">
+          <input type="password" id="login-pwd" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
         </div>
-        <div class="error-banner" id="login-error">Incorrect password. Please try again.</div>
+        <div class="error-banner" id="login-error">Please select your name and enter your password.</div>
         <button class="login-btn" onclick="doLogin()">Continue &rarr;</button>
       </div>
     </div>
@@ -246,24 +246,17 @@ function loadConfig(){
     .then(r=>r.json())
     .then(data=>{
       if(data.employees && data.employees.length>0) EMPLOYEES=data.employees;
-      if(data.supervisors && Object.keys(data.supervisors).length>0) SUPERVISORS=data.supervisors;
+      if(data.supervisors && Object.keys(data.supervisors).length>0){
+        // Merge — always keep passwords from hardcoded defaults, update everything else from sheet
+        Object.entries(data.supervisors).forEach(([name,info])=>{
+          const defaultPwd = SUPERVISORS_DEFAULT[name] ? SUPERVISORS_DEFAULT[name].pwd : info.pwd;
+          SUPERVISORS[name] = Object.assign({}, info, {pwd: defaultPwd});
+        });
+      }
     })
     .catch(()=>{})
-    .finally(()=>{ buildLoginGrid(); }); // Always rebuild grid after load
+    .finally(()=>{ buildLoginGrid(); });
 }
-
-function buildLoginGrid(){
-  const g=document.getElementById('sup-grid');
-  if(!g) return;
-  g.innerHTML='';
-  Object.entries(SUPERVISORS).forEach(([n,i])=>{
-    const d=document.createElement('div');d.className='sup-btn';
-    d.innerHTML='<div class="name">'+n+'</div><div class="team">'+i.title+'</div>';
-    d.onclick=()=>{document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));d.classList.add('selected');currentSup=n;};
-    g.appendChild(d);
-  });
-}
-const DRIVE_FOLDER_ID="1n3KiTQLLSRznePc3w_fSsuN1VEls1mya";
 
 const SUPERVISORS_DEFAULT={
   "Khatu Rajendra":{pwd:"Raigad@KR",title:"In-Charge",team:[13,103,105,136,141,614]},
@@ -398,13 +391,25 @@ const SC={1:{bg:"#FCE4D6",fg:"#C00000"},2:{bg:"#FEF0E0",fg:"#B8560A"},3:{bg:"#FF
 let currentSup=null,selectedEmp=null,scores={},notes={};
 
 
+function buildLoginGrid(){
+  const g=document.getElementById('sup-grid');
+  if(!g) return;
+  g.innerHTML='';
+  Object.entries(SUPERVISORS).forEach(([n,i])=>{
+    const d=document.createElement('div');d.className='sup-btn';
+    d.innerHTML='<div class="name">'+n+'</div><div class="team">'+i.title+'</div>';
+    d.onclick=()=>{document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));d.classList.add('selected');currentSup=n;};
+    g.appendChild(d);
+  });
+}
+
 function doLogin(){
   const errEl=document.getElementById('login-error');
-  if(!currentSup){errEl.textContent='Please select your name to continue.';errEl.style.display='block';return;}
-  const pwd=document.getElementById('login-pwd').value;
+  const pwd=document.getElementById('login-pwd').value.trim();
+  if(!currentSup){errEl.textContent='Please select your name first.';errEl.style.display='block';return;}
   if(!pwd){errEl.textContent='Please enter your password.';errEl.style.display='block';return;}
   if(pwd!==SUPERVISORS[currentSup].pwd){errEl.textContent='Incorrect password. Please try again.';errEl.style.display='block';return;}
-  errEl.style.display='none';
+  errEl.style.display='none';;
   document.getElementById('sup-badge').textContent=currentSup;
   document.getElementById('sup-badge').style.display='';
   document.getElementById('logout-btn').style.display='';
@@ -621,6 +626,9 @@ function showToast(msg){
 }
 
 // Initialize — build grid from defaults immediately, then load from sheet
+document.addEventListener('DOMContentLoaded', function(){
+  loadConfig();
+});
 document.addEventListener('DOMContentLoaded', function(){
   buildLoginGrid();
   loadConfig();
