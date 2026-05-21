@@ -248,9 +248,21 @@ function loadConfig(){
       if(data.employees && data.employees.length>0) EMPLOYEES=data.employees;
       if(data.supervisors && Object.keys(data.supervisors).length>0) SUPERVISORS=data.supervisors;
     })
-    .catch(()=>{}); // Silent fail — use defaults
+    .catch(()=>{})
+    .finally(()=>{ buildLoginGrid(); }); // Always rebuild grid after load
 }
-loadConfig();
+
+function buildLoginGrid(){
+  const g=document.getElementById('sup-grid');
+  if(!g) return;
+  g.innerHTML='';
+  Object.entries(SUPERVISORS).forEach(([n,i])=>{
+    const d=document.createElement('div');d.className='sup-btn';
+    d.innerHTML='<div class="name">'+n+'</div><div class="team">'+i.title+'</div>';
+    d.onclick=()=>{document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));d.classList.add('selected');currentSup=n;};
+    g.appendChild(d);
+  });
+}
 const DRIVE_FOLDER_ID="1n3KiTQLLSRznePc3w_fSsuN1VEls1mya";
 
 const SUPERVISORS_DEFAULT={
@@ -385,15 +397,6 @@ const SC={1:{bg:"#FCE4D6",fg:"#C00000"},2:{bg:"#FEF0E0",fg:"#B8560A"},3:{bg:"#FF
 
 let currentSup=null,selectedEmp=null,scores={},notes={};
 
-(function(){
-  const g=document.getElementById('sup-grid');
-  Object.entries(SUPERVISORS).forEach(([n,i])=>{
-    const d=document.createElement('div');d.className='sup-btn';
-    d.innerHTML='<div class="name">'+n+'</div><div class="team">'+i.title+'</div>';
-    d.onclick=()=>{document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));d.classList.add('selected');currentSup=n;};
-    g.appendChild(d);
-  });
-})();
 
 function doLogin(){
   const errEl=document.getElementById('login-error');
@@ -616,6 +619,12 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3500);
 }
+
+// Initialize — build grid from defaults immediately, then load from sheet
+document.addEventListener('DOMContentLoaded', function(){
+  buildLoginGrid();
+  loadConfig();
+});
 </script>
 </body>
 </html>
