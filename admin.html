@@ -1,1 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raigad PMS — Admin Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a1a1a}
+.topbar{background:#1F4E79;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.topbar h1{color:#fff;font-size:15px;font-weight:600}
+.topbar .badge{background:rgba(255,255,255,0.15);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px}
+.topbar .logout{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
+.screen{display:none;max-width:900px;margin:32px auto;padding:0 16px 48px}
+.screen.active{display:block}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px}
+.card-header{background:#1F4E79;padding:16px 20px}
+.card-header h2{color:#fff;font-size:16px;font-weight:600}
+.card-header p{color:rgba(255,255,255,0.7);font-size:12px;margin-top:3px}
+.card-body{padding:20px}
+.login-logo{text-align:center;margin-bottom:24px}
+.login-logo .org{font-size:22px;font-weight:700;color:#1F4E79}
+.login-logo .sub{font-size:13px;color:#666;margin-top:4px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
+.field input,.field select{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff}
+.field input:focus,.field select:focus{outline:none;border-color:#2E75B6}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.btn{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333;transition:all 0.12s}
+.btn:hover{background:#f5f5f5}
+.btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
+.btn-primary:hover{background:#16396b}
+.btn-danger{background:#C00000;color:#fff;border-color:#C00000}
+.btn-danger:hover{background:#a00000}
+.btn-success{background:#375623;color:#fff;border-color:#375623}
+.btn-success:hover{background:#2a4119}
+.btn-sm{padding:5px 12px;font-size:12px}
+.tabs{display:flex;border-bottom:1px solid #e8edf2;margin-bottom:20px}
+.tab{padding:10px 18px;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;background:#1F4E79;color:#fff;font-weight:600;font-size:12px}
+td{padding:9px 12px;border-bottom:1px solid #f0f0f0;color:#1a1a1a}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:#D6E4F0;color:#1F4E79}
+.error-banner{background:#FCE4D6;color:#C00000;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
+.success-banner{background:#E2EFDA;color:#375623;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:200}
+.modal-bg.active{display:flex;align-items:center;justify-content:center}
+.modal{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:600;color:#1F4E79;margin-bottom:16px}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #e8edf2}
+.search-bar{width:100%;padding:9px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;margin-bottom:14px}
+.search-bar:focus{outline:none;border-color:#2E75B6}
+.loading{text-align:center;padding:40px;color:#888;font-size:13px}
+.spinner{width:28px;height:28px;border:3px solid #e0e0e0;border-top-color:#1F4E79;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:600px){.two-col,.three-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
 
+<div class="topbar">
+  <h1>Raigad PMS — Admin Panel</h1>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="badge" id="admin-badge" style="display:none">Admin</span>
+    <button class="logout" id="admin-logout" style="display:none" onclick="adminLogout()">Logout</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="screen active" id="screen-login">
+  <div style="max-width:400px;margin:0 auto">
+    <div class="login-logo">
+      <div class="org">Admin Panel</div>
+      <div class="sub">Raigad Ropeways PMS</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Admin Login</h2></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Admin Password</label>
+          <input type="password" id="admin-pwd" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()">
+        </div>
+        <div class="error-banner" id="login-err">Incorrect password.</div>
+        <button class="btn btn-primary" style="width:100%" onclick="adminLogin()">Login</button>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:12px">
+      <a href="index.html" style="color:#2E75B6">← Back to Review Form</a>
+    </p>
+  </div>
+</div>
+
+<!-- MAIN ADMIN -->
+<div class="screen" id="screen-admin">
+  <div class="success-banner" id="global-success"></div>
+  <div class="error-banner" id="global-error"></div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('employees')">Employees</div>
+    <div class="tab" onclick="switchTab('supervisors')">Supervisors</div>
+  </div>
+
+  <!-- EMPLOYEES TAB -->
+  <div id="tab-employees">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <input class="search-bar" style="max-width:320px;margin-bottom:0" type="text" placeholder="Search by name, role or supervisor..." oninput="filterEmployees(this.value)" id="emp-search">
+      <button class="btn btn-primary" onclick="openAddEmployee()">+ Add Employee</button>
+    </div>
+    <div class="card">
+      <table id="emp-table">
+        <thead><tr><th>Code</th><th>Name</th><th>Role</th><th>Station</th><th>Supervisor</th><th>Actions</th></tr></thead>
+        <tbody id="emp-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SUPERVISORS TAB -->
+  <div id="tab-supervisors" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="font-size:14px;color:#555">Manage Supervisors & Passwords</h3>
+      <button class="btn btn-primary" onclick="openAddSupervisor()">+ Add Supervisor</button>
+    </div>
+    <div class="card">
+      <table id="sup-table">
+        <thead><tr><th>Name</th><th>Title</th><th>Password</th><th>Team Size</th><th>Actions</th></tr></thead>
+        <tbody id="sup-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT EMPLOYEE MODAL -->
+<div class="modal-bg" id="emp-modal">
+  <div class="modal">
+    <h3 id="emp-modal-title">Add Employee</h3>
+    <input type="hidden" id="emp-edit-idx">
+    <div class="two-col">
+      <div class="field"><label>Employee Code *</label><input type="number" id="emp-code" placeholder="e.g. 620"></div>
+      <div class="field"><label>Full Name *</label><input type="text" id="emp-name" placeholder="Last First"></div>
+    </div>
+    <div class="field">
+      <label>Role *</label>
+      <select id="emp-role" onchange="onRoleChange()">
+        <option value="">Select role...</option>
+      </select>
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label>Station *</label>
+        <select id="emp-station">
+          <option value="Lower">Lower Station</option>
+          <option value="Upper">Upper Station</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Group</label>
+        <input type="text" id="emp-group" readonly style="background:#f5f7fa;color:#888">
+      </div>
+    </div>
+    <div class="field">
+      <label>Supervisor *</label>
+      <select id="emp-supervisor"><option value="">Select supervisor...</option></select>
+    </div>
+    <div class="error-banner" id="emp-modal-err"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('emp-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEmployee()">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT SUPERVISOR MODAL -->
+<div class="modal-bg" id="sup-modal">
+  <div class="modal">
+    <h3 id="sup-modal-title">Add Supervisor</h3>
+    <input type="hidden" id="sup-edit-name">
+    <div class="field"><label>Full Name *</label><input type="text" id="sup-name" placeholder="e.g. Sharma Ramesh"></div>
+    <div class="field"><label>Title / Designation *</label><input type="text" id="sup-title" placeholder="e.g. In-Charge (Lower Station)"></div>
+    <div class="field"><label>Password *</label><input type="text" id="sup-pwd" placeholder="e.g. Raigad@RS"></div>
+    <div class="error-banner" id="sup-modal-err"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('sup-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSupervisor()">Save Supervisor</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXla2BllajIgAEKaLN80hmeLBPCjAxLghyVRHcOZkZzIcPQQr4VYAG3IS2UHMIg-5u2Q/exec";
+const ADMIN_PASSWORD = "RaigadAdmin@2025";
+
+const ROLE_GROUPS = {
+  "Ropeway Operator":"Ropeway Operations","Cabin Boy":"Ropeway Operations","Folio Line Boy":"Ropeway Operations",
+  "Ticket Vendor":"Ropeway Operations","Ticket Scanner":"Ropeway Operations",
+  "Foreman Mechanical":"Technical & Maintenance","Supervisor Mechanical":"Technical & Maintenance",
+  "Electrician":"Technical & Maintenance","Engineer - Civil":"Technical & Maintenance",
+  "In-Charge (Lower Station)":"Management & Supervision","Joint In-Charge":"Management & Supervision",
+  "In-Charge (Upper Station)":"Management & Supervision",
+  "Restaurant Supervisor":"Restaurant Operations","Cook":"Restaurant Operations","Sub-Cook":"Restaurant Operations",
+  "Cook Helper":"Restaurant Operations","Waiter":"Restaurant Operations","Restaurant Billing":"Restaurant Operations",
+  "Restaurant Front Desk":"Restaurant Operations",
+  "Souvenir Shop":"Retail & Visitor Experience","Museum":"Retail & Visitor Experience","Hirkani Stall":"Retail & Visitor Experience",
+  "Room Attendant":"Accommodation",
+  "Chief Accountant":"Back Office & Support","Jr. Accountant":"Back Office & Support",
+  "Store Keeper":"Back Office & Support","Driver":"Back Office & Support",
+  "Night Watchman":"Facility & Sanitation","Site Cleaner / Sweeper":"Facility & Sanitation",
+  "Bio Toilet Cleaner":"Facility & Sanitation",
+};
+
+// Local state — loaded from Sheet
+let EMPLOYEES = [];
+let SUPERVISORS = {};
+let filteredEmps = [];
+
+// ── AUTH ──────────────────────────────────────────────────────────
+function adminLogin(){
+  const pwd = document.getElementById('admin-pwd').value;
+  if(pwd !== ADMIN_PASSWORD){
+    document.getElementById('login-err').style.display='block'; return;
+  }
+  document.getElementById('login-err').style.display='none';
+  document.getElementById('admin-badge').style.display='';
+  document.getElementById('admin-logout').style.display='';
+  showScreen('screen-admin');
+  loadData();
+}
+
+function adminLogout(){
+  document.getElementById('admin-pwd').value='';
+  document.getElementById('admin-badge').style.display='none';
+  document.getElementById('admin-logout').style.display='none';
+  showScreen('screen-login');
+}
+
+// ── LOAD DATA FROM SHEET ──────────────────────────────────────────
+function loadData(){
+  document.getElementById('emp-tbody').innerHTML='<tr><td colspan="6"><div class="loading"><div class="spinner"></div>Loading...</div></td></tr>';
+  document.getElementById('sup-tbody').innerHTML='<tr><td colspan="5"><div class="loading"><div class="spinner"></div>Loading...</div></td></tr>';
+  
+  const url = APPS_SCRIPT_URL + '?action=getConfig';
+  fetch(url)
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.employees) EMPLOYEES = data.employees;
+      if(data.supervisors) SUPERVISORS = data.supervisors;
+      filteredEmps = [...EMPLOYEES];
+      renderEmployees();
+      renderSupervisors();
+      populateDropdowns();
+    })
+    .catch(()=>{
+      // Fallback — load hardcoded data if sheet not available yet
+      showToast('Could not load from sheet. Showing last known data.');
+      renderEmployees();
+      renderSupervisors();
+    });
+}
+
+// ── TABS ──────────────────────────────────────────────────────────
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active', (i===0&&tab==='employees')||(i===1&&tab==='supervisors'));});
+  document.getElementById('tab-employees').style.display = tab==='employees'?'':'none';
+  document.getElementById('tab-supervisors').style.display = tab==='supervisors'?'':'none';
+}
+
+// ── POPULATE DROPDOWNS ────────────────────────────────────────────
+function populateDropdowns(){
+  // Role dropdown
+  const roleSel = document.getElementById('emp-role');
+  roleSel.innerHTML = '<option value="">Select role...</option>';
+  Object.keys(ROLE_GROUPS).sort().forEach(r=>{
+    roleSel.innerHTML += `<option value="${r}">${r}</option>`;
+  });
+  // Supervisor dropdown
+  const supSel = document.getElementById('emp-supervisor');
+  supSel.innerHTML = '<option value="">Select supervisor...</option>';
+  Object.keys(SUPERVISORS).sort().forEach(s=>{
+    supSel.innerHTML += `<option value="${s}">${s}</option>`;
+  });
+}
+
+function onRoleChange(){
+  const role = document.getElementById('emp-role').value;
+  document.getElementById('emp-group').value = ROLE_GROUPS[role] || '';
+}
+
+// ── RENDER EMPLOYEES ──────────────────────────────────────────────
+function renderEmployees(){
+  const tbody = document.getElementById('emp-tbody');
+  if(!filteredEmps.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">No employees found</td></tr>';return;}
+  tbody.innerHTML = filteredEmps.map((e,i)=>{
+    const actualIdx = EMPLOYEES.indexOf(e);
+    const sup = Object.entries(SUPERVISORS).find(([,v])=>v.team&&v.team.includes(e.code));
+    const supName = sup ? sup[0] : '<span style="color:#C00000">Unassigned</span>';
+    return `<tr>
+      <td><span class="tag">${e.code}</span></td>
+      <td><strong>${e.name}</strong></td>
+      <td style="font-size:12px;color:#555">${e.role}</td>
+      <td style="font-size:12px">${e.station}</td>
+      <td style="font-size:12px">${supName}</td>
+      <td>
+        <button class="btn btn-sm" onclick="openEditEmployee(${actualIdx})" style="margin-right:6px">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${actualIdx})">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterEmployees(q){
+  const v = q.toLowerCase();
+  filteredEmps = EMPLOYEES.filter(e=>
+    e.name.toLowerCase().includes(v) ||
+    e.role.toLowerCase().includes(v) ||
+    String(e.code).includes(v) ||
+    Object.entries(SUPERVISORS).some(([n,v2])=>v2.team&&v2.team.includes(e.code)&&n.toLowerCase().includes(v))
+  );
+  renderEmployees();
+}
+
+// ── RENDER SUPERVISORS ────────────────────────────────────────────
+function renderSupervisors(){
+  const tbody = document.getElementById('sup-tbody');
+  const entries = Object.entries(SUPERVISORS);
+  if(!entries.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No supervisors found</td></tr>';return;}
+  tbody.innerHTML = entries.map(([name, info])=>{
+    const teamSize = info.team ? info.team.length : 0;
+    return `<tr>
+      <td><strong>${name}</strong></td>
+      <td style="font-size:12px;color:#555">${info.title||''}</td>
+      <td><code style="background:#f5f5f5;padding:2px 8px;border-radius:4px;font-size:12px">${info.pwd||''}</code></td>
+      <td><span class="tag">${teamSize} employees</span></td>
+      <td>
+        <button class="btn btn-sm" onclick="openEditSupervisor('${name}')" style="margin-right:6px">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteSupervisor('${name}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ADD / EDIT EMPLOYEE ───────────────────────────────────────────
+function openAddEmployee(){
+  document.getElementById('emp-modal-title').textContent = 'Add Employee';
+  document.getElementById('emp-edit-idx').value = '';
+  document.getElementById('emp-code').value = '';
+  document.getElementById('emp-name').value = '';
+  document.getElementById('emp-role').value = '';
+  document.getElementById('emp-group').value = '';
+  document.getElementById('emp-station').value = 'Lower';
+  document.getElementById('emp-supervisor').value = '';
+  document.getElementById('emp-modal-err').style.display='none';
+  document.getElementById('emp-modal').classList.add('active');
+}
+
+function openEditEmployee(idx){
+  const e = EMPLOYEES[idx];
+  document.getElementById('emp-modal-title').textContent = 'Edit Employee';
+  document.getElementById('emp-edit-idx').value = idx;
+  document.getElementById('emp-code').value = e.code;
+  document.getElementById('emp-name').value = e.name;
+  document.getElementById('emp-role').value = e.role;
+  document.getElementById('emp-group').value = e.group || ROLE_GROUPS[e.role] || '';
+  document.getElementById('emp-station').value = e.station;
+  // Find supervisor
+  const sup = Object.entries(SUPERVISORS).find(([,v])=>v.team&&v.team.includes(e.code));
+  document.getElementById('emp-supervisor').value = sup ? sup[0] : '';
+  document.getElementById('emp-modal-err').style.display='none';
+  document.getElementById('emp-modal').classList.add('active');
+}
+
+function saveEmployee(){
+  const idx = document.getElementById('emp-edit-idx').value;
+  const code = parseInt(document.getElementById('emp-code').value);
+  const name = document.getElementById('emp-name').value.trim();
+  const role = document.getElementById('emp-role').value;
+  const station = document.getElementById('emp-station').value;
+  const group = ROLE_GROUPS[role] || document.getElementById('emp-group').value;
+  const supervisor = document.getElementById('emp-supervisor').value;
+  const errEl = document.getElementById('emp-modal-err');
+
+  if(!code||!name||!role||!supervisor){errEl.textContent='Please fill in all required fields.';errEl.style.display='block';return;}
+
+  const emp = {code, name, role, group, station};
+
+  if(idx === ''){
+    // Add new — check code not duplicate
+    if(EMPLOYEES.find(e=>e.code===code)){errEl.textContent='Employee code already exists.';errEl.style.display='block';return;}
+    EMPLOYEES.push(emp);
+  } else {
+    // Edit — remove old code from old supervisor team first
+    const oldEmp = EMPLOYEES[parseInt(idx)];
+    Object.values(SUPERVISORS).forEach(s=>{if(s.team)s.team=s.team.filter(c=>c!==oldEmp.code);});
+    EMPLOYEES[parseInt(idx)] = emp;
+  }
+
+  // Remove from all supervisor teams first, then add to selected
+  Object.values(SUPERVISORS).forEach(s=>{if(s.team)s.team=s.team.filter(c=>c!==code);});
+  if(!SUPERVISORS[supervisor].team) SUPERVISORS[supervisor].team=[];
+  SUPERVISORS[supervisor].team.push(code);
+
+  filteredEmps = [...EMPLOYEES];
+  renderEmployees();
+  renderSupervisors();
+  closeModal('emp-modal');
+  saveToSheet();
+}
+
+function deleteEmployee(idx){
+  const e = EMPLOYEES[idx];
+  if(!confirm(`Delete ${e.name}? This cannot be undone.`)) return;
+  // Remove from supervisor teams
+  Object.values(SUPERVISORS).forEach(s=>{if(s.team)s.team=s.team.filter(c=>c!==e.code);});
+  EMPLOYEES.splice(idx, 1);
+  filteredEmps = [...EMPLOYEES];
+  renderEmployees();
+  renderSupervisors();
+  saveToSheet();
+}
+
+// ── ADD / EDIT SUPERVISOR ─────────────────────────────────────────
+function openAddSupervisor(){
+  document.getElementById('sup-modal-title').textContent = 'Add Supervisor';
+  document.getElementById('sup-edit-name').value = '';
+  document.getElementById('sup-name').value = '';
+  document.getElementById('sup-title').value = '';
+  document.getElementById('sup-pwd').value = '';
+  document.getElementById('sup-modal-err').style.display='none';
+  document.getElementById('sup-modal').classList.add('active');
+}
+
+function openEditSupervisor(name){
+  const s = SUPERVISORS[name];
+  document.getElementById('sup-modal-title').textContent = 'Edit Supervisor';
+  document.getElementById('sup-edit-name').value = name;
+  document.getElementById('sup-name').value = name;
+  document.getElementById('sup-title').value = s.title||'';
+  document.getElementById('sup-pwd').value = s.pwd||'';
+  document.getElementById('sup-modal-err').style.display='none';
+  document.getElementById('sup-modal').classList.add('active');
+}
+
+function saveSupervisor(){
+  const oldName = document.getElementById('sup-edit-name').value;
+  const name = document.getElementById('sup-name').value.trim();
+  const title = document.getElementById('sup-title').value.trim();
+  const pwd = document.getElementById('sup-pwd').value.trim();
+  const errEl = document.getElementById('sup-modal-err');
+
+  if(!name||!title||!pwd){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
+
+  if(oldName && oldName !== name){
+    // Renamed — transfer team
+    const team = SUPERVISORS[oldName]?.team || [];
+    delete SUPERVISORS[oldName];
+    SUPERVISORS[name] = {pwd, title, team};
+  } else if(!oldName){
+    // New supervisor
+    SUPERVISORS[name] = {pwd, title, team:[]};
+  } else {
+    SUPERVISORS[name].pwd = pwd;
+    SUPERVISORS[name].title = title;
+  }
+
+  renderSupervisors();
+  populateDropdowns();
+  closeModal('sup-modal');
+  saveToSheet();
+}
+
+function deleteSupervisor(name){
+  const teamSize = SUPERVISORS[name]?.team?.length || 0;
+  if(teamSize > 0){
+    if(!confirm(`${name} has ${teamSize} employees mapped to them. Deleting will leave those employees unassigned. Continue?`)) return;
+  } else {
+    if(!confirm(`Delete supervisor ${name}?`)) return;
+  }
+  delete SUPERVISORS[name];
+  renderSupervisors();
+  populateDropdowns();
+  saveToSheet();
+}
+
+// ── SAVE TO SHEET ─────────────────────────────────────────────────
+function saveToSheet(){
+  showToast('Saving...');
+  const payload = {
+    action: 'saveConfig',
+    employees: EMPLOYEES,
+    supervisors: SUPERVISORS,
+  };
+  const url = APPS_SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload));
+  const img = new Image();
+  img.onload = img.onerror = function(){showToast('Saved successfully');};
+  img.src = url;
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────────
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+// Initial setup of role dropdown
+(function(){
+  const roleSel = document.getElementById('emp-role');
+  Object.keys(ROLE_GROUPS).sort().forEach(r=>{ roleSel.innerHTML += `<option value="${r}">${r}</option>`; });
+})();
+</script>
+</body>
+</html>
