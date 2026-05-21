@@ -142,7 +142,7 @@
         <button class="login-btn" onclick="doLogin()">Continue &rarr;</button>
       </div>
     </div>
-    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:16px">Raigad Ropeways Pvt. Ltd. &middot; Confidential</p>
+    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:16px">Raigad Ropeways Pvt. Ltd. &middot; Confidential &middot; <a href="admin.html" style="color:#aaa">Admin</a></p>
   </div>
 </div>
 
@@ -240,7 +240,20 @@
 const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbyXla2BllajIgAEKaLN80hmeLBPCjAxLghyVRHcOZkZzIcPQQr4VYAG3IS2UHMIg-5u2Q/exec";
 const DRIVE_FOLDER_ID="1n3KiTQLLSRznePc3w_fSsuN1VEls1mya";
 
-const SUPERVISORS={
+// Load employees and supervisors from Google Sheet Config
+function loadConfig(){
+  fetch(APPS_SCRIPT_URL+'?action=getConfig')
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.employees && data.employees.length>0) EMPLOYEES=data.employees;
+      if(data.supervisors && Object.keys(data.supervisors).length>0) SUPERVISORS=data.supervisors;
+    })
+    .catch(()=>{}); // Silent fail — use defaults
+}
+loadConfig();
+const DRIVE_FOLDER_ID="1n3KiTQLLSRznePc3w_fSsuN1VEls1mya";
+
+const SUPERVISORS_DEFAULT={
   "Khatu Rajendra":{pwd:"Raigad@KR",title:"In-Charge",team:[13,103,105,136,141,614]},
   "Phondke Uday":{pwd:"Raigad@PU",title:"Joint In-Charge",team:[106,113,124,133,137]},
   "Salunkhe Pratik":{pwd:"Raigad@SP",title:"In-Charge (Upper Station)",team:[110,118,143,503,509,521,524,615]},
@@ -252,8 +265,10 @@ const SUPERVISORS={
   "Shingate Rajesh":{pwd:"Raigad@SR",title:"Chief Accountant",team:[108,114,115,117,126,127,128,138,144,407,511,513,519]},
   "Umaratkar Santosh":{pwd:"Raigad@US",title:"Foreman Mechanical",team:[104,111,119,123,125,132,135,139,140,414,512,523,607]},
 };
+let SUPERVISORS = {...SUPERVISORS_DEFAULT}
 
-const EMPLOYEES=[
+const EMPLOYEES_DEFAULT=[
+
   {code:13,name:"Khaladkar Akshay",role:"Engineer - Civil",group:"Technical & Maintenance",station:"Lower"},
   {code:103,name:"Shingate Rajesh",role:"Chief Accountant",group:"Back Office & Support",station:"Lower"},
   {code:104,name:"Sanas Vijay",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
@@ -330,6 +345,7 @@ const EMPLOYEES=[
   {code:618,name:"Sakpal Riya",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
   {code:619,name:"Gore Mangesh",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
 ];
+let EMPLOYEES = [...EMPLOYEES_DEFAULT];
 
 const ROLES={
   "Ropeway Operator":[["Pre-Shift Safety Checks","S, D"],["Signal Discipline","S, WR"],["Emergency Response Handling","S, WR"],["System Knowledge & Control Understanding","S, WR"],["Problem Solving Ability & Willingness","WR, B"],["Operational Log Accuracy","WR, D"],["Communication with Stations","WR, B"],["Composure During Peak Hours","B, WR"],["Attendance & Punctuality","D"]],
