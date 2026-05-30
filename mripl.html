@@ -28,6 +28,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 .field input,.field select{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff}
 .field input:focus,.field select:focus{outline:none;border-color:#2E75B6}
 .field input[readonly]{background:#f5f7fa;color:#888}
+.sup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sup-btn{padding:12px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;transition:all 0.15s}
+.sup-btn:hover{border-color:#2E75B6;background:#EBF4FB}
+.sup-btn.selected{border-color:#1F4E79;background:#D6E4F0}
+.sup-btn .name{font-size:13px;font-weight:600;color:#1F4E79}
+.sup-btn .team{font-size:11px;color:#888;margin-top:2px}
 .login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
 .login-btn:hover{background:#16396b}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -118,11 +124,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
     <div class="card">
       <div class="card-header"><h2>Reviewer Login</h2><p>Enter your password to begin reviewing</p></div>
       <div class="card-body">
-        <div class="field">
+        <div class="sup-grid" id="sup-grid"></div>
+        <div class="field" style="margin-top:4px">
           <label>Password</label>
           <input type="password" id="login-pwd" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
         </div>
-        <div class="error-banner" id="login-error">Incorrect password. Please try again.</div>
+        <div class="error-banner" id="login-error">Please select your name and enter your password.</div>
         <button class="login-btn" onclick="doLogin()">Continue &rarr;</button>
       </div>
     </div>
@@ -222,7 +229,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxzJsDdn_3dfAadckG8YEYmqikSU-DvSMWYkJ6Kkafc4U4d-LD-bC48FsrNLb9b8JE24Q/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwrrLexkBy52pBtYWj424UXqK9by1N5aCLtlz1kHuIAByUB_sVpnLJhmBtEDhJKOF8P/exec";
 
 // ── SUPERVISORS (placeholder — update via admin panel once mappings confirmed) ──
 const SUPERVISORS_DEFAULT={
@@ -304,14 +311,25 @@ function getCriteria(emp){
 }
 
 // ── LOGIN ──
+function buildGrid(){
+  const g=document.getElementById('sup-grid');
+  if(!g)return;
+  g.innerHTML='';
+  Object.entries(SUPERVISORS).forEach(([n,i])=>{
+    const d=document.createElement('div');d.className='sup-btn';
+    d.innerHTML='<div class="name">'+n+'</div><div class="team">'+i.title+'</div>';
+    d.onclick=()=>{document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));d.classList.add('selected');currentSup=n;};
+    g.appendChild(d);
+  });
+}
+
 function doLogin(){
   const errEl=document.getElementById('login-error');
   const pwd=document.getElementById('login-pwd').value.trim();
+  if(!currentSup){errEl.textContent='Please select your name first.';errEl.style.display='block';return;}
   if(!pwd){errEl.textContent='Please enter your password.';errEl.style.display='block';return;}
-  const match=Object.entries(SUPERVISORS).find(([,info])=>info.pwd===pwd);
-  if(!match){errEl.textContent='Incorrect password. Please try again.';errEl.style.display='block';return;}
+  if(pwd!==SUPERVISORS[currentSup].pwd){errEl.textContent='Incorrect password. Please try again.';errEl.style.display='block';return;}
   errEl.style.display='none';
-  currentSup=match[0];
   document.getElementById('sup-badge').textContent=currentSup;
   document.getElementById('sup-badge').style.display='';
   document.getElementById('logout-btn').style.display='';
@@ -323,6 +341,7 @@ function logout(){
   document.getElementById('sup-badge').style.display='none';
   document.getElementById('logout-btn').style.display='none';
   document.getElementById('login-pwd').value='';
+  document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));
   showScreen('screen-login');
 }
 
@@ -507,6 +526,10 @@ function loadConfig(){
     .catch(()=>{});
 }
 loadConfig();
+
+document.addEventListener('DOMContentLoaded', function(){
+  buildGrid();
+});
 </script>
 </body>
 </html>
