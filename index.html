@@ -5,120 +5,105 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Raigad Ropeways — Performance Review System</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a1a1a}
-  .topbar{background:#1F4E79;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-  .topbar h1{color:#fff;font-size:15px;font-weight:600}
-  .topbar .right{display:flex;align-items:center;gap:12px}
-  .sup-badge{background:rgba(255,255,255,0.15);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px}
-  .logout-btn{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
-  .logout-btn:hover{background:rgba(255,255,255,0.1)}
-  .screen{display:none;max-width:700px;margin:32px auto;padding:0 16px 48px}
-  .screen.active{display:block}
-  .card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px}
-  .card-header{background:#1F4E79;padding:16px 20px}
-  .card-header h2{color:#fff;font-size:16px;font-weight:600}
-  .card-header p{color:rgba(255,255,255,0.7);font-size:12px;margin-top:4px}
-  .card-body{padding:20px}
-  .login-logo{text-align:center;margin-bottom:24px}
-  .login-logo .org{font-size:22px;font-weight:700;color:#1F4E79}
-  .login-logo .sub{font-size:13px;color:#666;margin-top:4px}
-  .sup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-  .sup-btn{padding:14px 12px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;transition:all 0.15s;background:#fff}
-  .sup-btn:hover{border-color:#2E75B6;background:#EBF4FB}
-  .sup-btn.selected{border-color:#1F4E79;background:#D6E4F0}
-  .sup-btn .name{font-size:13px;font-weight:600;color:#1F4E79}
-  .sup-btn .team{font-size:11px;color:#888;margin-top:3px}
-  .login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
-  .login-btn:hover{background:#16396b}
-  .emp-search{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:12px}
-  .emp-search:focus{outline:none;border-color:#2E75B6}
-  .emp-list{max-height:340px;overflow-y:auto}
-  .emp-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;margin-bottom:6px;transition:all 0.12s}
-  .emp-item:hover{background:#f0f4f8}
-  .emp-item.selected{background:#D6E4F0;border-color:#2E75B6}
-  .emp-item .emp-name{font-size:13px;font-weight:600;color:#1a1a1a}
-  .emp-item .emp-meta{font-size:11px;color:#888;margin-top:2px}
-  .emp-item .emp-code{font-size:11px;color:#2E75B6;font-weight:600}
-  .step-bar{display:flex;border-bottom:1px solid #e8edf2;background:#fafbfc}
-  .step-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;color:#999;cursor:pointer;border-bottom:2px solid transparent}
-  .step-tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600;background:#fff}
-  .step-tab.done{color:#375623}
-  .field{margin-bottom:14px}
-  .field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
-  .field input,.field select{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff}
-  .field input:focus,.field select:focus{outline:none;border-color:#2E75B6}
-  .field input[readonly]{background:#f5f7fa;color:#888}
-  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-  .prog-wrap{margin-bottom:16px}
-  .prog-label{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
-  .prog-track{height:6px;background:#e8edf2;border-radius:3px;overflow:hidden}
-  .prog-fill{height:100%;background:#1F4E79;border-radius:3px;transition:width 0.3s}
-  .crit-card{border:1.5px solid #e8edf2;border-radius:10px;padding:14px 16px;margin-bottom:12px}
-  .crit-card.scored{border-color:#2E75B6;background:#fafcff}
-  .crit-card.error{border-color:#C00000 !important;background:#fff8f8}
-  .crit-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
-  .pills{margin-bottom:10px;display:flex;flex-wrap:wrap;gap:5px}
-  .pill{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:600}
-  .pill-S{background:#FCE4D6;color:#C00000}
-  .pill-WR{background:#DEEAF1;color:#1F4E79}
-  .pill-B{background:#E2EFDA;color:#375623}
-  .pill-D{background:#EAE0F0;color:#7030A0}
-  .score-row{display:flex;gap:7px;margin-bottom:10px}
-  .score-btn{flex:1;padding:10px 4px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;min-width:0}
-  .score-btn:hover{border-color:#2E75B6;background:#EBF4FB}
-  .score-btn .snum{font-size:18px;font-weight:700;display:block}
-  .score-btn .slbl{font-size:9px;display:block;margin-top:2px;color:#888}
-  .score-btn.s1{background:#FCE4D6;border-color:#C00000}.score-btn.s1 .snum,.score-btn.s1 .slbl{color:#C00000}
-  .score-btn.s2{background:#FEF0E0;border-color:#B8560A}.score-btn.s2 .snum,.score-btn.s2 .slbl{color:#B8560A}
-  .score-btn.s3{background:#FFF2CC;border-color:#7F6000}.score-btn.s3 .snum,.score-btn.s3 .slbl{color:#7F6000}
-  .score-btn.s4{background:#E2EFDA;border-color:#375623}.score-btn.s4 .snum,.score-btn.s4 .slbl{color:#375623}
-  .score-btn.s5{background:#DEEAF1;border-color:#1F4E79}.score-btn.s5 .snum,.score-btn.s5 .slbl{color:#1F4E79}
-  .note-label{font-size:11px;font-weight:600;color:#555;margin-bottom:4px}
-  .req-star{color:#C00000;margin-left:3px}
-  .note-area{width:100%;padding:8px 10px;border:1.5px solid #e8edf2;border-radius:7px;font-size:12px;resize:vertical;min-height:52px;font-family:inherit;color:#333}
-  .note-area:focus{outline:none;border-color:#2E75B6}
-  .note-area.err{border-color:#C00000}
-  .note-err{font-size:11px;color:#C00000;margin-top:3px;display:none}
-  .attach-section{border:1.5px dashed #d0d8e4;border-radius:10px;padding:18px;margin-top:16px;text-align:center;background:#fafbfc}
-  .attach-title{font-size:13px;font-weight:600;color:#333;margin-bottom:4px}
-  .attach-sub{font-size:11px;color:#999;margin-bottom:12px}
-  .attach-btn{display:inline-block;padding:9px 20px;border:1.5px solid #2E75B6;border-radius:7px;color:#2E75B6;font-size:13px;cursor:pointer;background:#fff;font-weight:600}
-  .attach-btn:hover{background:#EBF4FB}
-  .attach-preview{margin-top:10px;font-size:12px;color:#375623;font-weight:600}
-  .remove-file{color:#C00000;cursor:pointer;margin-left:8px;font-weight:400;font-size:11px}
-  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e8edf2}
-  .btn{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333}
-  .btn:hover{background:#f5f5f5}
-  .btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
-  .btn-primary:hover{background:#16396b}
-  .btn-success{background:#375623;color:#fff;border-color:#375623}
-  .btn-success:hover{background:#2a4119}
-  .summary-box{border:1px solid #e8edf2;border-radius:10px;padding:16px;margin-bottom:12px}
-  .summary-emp{font-size:15px;font-weight:700;color:#1F4E79;margin-bottom:4px}
-  .summary-meta{font-size:12px;color:#666;margin-bottom:0}
-  .crit-row{display:flex;align-items:flex-start;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;gap:12px}
-  .crit-row:last-child{border-bottom:none}
-  .crit-row-left{flex:1}
-  .crit-row-name{font-size:12px;font-weight:600;color:#1a1a1a}
-  .crit-row-note{font-size:11px;color:#888;margin-top:2px;font-style:italic}
-  .score-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
-  .submitting{text-align:center;padding:40px 20px}
-  .spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1F4E79;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .done-state{text-align:center;padding:40px 20px}
-  .done-state .check{font-size:48px;margin-bottom:16px}
-  .done-state h2{font-size:18px;font-weight:700;color:#375623;margin-bottom:8px}
-  .done-state p{font-size:13px;color:#666;margin-bottom:24px;line-height:1.6}
-  .error-banner{background:#FCE4D6;color:#C00000;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
-  .toast.show{opacity:1}
-  @media(max-width:500px){.two-col,.three-col{grid-template-columns:1fr}.sup-grid{grid-template-columns:1fr}.score-btn .slbl{display:none}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a1a1a}
+.topbar{background:#1F4E79;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.topbar h1{color:#fff;font-size:15px;font-weight:600}
+.topbar .right{display:flex;align-items:center;gap:12px}
+.sup-badge{background:rgba(255,255,255,0.15);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px}
+.logout-btn{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
+.logout-btn:hover{background:rgba(255,255,255,0.1)}
+.screen{display:none;max-width:700px;margin:32px auto;padding:0 16px 48px}
+.screen.active{display:block}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px}
+.card-header{background:#1F4E79;padding:16px 20px}
+.card-header h2{color:#fff;font-size:16px;font-weight:600}
+.card-header p{color:rgba(255,255,255,0.7);font-size:12px;margin-top:4px}
+.card-body{padding:20px}
+.login-logo{text-align:center;margin-bottom:24px}
+.login-logo .org{font-size:22px;font-weight:700;color:#1F4E79}
+.login-logo .sub{font-size:13px;color:#666;margin-top:4px}
+.sup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sup-btn{padding:14px 12px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;transition:all 0.15s}
+.sup-btn:hover{border-color:#2E75B6;background:#EBF4FB}
+.sup-btn.selected{border-color:#1F4E79;background:#D6E4F0}
+.sup-btn .name{font-size:13px;font-weight:600;color:#1F4E79}
+.sup-btn .team{font-size:11px;color:#888;margin-top:3px}
+.login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.login-btn:hover{background:#16396b}
+.emp-search{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:12px}
+.emp-search:focus{outline:none;border-color:#2E75B6}
+.emp-list{max-height:340px;overflow-y:auto}
+.emp-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;margin-bottom:6px}
+.emp-item:hover{background:#f0f4f8}
+.emp-item.selected{background:#D6E4F0;border-color:#2E75B6}
+.emp-item .emp-name{font-size:13px;font-weight:600}
+.emp-item .emp-meta{font-size:11px;color:#888;margin-top:2px}
+.emp-item .emp-code{font-size:11px;color:#2E75B6;font-weight:600}
+.step-bar{display:flex;border-bottom:1px solid #e8edf2;background:#fafbfc}
+.step-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;color:#999;border-bottom:2px solid transparent}
+.step-tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600;background:#fff}
+.step-tab.done{color:#375623}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
+.field input,.field select{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff}
+.field input:focus,.field select:focus{outline:none;border-color:#2E75B6}
+.field input[readonly]{background:#f5f7fa;color:#888}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.prog-wrap{margin-bottom:16px}
+.prog-label{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
+.prog-track{height:6px;background:#e8edf2;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#1F4E79;border-radius:3px;transition:width 0.3s}
+.crit-card{border:1.5px solid #e8edf2;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.crit-card.scored{border-color:#2E75B6;background:#fafcff}
+.crit-card.error{border-color:#C00000 !important;background:#fff8f8}
+.crit-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:8px}
+.score-row{display:flex;gap:7px;margin-bottom:10px}
+.score-btn{flex:1;padding:10px 4px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;min-width:0}
+.score-btn:hover{border-color:#2E75B6;background:#EBF4FB}
+.score-btn .snum{font-size:18px;font-weight:700;display:block}
+.score-btn .slbl{font-size:9px;display:block;margin-top:2px;color:#888}
+.score-btn.s1{background:#FCE4D6;border-color:#C00000}.score-btn.s1 .snum,.score-btn.s1 .slbl{color:#C00000}
+.score-btn.s2{background:#FEF0E0;border-color:#B8560A}.score-btn.s2 .snum,.score-btn.s2 .slbl{color:#B8560A}
+.score-btn.s3{background:#FFF2CC;border-color:#7F6000}.score-btn.s3 .snum,.score-btn.s3 .slbl{color:#7F6000}
+.score-btn.s4{background:#E2EFDA;border-color:#375623}.score-btn.s4 .snum,.score-btn.s4 .slbl{color:#375623}
+.score-btn.s5{background:#DEEAF1;border-color:#1F4E79}.score-btn.s5 .snum,.score-btn.s5 .slbl{color:#1F4E79}
+.note-label{font-size:11px;font-weight:600;color:#555;margin-bottom:4px}
+.req-star{color:#C00000;margin-left:3px}
+.note-area{width:100%;padding:8px 10px;border:1.5px solid #e8edf2;border-radius:7px;font-size:12px;resize:vertical;min-height:52px;font-family:inherit;color:#333}
+.note-area:focus{outline:none;border-color:#2E75B6}
+.note-area.err{border-color:#C00000}
+.note-err{font-size:11px;color:#C00000;margin-top:3px;display:none}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e8edf2}
+.btn{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333}
+.btn:hover{background:#f5f5f5}
+.btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
+.btn-primary:hover{background:#16396b}
+.btn-success{background:#375623;color:#fff;border-color:#375623}
+.summary-box{border:1px solid #e8edf2;border-radius:10px;padding:16px;margin-bottom:12px}
+.summary-emp{font-size:15px;font-weight:700;color:#1F4E79;margin-bottom:4px}
+.summary-meta{font-size:12px;color:#666}
+.crit-row{display:flex;align-items:flex-start;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;gap:12px}
+.crit-row:last-child{border-bottom:none}
+.crit-row-left{flex:1}
+.crit-row-name{font-size:12px;font-weight:600;color:#1a1a1a}
+.crit-row-note{font-size:11px;color:#888;margin-top:2px;font-style:italic}
+.score-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.submitting{text-align:center;padding:40px 20px}
+.spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1F4E79;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.done-state{text-align:center;padding:40px 20px}
+.done-state .check{font-size:48px;margin-bottom:16px}
+.done-state h2{font-size:18px;font-weight:700;color:#375623;margin-bottom:8px}
+.done-state p{font-size:13px;color:#666;margin-bottom:24px;line-height:1.6}
+.error-banner{background:#FCE4D6;color:#C00000;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:500px){.two-col,.three-col{grid-template-columns:1fr}.sup-grid{grid-template-columns:1fr}.score-btn .slbl{display:none}}
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <h1>Raigad Ropeways &mdash; Performance Review System</h1>
   <div class="right">
@@ -134,7 +119,7 @@
       <div class="card-header"><h2>Supervisor Login</h2><p>Select your name to begin reviewing your team</p></div>
       <div class="card-body">
         <div class="sup-grid" id="sup-grid"></div>
-        <div class="field" style="margin-top:8px">
+        <div class="field" style="margin-top:4px">
           <label>Password</label>
           <input type="password" id="login-pwd" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
         </div>
@@ -200,7 +185,7 @@
         <div class="prog-label"><span id="prog-text">0 of 0 scored</span><span id="prog-pct">0%</span></div>
         <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
       </div>
-      <p style="font-size:11px;color:#888;margin-bottom:14px;">Observation note under each criterion is <strong>mandatory</strong>.</p>
+      <p style="font-size:11px;color:#888;margin-bottom:14px">Observation note under each criterion is <strong>mandatory</strong>.</p>
       <div id="criteria-list"></div>
       <div class="nav-row">
         <button class="btn" onclick="goFormStep(1)">&larr; Back</button>
@@ -209,7 +194,6 @@
     </div>
     <div class="card-body" id="form-step-3" style="display:none">
       <div id="summary-content"></div>
-
       <div class="nav-row">
         <button class="btn" onclick="goFormStep(2)">&larr; Edit scores</button>
         <button class="btn btn-success" onclick="submitReview()">Submit Review</button>
@@ -217,7 +201,7 @@
     </div>
     <div class="card-body submitting" id="form-submitting" style="display:none">
       <div class="spinner"></div>
-      <p style="color:#666;font-size:13px" id="submit-status">Saving to Google Sheets...</p>
+      <p style="color:#666;font-size:13px" id="submit-status">Saving...</p>
     </div>
   </div>
 </div>
@@ -228,7 +212,7 @@
       <div class="check">&#10003;</div>
       <h2>Review submitted</h2>
       <p id="done-detail"></p>
-      <a id="done-email-btn" class="btn" style="display:none;margin-bottom:12px;text-decoration:none;background:#D6E4F0;color:#1F4E79;border-color:#2E75B6;">Attach a document via email</a><br>
+      <a id="done-email-btn" class="btn" style="display:none;margin-bottom:12px;text-decoration:none;background:#D6E4F0;color:#1F4E79;border-color:#2E75B6" target="_blank">Attach a document via email</a><br>
       <button class="btn btn-primary" style="margin-top:8px" onclick="reviewAnother()">Review another employee</button>
     </div>
   </div>
@@ -238,34 +222,366 @@
 
 <script>
 const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwTrLkFdYg3Azi4L6KYUKezGyNezWbR3mmmw8vaVJZH9xCb-Uq2tOJupeZAXu-qfL5Vxw/exec";
-const DRIVE_FOLDER_ID="1n3KiTQLLSRznePc3w_fSsuN1VEls1mya";
 
-// Load employees and supervisors from Google Sheet Config
-// ── DYNAMIC CONFIG ───────────────────────────────────────────────
-let RATING_SCALE_LIVE=null;
-let CRITERIA_LIVE={};
-let EMP_CRITERIA_LIVE={};
+const SUPERVISORS_DEFAULT={
+  "Khatu Rajendra":{pwd:"Raigad@KR",title:"In-Charge",team:[13,103,105,136,141,614]},
+  "Phondke Uday":{pwd:"Raigad@PU",title:"Joint In-Charge",team:[106,113,124,133,137]},
+  "Salunkhe Pratik":{pwd:"Raigad@SP",title:"In-Charge (Upper Station)",team:[110,118,143,503,509,521,524,615]},
+  "Bendugade Mahesh":{pwd:"Raigad@BM",title:"Restaurant Supervisor",team:[107,109,112,116,120,121,129,130,131,413,507,510,522,611,617]},
+  "Chipade Pralhad":{pwd:"Raigad@CP",title:"Electrician",team:[411,515,516,517,520]},
+  "Dighe Sanket":{pwd:"Raigad@DS",title:"In-Charge (TB)",team:[616,618]},
+  "Khaladkar Akshay":{pwd:"Raigad@KA",title:"Jr. Engineer",team:[142,410,415]},
+  "Sanas Vijay":{pwd:"Raigad@SV",title:"Store Keeper",team:[505,514,518,606,619]},
+  "Shingate Rajesh":{pwd:"Raigad@SR",title:"Chief Accountant",team:[108,114,115,117,126,127,128,138,144,407,511,513,519]},
+  "Umaratkar Santosh":{pwd:"Raigad@US",title:"Foreman Mechanical",team:[104,111,119,123,125,132,135,139,140,414,512,523,607]},
+};
+let SUPERVISORS={...SUPERVISORS_DEFAULT};
+
+const EMPLOYEES_DEFAULT=[
+  {code:13,name:"Khaladkar Akshay",role:"Engineer - Civil",group:"Technical & Maintenance",station:"Lower"},
+  {code:103,name:"Shingte Rajesh",role:"Chief Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:104,name:"Sanas Vijay",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:105,name:"Bhosale Santosh",role:"Driver",group:"Back Office & Support",station:"Lower"},
+  {code:106,name:"Aukirkar Balaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
+  {code:107,name:"Aukirkar Baliram",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:108,name:"Aukirkar Motiram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:109,name:"Aukirkar Raju",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:110,name:"Aukirkar Ramchandra",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
+  {code:111,name:"Aukirkar Sakharam",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:112,name:"Aukirkar Shushila",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:113,name:"Bendugade Mahesh",role:"Restaurant Supervisor",group:"Restaurant Operations",station:"Lower"},
+  {code:114,name:"Gangan Sandeep",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:115,name:"Gangan Santosh",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:116,name:"Shinde Suman",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:117,name:"Aukirkar Gangaram",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:118,name:"Aukirkar Jagan",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
+  {code:119,name:"Aukirkar Mahadev",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:120,name:"Aukirkar Maloji",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:121,name:"Aukirkar Motiram",role:"Cook Helper",group:"Restaurant Operations",station:"Upper"},
+  {code:123,name:"Aukirkar Ram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:124,name:"Aukirkar Dhaktu",role:"Night Watchman",group:"Facility & Sanitation",station:"Upper"},
+  {code:125,name:"Aukirkar Umesh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:126,name:"Aukirkar Vasant",role:"Souvenir Shop",group:"Retail & Visitor Experience",station:"Upper"},
+  {code:127,name:"Gaikwad Rajendra",role:"Ticket Vendor",group:"Ropeway Operations",station:"Upper"},
+  {code:128,name:"Gore Tukaram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Upper"},
+  {code:129,name:"Ningdalli Manikappa",role:"Cook",group:"Restaurant Operations",station:"Lower"},
+  {code:130,name:"Shinde Baburao",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
+  {code:131,name:"Aukirkar Deepak",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
+  {code:132,name:"Paswan Dilip",role:"Supervisor Mechanical",group:"Technical & Maintenance",station:"Upper"},
+  {code:133,name:"Railkar Suryakant",role:"Night Watchman",group:"Facility & Sanitation",station:"Lower"},
+  {code:135,name:"Kachare Balaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:136,name:"Salunkhe Pratik",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
+  {code:137,name:"Aukirkar Santosh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:138,name:"Mahadik Anil",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:139,name:"Sadhu Saran",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:140,name:"Raju Prasad",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:141,name:"Dighe Sanket",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
+  {code:142,name:"Bhosale Rohit",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+  {code:143,name:"Kadam Roshan",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:144,name:"Lamje Ankush",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:407,name:"Khopkar Vijay",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:410,name:"Gore Akshay",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:411,name:"Aukirkar Dattaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
+  {code:413,name:"Aukirkar Parvatibai",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:414,name:"Kokare Dipak",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
+  {code:415,name:"Gore Pratik",role:"Cabin Boy",group:"Ropeway Operations",station:"Upper"},
+  {code:503,name:"Shedge Rakesh",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:505,name:"Shelar Dinesh",role:"Museum",group:"Retail & Visitor Experience",station:"Lower"},
+  {code:507,name:"Mandavkar Yogesh",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:509,name:"Hogade Gangaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:510,name:"Hirve Ganesh",role:"Sub-Cook",group:"Restaurant Operations",station:"Lower"},
+  {code:511,name:"Jadhav Sushil",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Lower"},
+  {code:512,name:"Gaikwad Devendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:513,name:"Gaikwad Rutik",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:514,name:"Aukirkar Sitaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:515,name:"Dhebe Suresh",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
+  {code:516,name:"Pasawan Indrajit",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:517,name:"Pasawan Krushna",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:518,name:"Aukirkar Balkrushna",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+  {code:519,name:"Aukirkar Satish",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:520,name:"Shinde Raju",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:521,name:"Aniket Aukirkar",role:"Room Attendant",group:"Accommodation",station:"Upper"},
+  {code:522,name:"Kadam Anand",role:"Sub-Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:523,name:"Pasawan Dilip Kumar",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:524,name:"Aukirkar Rushikesh",role:"Hirkani Stall",group:"Retail & Visitor Experience",station:"Lower"},
+  {code:606,name:"Shinde Tanaji",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:607,name:"Shinde Rajendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:611,name:"Khabre Sarika",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:614,name:"Chipade Pralhad",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:615,name:"Kadu Vasant",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:616,name:"Sangurde Kajal",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
+  {code:617,name:"Gore Vanita",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:618,name:"Sakpal Riya",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
+  {code:619,name:"Gore Mangesh",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+];
+let EMPLOYEES=[...EMPLOYEES_DEFAULT];
+
+const ROLES={
+  "Ropeway Operator":[["Pre-Shift Safety Checks","S, D"],["Signal Discipline","S, WR"],["Emergency Response Handling","S, WR"],["System Knowledge & Control Understanding","S, WR"],["Problem Solving Ability & Willingness","WR, B"],["Operational Log Accuracy","WR, D"],["Communication with Stations","WR, B"],["Composure During Peak Hours","B, WR"],["Attendance & Punctuality","D"]],
+  "Cabin Boy":[["Boarding Safety Control","S"],["Passenger Assistance","B, WR"],["Signal to Operator","S, WR"],["Station Discipline","D, S"],["Behaviour with Visitors","B"],["Rush Hour Contribution","WR, B"],["Trolley Cleanliness & Upkeep","S, D, WR"],["Attendance & Punctuality","D"]],
+  "Folio Line Boy":[["Queue Management","WR, S"],["Visitor Communication","B"],["Guidance for Folio Writing","WR, B"],["Behaviour Under Pressure","B"],["Attendance & Punctuality","D"]],
+  "Ticket Vendor":[["Ticket & Cash Accuracy","WR, D"],["Speed at Counter","WR"],["Visitor Interaction","B"],["Fraud Prevention & Vigilance","D, S"],["Discrepancy Reporting","D, WR"],["Attendance & Punctuality","D"]],
+  "Ticket Scanner":[["Scanning Consistency","S, WR"],["Invalid Ticket Handling","S, WR"],["Throughput Speed","WR"],["Coordination with Queue","WR, B"],["Visitor Communication on Waiting Time","WR, B"],["Attendance & Punctuality","D"]],
+  "Foreman Mechanical":[["System Knowledge & Operational Understanding","S, WR"],["Continuous Improvement in Maintenance & Efficiency","WR"],["Innovation & Practical Problem Solving","S, WR"],["Scheduled Maintenance Execution","S, WR"],["Team Supervision & Teamwork","WR, B"],["Issue Detection & Reporting","S, WR"],["Maintenance Log Quality","D, WR"],["Compliance & SOP Adherence","S, D"],["Attendance & Punctuality","D"]],
+  "Supervisor Mechanical":[["Task Completion Quality","WR, S"],["Team Leadership & Direction","WR, B"],["Safety Protocol Adherence","S"],["Issue Escalation","S, D"],["Preventive Maintenance","D"],["Tool & Equipment Care","D, WR"],["Attendance & Punctuality","D"]],
+  "Electrician":[["System Knowledge & Electrical Understanding","S, WR"],["Electrical Maintenance Execution","S, WR"],["Fault Response Time","WR, S"],["Continuous Improvement & Recurring Issue Prevention","WR"],["Safety Compliance","S"],["Documentation","D, WR"],["Emergency Handling","S"],["Attendance & Punctuality","D"]],
+  "Engineer - Civil":[["Inspection Regularity","S, D"],["Issue Reporting & Follow-up","S, WR"],["Budgeting & Estimation of Civil Work","WR, D"],["Coordination with Teams","WR, B"],["Documentation Quality","D, WR"],["Post-Event Inspection (Weather / Incident)","S"],["Attendance & Punctuality","D"]],
+  "In-Charge (Lower Station)":[["Operational Flow Management","WR, S"],["Team Management","WR, B"],["Continuous Improvement in Visitor Flow Management","WR, B"],["Visitor Complaint Handling","B"],["Peak Hour Readiness","WR, S"],["Incident & Safety Management","WR, S"],["Communication with Management","D, B"],["Inter-Department Coordination","WR, B"],["Attendance, Availability & Operational Control","D"]],
+  "Joint In-Charge":[["Operational Support","WR, D"],["Deputising Ability","WR, S"],["Team Coordination","WR, B"],["Problem Solving","WR, B"],["Attendance & Punctuality","D"]],
+  "In-Charge (Upper Station)":[["Upper Station Flow","WR, S"],["Multi-Department Coordination","WR, B"],["Continuous Improvement in Visitor Flow Management","WR, B"],["Visitor Experience Oversight","B, WR"],["Facility Readiness","WR, D"],["Communication with Lower Station","D, B"],["Attendance & Punctuality","D"]],
+  "Restaurant Supervisor":[["Service Flow Management","WR"],["Kitchen-Floor Coordination","WR, B"],["Billing Supervision & Accuracy Control","WR, D"],["Hygiene & Cleanliness","S, WR"],["Order Accuracy & Service Control","WR"],["Issue Escalation & Resolution Control","WR, B"],["Inventory & Wastage Oversight","WR, D"],["Visitor Complaint Handling","B"],["Staff Meal Monitoring, Verification & Control","WR, D"],["Staff Meal Inventory & Wastage Control","D, WR"],["Staff Attendance Management","D, WR"],["Attendance & Punctuality","D"]],
+  "Cook":[["Food Quality & Consistency","WR, S"],["Speed of Preparation","WR"],["Kitchen Hygiene","S, D"],["Food Wastage Control & Material Handling","WR, D"],["Ingredient Management","WR, D"],["Personal Hygiene & Grooming Standards","S, D"],["Attendance & Punctuality","D"]],
+  "Sub-Cook":[["Preparation Quality","WR"],["Support During Service","WR, B"],["Kitchen Hygiene","S, D"],["Learning & Improvement","WR, B"],["Attendance & Punctuality","D"]],
+  "Cook Helper":[["Cleaning & Washing","S, WR"],["Preparation Support","WR"],["Material Handling & Care","WR, D"],["Speed & Responsiveness","WR, B"],["Attendance & Punctuality","D"]],
+  "Waiter":[["Order Accuracy","WR"],["Speed of Service","WR"],["Visitor Interaction","B"],["Table Cleanliness","S, D"],["Attendance & Punctuality","D"]],
+  "Restaurant Billing":[["Billing Accuracy","WR, D"],["Speed at Billing Counter","WR"],["Payment Handling, Recording & Reconciliation","D, WR"],["Visitor Interaction","B"],["Attendance & Punctuality","D"]],
+  "Restaurant Front Desk":[["Visitor Welcome","B"],["Seating Management","WR"],["Wait Time Communication","B, WR"],["Coordination with Floor Staff","WR, B"],["Attendance & Punctuality","D"]],
+  "Souvenir Shop":[["Sales & Cash Accuracy","WR, D"],["Visitor & Sales Engagement & Upselling","B, WR"],["Shop Presentation","WR, D"],["Inventory Control & Stock Accuracy","WR, D"],["Attendance & Punctuality","D"]],
+  "Museum":[["Visitor Guidance","B, WR"],["Exhibit Maintenance","WR, D"],["Visitor Management","B, S"],["Attendance & Punctuality","D"]],
+  "Hirkani Stall":[["Food & Cash Accuracy","WR, D"],["Stall Cleanliness","S, D"],["Visitor Interaction","B"],["Attendance & Punctuality","D"]],
+  "Room Attendant":[["Room Cleanliness & Readiness","WR, S"],["Amenity Management","WR, D"],["Linen & Upkeep","WR, D"],["Guest Interaction","B"],["Attendance & Punctuality","D"]],
+  "Chief Accountant":[["Financial Record Accuracy","WR, D"],["Payroll & Payment Timeliness","WR, D"],["Reporting to Management","D, B"],["Compliance & Audit Readiness","D, WR"],["Financial Control & Risk Oversight","WR, D"],["Internal Control & Improvements","WR, D"],["Cross-Department Coordination","WR"],["Handling Complex Accounting Issues","WR"],["Team Supervision & Capability Development","WR, B"],["Attendance & Punctuality","D"]],
+  "Jr. Accountant":[["Data Entry Accuracy","WR, D"],["Reconciliation Timeliness","D, WR"],["Responsiveness to Requests","WR, B"],["Data Reliability & Validation","WR"],["Attendance & Punctuality","D"]],
+  "Store Keeper":[["Stock Accuracy","WR, D"],["Issue & Receipt Management","D, WR"],["Reorder Alertness","WR, S"],["Store Organisation, Control & Inventory Safety","D, WR"],["Department Support Responsiveness","WR"],["Attendance & Punctuality","D"]],
+  "Driver":[["Safe Driving","S"],["Vehicle Maintenance","S, WR"],["Punctuality & Reliability","D, WR"],["Conduct & Professionalism","B"],["Attendance & Punctuality","D"]],
+  "Night Watchman":[["Patrol Regularity","S, D"],["Incident Reporting","S, D"],["Entry Point Monitoring","S"],["Alertness & Reliability","D, S"],["Attendance & Punctuality","D"]],
+  "Site Cleaner / Sweeper":[["Cleaning Coverage","WR, S"],["Cleaning During Peak Hours","WR, D"],["Waste Management","S, D"],["Attendance & Punctuality","D"]],
+  "Bio Toilet Cleaner":[["Toilet Cleanliness","S, WR"],["Restocking of Supplies","WR, D"],["Cleaning Frequency","WR, D"],["Maintenance Reporting","S, D"],["Attendance & Punctuality","D"]],
+};
+
+const SL={1:"Poor",2:"Needs Impr.",3:"Good",4:"Very Good",5:"Excellent"};
+const SC={1:{bg:"#FCE4D6",fg:"#C00000"},2:{bg:"#FEF0E0",fg:"#B8560A"},3:{bg:"#FFF2CC",fg:"#7F6000"},4:{bg:"#E2EFDA",fg:"#375623"},5:{bg:"#DEEAF1",fg:"#1F4E79"}};
+
+let currentSup=null,selectedEmp=null,scores={},notes={};
+let CRITERIA_LIVE={},EMP_CRITERIA_LIVE={},RATING_SCALE_LIVE=null;
+let currentPayload=null;
 
 function getCriteriaForEmp(emp){
   if(EMP_CRITERIA_LIVE[emp.code]&&EMP_CRITERIA_LIVE[emp.code].length)
     return EMP_CRITERIA_LIVE[emp.code].map(n=>[n]);
   if(CRITERIA_LIVE[emp.role]&&CRITERIA_LIVE[emp.role].length)
     return CRITERIA_LIVE[emp.role].map(n=>[n]);
-  return getCriteria(emp);
+  return ROLES[emp.role]||[];
 }
 
 function getRatingScale(){
-  return RATING_SCALE_LIVE||[
-    {score:1,label:"Poor",bg:"#FCE4D6",fg:"#C00000"},
-    {score:2,label:"Needs Impr.",bg:"#FEF0E0",fg:"#B8560A"},
-    {score:3,label:"Good",bg:"#FFF2CC",fg:"#7F6000"},
-    {score:4,label:"Very Good",bg:"#E2EFDA",fg:"#375623"},
-    {score:5,label:"Excellent",bg:"#DEEAF1",fg:"#1F4E79"},
-  ];
+  if(RATING_SCALE_LIVE&&RATING_SCALE_LIVE.length)return RATING_SCALE_LIVE;
+  return[{score:1,label:"Poor",bg:"#FCE4D6",fg:"#C00000"},{score:2,label:"Needs Impr.",bg:"#FEF0E0",fg:"#B8560A"},{score:3,label:"Good",bg:"#FFF2CC",fg:"#7F6000"},{score:4,label:"Very Good",bg:"#E2EFDA",fg:"#375623"},{score:5,label:"Excellent",bg:"#DEEAF1",fg:"#1F4E79"}];
 }
 
+function buildGrid(){
+  const g=document.getElementById('sup-grid');
+  if(!g)return;
+  g.innerHTML='';
+  Object.entries(SUPERVISORS).forEach(([n,i])=>{
+    const d=document.createElement('div');d.className='sup-btn';
+    d.innerHTML='<div class="name">'+n+'</div><div class="team">'+i.title+'</div>';
+    d.onclick=()=>{document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));d.classList.add('selected');currentSup=n;};
+    g.appendChild(d);
+  });
+}
+
+function doLogin(){
+  const errEl=document.getElementById('login-error');
+  const pwd=document.getElementById('login-pwd').value.trim();
+  if(!currentSup){errEl.textContent='Please select your name first.';errEl.style.display='block';return;}
+  if(!pwd){errEl.textContent='Please enter your password.';errEl.style.display='block';return;}
+  if(pwd!==SUPERVISORS[currentSup].pwd){errEl.textContent='Incorrect password. Please try again.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+  document.getElementById('sup-badge').textContent=currentSup;
+  document.getElementById('sup-badge').style.display='';
+  document.getElementById('logout-btn').style.display='';
+  buildEmpList();showScreen('screen-employees');
+}
+
+function logout(){
+  currentSup=null;selectedEmp=null;scores={};notes={};
+  document.getElementById('sup-badge').style.display='none';
+  document.getElementById('logout-btn').style.display='none';
+  document.getElementById('login-pwd').value='';
+  document.querySelectorAll('.sup-btn').forEach(b=>b.classList.remove('selected'));
+  showScreen('screen-login');
+}
+
+function buildEmpList(){
+  const codes=SUPERVISORS[currentSup].team;
+  const emps=EMPLOYEES.filter(e=>codes.includes(e.code));
+  document.getElementById('emp-screen-sub').textContent=emps.length+' team members \u2014 '+SUPERVISORS[currentSup].title;
+  renderEmpList(emps);
+}
+
+function renderEmpList(emps){
+  document.getElementById('emp-list').innerHTML=emps.map(e=>'<div class="emp-item" id="emp-'+e.code+'" onclick="selectEmp('+e.code+')"><div><div class="emp-name">'+e.name+'</div><div class="emp-meta">'+e.role+' \u00b7 '+e.station+' Station</div></div><span class="emp-code">'+e.code+'</span></div>').join('');
+}
+
+function filterEmps(q){
+  const v=q.toLowerCase();
+  const codes=SUPERVISORS[currentSup].team;
+  const res=EMPLOYEES.filter(e=>codes.includes(e.code)&&(e.name.toLowerCase().includes(v)||e.role.toLowerCase().includes(v)));
+  renderEmpList(res);
+  if(selectedEmp&&!res.find(e=>e.code===selectedEmp.code)){selectedEmp=null;document.getElementById('start-form-btn').disabled=true;}
+}
+
+function selectEmp(code){
+  document.querySelectorAll('.emp-item').forEach(el=>el.classList.remove('selected'));
+  const el=document.getElementById('emp-'+code);if(el)el.classList.add('selected');
+  selectedEmp=EMPLOYEES.find(e=>e.code===code);
+  document.getElementById('start-form-btn').disabled=false;
+}
+
+function goToForm(){
+  if(!selectedEmp)return;
+  scores={};notes={};
+  document.getElementById('ff-name').value=selectedEmp.name;
+  document.getElementById('ff-code').value=selectedEmp.code;
+  document.getElementById('ff-role').value=selectedEmp.role;
+  document.getElementById('ff-group').value=selectedEmp.group;
+  document.getElementById('ff-station').value=selectedEmp.station+' Station';
+  document.getElementById('ff-supervisor').value=currentSup;
+  document.getElementById('ff-quarter').value='';
+  document.getElementById('form-role-title').textContent='Performance Review \u2014 '+selectedEmp.role;
+  document.getElementById('form-emp-sub').textContent=selectedEmp.name+' \u00b7 '+selectedEmp.station+' Station \u00b7 '+selectedEmp.group;
+  goFormStep(1);showScreen('screen-form');
+}
+
+function goFormStep(n){
+  if(n===2){const q=document.getElementById('ff-quarter').value;if(!q){document.getElementById('step1-error').style.display='block';return;}document.getElementById('step1-error').style.display='none';}
+  [1,2,3].forEach(i=>{document.getElementById('form-step-'+i).style.display=i===n?'block':'none';const t=document.getElementById('tab-'+i);t.className='step-tab'+(i===n?' active':i<n?' done':'');});
+  document.getElementById('form-submitting').style.display='none';
+  if(n===2)buildCriteria();
+  if(n===3)buildSummary();
+  window.scrollTo(0,0);
+}
+
+function tryGoStep3(){
+  const criteria=getCriteriaForEmp(selectedEmp);
+  criteria.forEach(([name],i)=>{const el=document.getElementById('note-'+i);if(el)notes[name]=el.value;});
+  if(!validateStep2())return;
+  goFormStep(3);
+}
+
+function buildCriteria(){
+  const criteria=getCriteriaForEmp(selectedEmp);
+  const total=criteria.length;
+  const scale=getRatingScale();
+  document.getElementById('criteria-list').innerHTML=criteria.map(([name],i)=>{
+    const btns=scale.map(sc=>{const s=sc.score;const lbl=(sc.label||String(s)).substring(0,10);return'<div class="score-btn'+(scores[name]===s?' s'+s:'')+'" id="sb-'+i+'-'+s+'" onclick="setScore('+i+',\''+name.replace(/'/g,"\\'")+'\','+s+','+total+')"><span class="snum">'+s+'</span><span class="slbl">'+lbl+'</span></div>';}).join('');
+    return'<div class="crit-card'+(scores[name]?' scored':'')+'" id="cc-'+i+'"><div class="crit-name">'+name+'</div><div class="score-row">'+btns+'</div><div class="note-label">Observation Notes<span class="req-star">*</span></div><textarea class="note-area" id="note-'+i+'" placeholder="Write a brief observation...">'+(notes[name]||'')+'</textarea><div class="note-err" id="note-err-'+i+'">Please add an observation note.</div></div>';
+  }).join('');
+  updateProgress(total);
+}
+
+function setScore(idx,name,score,total){
+  scores[name]=score;
+  getRatingScale().forEach(sc=>{const b=document.getElementById('sb-'+idx+'-'+sc.score);if(b)b.className='score-btn'+(sc.score===score?' s'+sc.score:'');});
+  document.getElementById('cc-'+idx).classList.add('scored');document.getElementById('cc-'+idx).classList.remove('error');
+  updateProgress(total);
+}
+
+function updateProgress(total){
+  const criteria=getCriteriaForEmp(selectedEmp);
+  const done=criteria.filter(([n])=>scores[n]!==undefined).length;
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-text').textContent=done+' of '+total+' scored';
+  document.getElementById('prog-pct').textContent=pct+'%';
+}
+
+function validateStep2(){
+  const criteria=getCriteriaForEmp(selectedEmp);
+  let valid=true;
+  criteria.forEach(([name],i)=>{
+    const noteVal=(notes[name]||'').trim();
+    const card=document.getElementById('cc-'+i);
+    const err=document.getElementById('note-err-'+i);
+    const ta=document.getElementById('note-'+i);
+    let ok=true;
+    if(scores[name]===undefined){card.classList.add('error');ok=false;valid=false;}
+    if(!noteVal){card.classList.add('error');err.style.display='block';if(ta)ta.classList.add('err');ok=false;valid=false;}
+    else{err.style.display='none';if(ta)ta.classList.remove('err');}
+    if(ok)card.classList.remove('error');
+  });
+  if(!valid){showToast('Please score all criteria and add observation notes.');const first=document.querySelector('.crit-card.error');if(first)first.scrollIntoView({behavior:'smooth',block:'center'});}
+  return valid;
+}
+
+function buildSummary(){
+  const criteria=getCriteriaForEmp(selectedEmp);
+  const q=document.getElementById('ff-quarter');
+  const qLabel=q.options[q.selectedIndex]?q.options[q.selectedIndex].text:'';
+  const year=document.getElementById('ff-year').value;
+  let html='<div class="summary-box"><div class="summary-emp">'+selectedEmp.name+'</div><div class="summary-meta">'+selectedEmp.role+' \u00b7 '+selectedEmp.station+' Station \u00b7 '+qLabel+' '+year+' \u00b7 Reviewed by '+currentSup+'</div></div><div class="summary-box"><div style="font-size:12px;font-weight:600;color:#555;margin-bottom:12px">Criteria &amp; Observations</div>';
+  criteria.forEach(([name])=>{
+    const s=scores[name]||0;const note=notes[name]||'';const c=SC[s]||{bg:'#f5f5f5',fg:'#888'};
+    html+='<div class="crit-row"><div class="crit-row-left"><div class="crit-row-name">'+name+'</div>'+(note?'<div class="crit-row-note">&ldquo;'+note+'&rdquo;</div>':'')+'</div><div class="score-dot" style="background:'+c.bg+';color:'+c.fg+'">'+(s||'&mdash;')+'</div></div>';
+  });
+  html+='</div>';
+  document.getElementById('summary-content').innerHTML=html;
+}
+
+function submitReview(){
+  const criteria=getCriteriaForEmp(selectedEmp);
+  const scored=criteria.map(([n])=>({name:n,score:scores[n]||0,note:notes[n]||''}));
+  const total=scored.reduce((a,b)=>a+b.score,0);
+  const maxScore=criteria.length*5;
+  const pct=maxScore>0?Math.round(total/maxScore*100):0;
+  const qEl=document.getElementById('ff-quarter');
+  const qLabel=qEl.options[qEl.selectedIndex]?qEl.options[qEl.selectedIndex].text:qEl.value;
+  const payload={
+    timestamp:new Date().toISOString(),supervisor:currentSup,empCode:selectedEmp.code,
+    empName:selectedEmp.name,role:selectedEmp.role,group:selectedEmp.group,
+    station:selectedEmp.station,quarter:qEl.value,quarterLabel:qLabel,
+    year:document.getElementById('ff-year').value,criteria:scored,
+    totalScore:total,maxScore:maxScore,percentScore:pct
+  };
+  [1,2,3].forEach(i=>document.getElementById('form-step-'+i).style.display='none');
+  document.getElementById('form-submitting').style.display='block';
+  checkDuplicateAndSubmit(payload);
+}
+
+function checkDuplicateAndSubmit(payload){
+  const url=APPS_SCRIPT_URL+'?action=checkDuplicate&client=raigad&empCode='+payload.empCode+'&quarter='+payload.quarter+'&year='+payload.year;
+  fetch(url)
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.exists){
+        document.getElementById('form-submitting').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already submitted</p><p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>'+payload.empName+'</strong> for <strong>'+payload.quarterLabel+' '+payload.year+'</strong> already exists.</p><button class="btn" onclick="goFormStep(3)" style="margin-right:10px">&larr; Go back</button><button class="btn btn-danger" onclick="sendData(currentPayload)" style="background:#C00000;color:#fff;border-color:#C00000">Submit anyway</button></div>';
+        currentPayload=payload;
+      } else {sendData(payload);}
+    })
+    .catch(()=>sendData(payload));
+}
+
+function sendData(payload){
+  const img=new Image();
+  img.onload=img.onerror=function(){showDone(payload);};
+  img.src=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
+  setTimeout(function(){showDone(payload);},3000);
+}
+
+function showDone(payload){
+  document.getElementById('form-submitting').style.display='none';
+  document.getElementById('done-detail').innerHTML='<strong>'+payload.empName+'</strong> \u00b7 '+payload.role+'<br>'+payload.quarterLabel+' '+payload.year+' \u00b7 Reviewed by '+payload.supervisor;
+  const subject=encodeURIComponent('PMS Attachment: '+payload.empName+' | '+payload.role+' | '+payload.quarterLabel+' '+payload.year);
+  const body=encodeURIComponent('Supporting document for performance review:\n\nEmployee: '+payload.empName+'\nRole: '+payload.role+'\nQuarter: '+payload.quarterLabel+' '+payload.year+'\nReviewed by: '+payload.supervisor+'\n\nPlease attach your file to this email before sending.');
+  const emailBtn=document.getElementById('done-email-btn');
+  if(emailBtn){emailBtn.href='https://mail.google.com/mail/?view=cm&fs=1&su='+subject+'&body='+body;emailBtn.style.display='inline-block';}
+  showScreen('screen-done');
+}
+
+function reviewAnother(){
+  selectedEmp=null;scores={};notes={};
+  document.querySelectorAll('.emp-item').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('start-form-btn').disabled=true;
+  document.getElementById('emp-search').value='';
+  buildEmpList();showScreen('screen-employees');
+}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
 function loadConfig(){
-  fetch(APPS_SCRIPT_URL+'?action=getConfig)
+  fetch(APPS_SCRIPT_URL+'?action=getConfig')
     .then(r=>r.json())
     .then(data=>{
       if(data.employees&&data.employees.length>0)EMPLOYEES=data.employees;
@@ -283,28 +599,7 @@ function loadConfig(){
     .catch(()=>{});
 }
 
-let currentPayload=null;
-
-function checkDuplicateAndSubmit(payload){
-  const role=payload.role?'&role='+encodeURIComponent(payload.role):'';
-  const url=APPS_SCRIPT_URL+'?action=checkDuplicate&client=raigad&empCode='+payload.empCode+'&quarter='+payload.quarter+'&year='+payload.year+role;
-  fetch(url)
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.exists){
-        [1,2,3].forEach(i=>document.getElementById('form-step-'+i).style.display='none');
-        document.getElementById('form-submitting').style.display='block';
-        document.getElementById('form-submitting').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already submitted</p><p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>'+payload.empName+'</strong> — <strong>'+payload.quarterLabel+' '+payload.year+'</strong> already exists in the sheet.</p><button class="btn" onclick="goFormStep(3)" style="margin-right:10px">&larr; Go back</button><button class="btn btn-danger" onclick="sendData(currentPayload)">Submit anyway</button></div>';
-        currentPayload=payload;
-      } else {
-        sendData(payload);
-      }
-    })
-    .catch(()=>sendData(payload));
-}
-
 document.addEventListener('DOMContentLoaded',function(){buildGrid();loadConfig();});
-
 </script>
 </body>
 </html>
