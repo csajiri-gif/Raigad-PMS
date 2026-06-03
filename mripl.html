@@ -229,7 +229,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwrrLexkBy52pBtYWj424UXqK9by1N5aCLtlz1kHuIAByUB_sVpnLJhmBtEDhJKOF8P/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwTrLkFdYg3Azi4L6KYUKezGyNezWbR3mmmw8vaVJZH9xCb-Uq2tOJupeZAXu-qfL5Vxw/exec";
 
 // ── SUPERVISORS (placeholder — update via admin panel once mappings confirmed) ──
 const SUPERVISORS_DEFAULT={
@@ -397,17 +397,17 @@ function goFormStep(n){
 }
 
 function tryGoStep3(){
-  const criteria=getCriteria(selectedEmp);
+  const criteria=getCriteriaForEmp(selectedEmp);
   criteria.forEach(([name],i)=>{const el=document.getElementById('note-'+i);if(el)notes[name]=el.value;});
   if(!validateStep2())return;
   goFormStep(3);
 }
 
 function buildCriteria(){
-  const criteria=getCriteria(selectedEmp);
+  const criteria=getCriteriaForEmp(selectedEmp);
   const total=criteria.length;
   document.getElementById('criteria-list').innerHTML=criteria.map(([name],i)=>{
-    const btns=[1,2,3,4,5].map(s=>'<div class="score-btn'+(scores[name]===s?' s'+s:'')+'" id="sb-'+i+'-'+s+'" onclick="setScore('+i+',\''+name.replace(/'/g,"\\'")+'\','+s+','+total+')"><span class="snum">'+s+'</span><span class="slbl">'+SL[s]+'</span></div>').join('');
+    const btns=getRatingScale().map(sc=>{const s=sc.score;const lbl=(sc.label||String(s)).substring(0,10);return'<div class="score-btn'+(scores[name]===s?' s'+s:'')+'" id="sb-'+i+'-'+s+'" onclick="setScore('+i+',\''+name.replace(/'/g,"\\'")+'\','+s+','+total+')"><span class="snum">'+s+'</span><span class="slbl">'+lbl+'</span></div>';}).join('');
     return '<div class="crit-card'+(scores[name]?' scored':'')+'" id="cc-'+i+'"><div class="crit-name">'+name+'</div><div class="score-row">'+btns+'</div><div class="note-label">Observation Notes<span class="req-star">*</span></div><textarea class="note-area" id="note-'+i+'" placeholder="Write a brief observation...">'+(notes[name]||'')+'</textarea><div class="note-err" id="note-err-'+i+'">Please add an observation note.</div></div>';
   }).join('');
   updateProgress(total);
@@ -422,7 +422,7 @@ function setScore(idx,name,score,total){
 }
 
 function updateProgress(total){
-  const criteria=getCriteria(selectedEmp);
+  const criteria=getCriteriaForEmp(selectedEmp);
   const done=criteria.filter(([n])=>scores[n]!==undefined).length;
   const pct=total>0?Math.round(done/total*100):0;
   document.getElementById('prog-fill').style.width=pct+'%';
@@ -431,7 +431,7 @@ function updateProgress(total){
 }
 
 function validateStep2(){
-  const criteria=getCriteria(selectedEmp);
+  const criteria=getCriteriaForEmp(selectedEmp);
   let valid=true;
   criteria.forEach(([name],i)=>{
     const noteVal=(notes[name]||'').trim();
@@ -449,7 +449,7 @@ function validateStep2(){
 }
 
 function buildSummary(){
-  const criteria=getCriteria(selectedEmp);
+  const criteria=getCriteriaForEmp(selectedEmp);
   const q=document.getElementById('ff-quarter');
   const qLabel=q.options[q.selectedIndex]?q.options[q.selectedIndex].text:'';
   const year=document.getElementById('ff-year').value;
@@ -463,7 +463,7 @@ function buildSummary(){
 }
 
 function submitReview(){
-  const criteria=getCriteria(selectedEmp);
+  const criteria=getCriteriaForEmp(selectedEmp);
   const scored=criteria.map(([n])=>({name:n,score:scores[n]||0,note:notes[n]||''}));
   const total=scored.reduce((a,b)=>a+b.score,0);
   const maxScore=criteria.length*5;
@@ -479,7 +479,7 @@ function submitReview(){
   };
   [1,2,3].forEach(i=>document.getElementById('form-step-'+i).style.display='none');
   document.getElementById('form-submitting').style.display='block';
-  sendData(payload);
+  checkDuplicateAndSubmit(payload);
 }
 
 function sendData(payload){
@@ -510,9 +510,31 @@ function reviewAnother(){
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
-// Load config from sheet on startup
+// ── DYNAMIC CONFIG ───────────────────────────────────────────────
+let RATING_SCALE_LIVE=null;
+let CRITERIA_LIVE={};
+let EMP_CRITERIA_LIVE={};
+
+function getCriteriaForEmp(emp){
+  if(EMP_CRITERIA_LIVE[emp.code]&&EMP_CRITERIA_LIVE[emp.code].length)
+    return EMP_CRITERIA_LIVE[emp.code].map(n=>[n]);
+  if(CRITERIA_LIVE[emp.role]&&CRITERIA_LIVE[emp.role].length)
+    return CRITERIA_LIVE[emp.role].map(n=>[n]);
+  return getCriteria(emp);
+}
+
+function getRatingScale(){
+  return RATING_SCALE_LIVE||[
+    {score:1,label:"Poor",bg:"#FCE4D6",fg:"#C00000"},
+    {score:2,label:"Needs Impr.",bg:"#FEF0E0",fg:"#B8560A"},
+    {score:3,label:"Good",bg:"#FFF2CC",fg:"#7F6000"},
+    {score:4,label:"Very Good",bg:"#E2EFDA",fg:"#375623"},
+    {score:5,label:"Excellent",bg:"#DEEAF1",fg:"#1F4E79"},
+  ];
+}
+
 function loadConfig(){
-  fetch(APPS_SCRIPT_URL+'?action=getConfig&client=mripl')
+  fetch(APPS_SCRIPT_URL+'?action=getConfig&client=mripl)
     .then(r=>r.json())
     .then(data=>{
       if(data.employees&&data.employees.length>0)EMPLOYEES=data.employees;
@@ -521,15 +543,37 @@ function loadConfig(){
           SUPERVISORS[name]=Object.assign({},SUPERVISORS_DEFAULT[name]||{},info);
           if(SUPERVISORS_DEFAULT[name])SUPERVISORS[name].pwd=SUPERVISORS_DEFAULT[name].pwd;
         });
+        buildGrid();
       }
+      if(data.criteria&&Object.keys(data.criteria).length>0)CRITERIA_LIVE=data.criteria;
+      if(data.empCriteria)EMP_CRITERIA_LIVE=data.empCriteria;
+      if(data.ratingScale&&data.ratingScale.length)RATING_SCALE_LIVE=data.ratingScale;
     })
     .catch(()=>{});
 }
-loadConfig();
 
-document.addEventListener('DOMContentLoaded', function(){
-  buildGrid();
-});
+let currentPayload=null;
+
+function checkDuplicateAndSubmit(payload){
+  const role=payload.role?'&role='+encodeURIComponent(payload.role):'';
+  const url=APPS_SCRIPT_URL+'?action=checkDuplicate&client=mripl&empCode='+payload.empCode+'&quarter='+payload.quarter+'&year='+payload.year+role;
+  fetch(url)
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.exists){
+        [1,2,3].forEach(i=>document.getElementById('form-step-'+i).style.display='none');
+        document.getElementById('form-submitting').style.display='block';
+        document.getElementById('form-submitting').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already submitted</p><p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>'+payload.empName+'</strong> — <strong>'+payload.quarterLabel+' '+payload.year+'</strong> already exists in the sheet.</p><button class="btn" onclick="goFormStep(3)" style="margin-right:10px">&larr; Go back</button><button class="btn btn-danger" onclick="sendData(currentPayload)">Submit anyway</button></div>';
+        currentPayload=payload;
+      } else {
+        sendData(payload);
+      }
+    })
+    .catch(()=>sendData(payload));
+}
+
+document.addEventListener('DOMContentLoaded',function(){buildGrid();loadConfig();});
+
 </script>
 </body>
 </html>
