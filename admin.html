@@ -7,126 +7,139 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a1a1a}
-.topbar{background:#1F4E79;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
-.topbar h1{color:#fff;font-size:15px;font-weight:600}
-.topbar .right{display:flex;align-items:center;gap:10px}
-.badge{background:rgba(255,255,255,0.15);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px}
-.logout{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
-.screen{display:none;max-width:960px;margin:28px auto;padding:0 16px 48px}
+.topbar{background:#1F4E79;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar h1{color:#fff;font-size:14px;font-weight:600}
+.badge{background:rgba(255,255,255,0.15);color:#fff;padding:4px 10px;border-radius:99px;font-size:11px}
+.logout-btn{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px}
+.screen{display:none;max-width:1000px;margin:24px auto;padding:0 16px 48px}
 .screen.active{display:block}
-.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px}
-.card-header{background:#1F4E79;padding:16px 20px}
-.card-header h2{color:#fff;font-size:16px;font-weight:600}
-.card-body{padding:20px}
-.login-logo{text-align:center;margin-bottom:24px}
-.login-logo .org{font-size:20px;font-weight:700;color:#1F4E79}
-.login-logo .sub{font-size:12px;color:#888;margin-top:3px}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
-.field input,.field select{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px}
-.field input:focus,.field select:focus{outline:none;border-color:#2E75B6}
-.btn{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:14px}
+.card-header{background:#1F4E79;padding:14px 18px}
+.card-header h2{color:#fff;font-size:15px;font-weight:600}
+.card-body{padding:18px}
+.login-btn{width:100%;padding:12px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:600;color:#555;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:8px 11px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px;color:#1a1a1a;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#2E75B6}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+/* System tabs */
+.sys-tabs{display:flex;gap:0;margin-bottom:18px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.sys-tab{flex:1;padding:13px;text-align:center;cursor:pointer;background:#fff;font-size:13px;font-weight:600;color:#888;border:1.5px solid #e0e0e0;transition:all 0.15s}
+.sys-tab:first-child{border-right:none;border-radius:10px 0 0 10px}
+.sys-tab:last-child{border-radius:0 10px 10px 0}
+.sys-tab.active{background:#1F4E79;color:#fff;border-color:#1F4E79}
+/* Inner nav */
+.inner-nav{display:flex;border-bottom:2px solid #e8edf2;margin-bottom:18px;overflow-x:auto}
+.inner-tab{padding:9px 16px;font-size:12px;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.inner-tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600}
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:9px 11px;background:#1F4E79;color:#fff;font-weight:600;font-size:11px;white-space:nowrap}
+td{padding:8px 11px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.tag{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:600;background:#D6E4F0;color:#1F4E79}
+/* Buttons */
+.btn{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333}
 .btn:hover{background:#f5f5f5}
 .btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
 .btn-primary:hover{background:#16396b}
 .btn-danger{background:#C00000;color:#fff;border-color:#C00000}
-.btn-danger:hover{background:#a00000}
-.btn-sm{padding:5px 12px;font-size:12px}
-.login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
-/* System tabs */
-.sys-tabs{display:flex;gap:0;margin-bottom:20px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.sys-tab{flex:1;padding:14px;text-align:center;cursor:pointer;background:#fff;font-size:14px;font-weight:600;color:#888;border:1.5px solid #e0e0e0;transition:all 0.15s}
-.sys-tab:first-child{border-right:none;border-radius:10px 0 0 10px}
-.sys-tab:last-child{border-radius:0 10px 10px 0}
-.sys-tab.active{background:#1F4E79;color:#fff;border-color:#1F4E79}
-/* Inner tabs */
-.tabs{display:flex;border-bottom:1px solid #e8edf2;margin-bottom:20px}
-.tab{padding:10px 18px;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent}
-.tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 12px;background:#1F4E79;color:#fff;font-weight:600;font-size:12px}
-td{padding:9px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#f8fafc}
-.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:#D6E4F0;color:#1F4E79}
-.tag-green{background:#E2EFDA;color:#375623}
-.error-banner{background:#FCE4D6;color:#C00000;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
-.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-icon{padding:4px 8px;font-size:13px;border-radius:5px;cursor:pointer;border:1px solid #e0e0e0;background:#fff}
+/* Search */
+.search-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
+.search-input{padding:8px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:12px;flex:1;max-width:320px}
+.search-input:focus{outline:none;border-color:#2E75B6}
+/* Modal */
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center}
 .modal-bg.active{display:flex}
-.modal{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
-.modal h3{font-size:16px;font-weight:600;color:#1F4E79;margin-bottom:16px}
-.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #e8edf2}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.search-bar{padding:9px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;margin-bottom:14px;width:100%;max-width:320px}
-.search-bar:focus{outline:none;border-color:#2E75B6}
-.loading{text-align:center;padding:32px;color:#888;font-size:13px}
-.spinner{width:28px;height:28px;border:3px solid #e0e0e0;border-top-color:#1F4E79;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.modal{background:#fff;border-radius:12px;padding:22px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,0.15)}
+.modal h3{font-size:15px;font-weight:700;color:#1F4E79;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #e8edf2}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid #e8edf2}
+/* Criteria builder */
+.crit-list{border:1.5px solid #e8edf2;border-radius:8px;overflow:hidden;margin-bottom:10px}
+.crit-item{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid #f0f0f0;gap:8px;background:#fff}
+.crit-item:last-child{border-bottom:none}
+.crit-item:hover{background:#f8fafc}
+.crit-drag{color:#ccc;cursor:grab;font-size:14px;flex-shrink:0}
+.crit-name-input{flex:1;padding:5px 8px;border:1.5px solid #e8edf2;border-radius:5px;font-size:12px}
+.crit-name-input:focus{outline:none;border-color:#2E75B6}
+.crit-remove{color:#C00000;cursor:pointer;font-size:16px;flex-shrink:0;padding:0 4px}
+.crit-add-row{display:flex;gap:8px;margin-top:8px}
+.crit-add-input{flex:1;padding:8px 11px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:12px}
+.crit-add-input:focus{outline:none;border-color:#2E75B6}
+/* Rating scale */
+.scale-row{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #f0f0f0;gap:10px}
+.scale-row:last-child{border-bottom:none}
+.scale-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+/* Error/success */
+.error-banner{background:#FCE4D6;color:#C00000;padding:9px 12px;border-radius:7px;font-size:12px;margin-bottom:12px;display:none}
+.info-box{background:#D6E4F0;color:#1F4E79;padding:9px 12px;border-radius:7px;font-size:12px;margin-bottom:12px}
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:8px;font-size:12px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
 .toast.show{opacity:1}
-@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+@media(max-width:600px){.two-col,.three-col{grid-template-columns:1fr}.search-row{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <h1>PMS Admin Panel &mdash; Raigad &amp; MRIPL HO</h1>
-  <div class="right">
+  <h1>PMS Admin Panel — Raigad &amp; MRIPL HO</h1>
+  <div style="display:flex;align-items:center;gap:8px">
     <span class="badge" id="admin-badge" style="display:none">Admin</span>
-    <button class="logout" id="admin-logout" style="display:none" onclick="adminLogout()">Logout</button>
+    <button class="logout-btn" id="admin-logout" style="display:none" onclick="adminLogout()">Logout</button>
   </div>
 </div>
 
 <!-- LOGIN -->
 <div class="screen active" id="screen-login">
-  <div style="max-width:380px;margin:0 auto">
-    <div class="login-logo"><div class="org">PMS Admin Panel</div><div class="sub">Raigad Ropeways &amp; MRIPL Head Office</div></div>
+  <div style="max-width:360px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:20px;font-weight:700;color:#1F4E79">PMS Admin</div>
+      <div style="font-size:12px;color:#888;margin-top:3px">Raigad Ropeways &amp; MRIPL Head Office</div>
+    </div>
     <div class="card">
       <div class="card-header"><h2>Admin Login</h2></div>
       <div class="card-body">
-        <div class="field"><label>Admin Password</label><input type="password" id="admin-pwd" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()"></div>
+        <div class="field"><label>Password</label><input type="password" id="admin-pwd" onkeydown="if(event.key==='Enter')adminLogin()"></div>
         <div class="error-banner" id="login-err">Incorrect password.</div>
         <button class="login-btn" onclick="adminLogin()">Login</button>
       </div>
     </div>
-    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:12px">
-      <a href="index.html" style="color:#aaa">← Raigad Review Form</a> &nbsp;|&nbsp;
-      <a href="mripl.html" style="color:#aaa">MRIPL Review Form →</a>
+    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:10px">
+      <a href="index.html" style="color:#aaa">← Raigad Form</a> &nbsp;|&nbsp; <a href="mripl.html" style="color:#aaa">MRIPL Form →</a>
     </p>
   </div>
 </div>
 
 <!-- MAIN -->
 <div class="screen" id="screen-admin">
-
-  <!-- System selector -->
   <div class="sys-tabs">
     <div class="sys-tab active" id="sys-raigad" onclick="switchSystem('raigad')">🏔 Raigad Ropeways</div>
     <div class="sys-tab" id="sys-mripl" onclick="switchSystem('mripl')">🏢 MRIPL Head Office</div>
   </div>
-
-  <!-- Content area -->
-  <div id="system-content"></div>
-
+  <div class="inner-nav" id="inner-nav"></div>
+  <div id="tab-content"></div>
 </div>
 
 <!-- EMPLOYEE MODAL -->
 <div class="modal-bg" id="emp-modal">
   <div class="modal">
     <h3 id="emp-modal-title">Add Employee</h3>
-    <input type="hidden" id="emp-edit-idx">
-    <input type="hidden" id="emp-system">
     <div class="two-col">
-      <div class="field"><label>Employee Code *</label><input type="number" id="emp-code" placeholder="e.g. 620"></div>
-      <div class="field"><label>Full Name *</label><input type="text" id="emp-name" placeholder="Last First"></div>
+      <div class="field"><label>Employee Code *</label><input type="number" id="emp-code"></div>
+      <div class="field"><label>Full Name *</label><input type="text" id="emp-name"></div>
     </div>
-    <div class="field"><label>Role / Designation *</label><select id="emp-role" onchange="onRoleChange()"><option value="">Select role...</option></select></div>
+    <div class="field"><label>Role *</label><select id="emp-role" onchange="onRoleChange()"><option value="">Select...</option></select></div>
     <div class="two-col">
-      <div class="field"><label>Station / Department *</label><input type="text" id="emp-station" placeholder="e.g. Lower or Accounts"></div>
-      <div class="field"><label>Group / Dept</label><input type="text" id="emp-group" readonly style="background:#f5f7fa;color:#888"></div>
+      <div class="field"><label>Station / Department</label><input type="text" id="emp-station"></div>
+      <div class="field"><label>Group</label><input type="text" id="emp-group" readonly style="background:#f5f7fa;color:#888"></div>
     </div>
-    <div class="field"><label>Supervisor / Reviewer *</label><select id="emp-supervisor"><option value="">Select...</option></select></div>
-    <div class="error-banner" id="emp-modal-err"></div>
+    <div class="field"><label>Reviewer / Supervisor *</label><select id="emp-supervisor"><option value="">Select...</option></select></div>
+    <div class="error-banner" id="emp-err"></div>
     <div class="modal-footer">
       <button class="btn" onclick="closeModal('emp-modal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveEmployee()">Save</button>
@@ -134,19 +147,52 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
-<!-- SUPERVISOR MODAL -->
-<div class="modal-bg" id="sup-modal">
+<!-- REVIEWER MODAL -->
+<div class="modal-bg" id="rev-modal">
   <div class="modal">
-    <h3 id="sup-modal-title">Add Supervisor</h3>
-    <input type="hidden" id="sup-edit-name">
-    <input type="hidden" id="sup-system">
-    <div class="field"><label>Full Name *</label><input type="text" id="sup-name"></div>
-    <div class="field"><label>Title / Designation *</label><input type="text" id="sup-title"></div>
-    <div class="field"><label>Password *</label><input type="text" id="sup-pwd" placeholder="e.g. Raigad@XX"></div>
-    <div class="error-banner" id="sup-modal-err"></div>
+    <h3 id="rev-modal-title">Add Reviewer</h3>
+    <div class="field"><label>Full Name *</label><input type="text" id="rev-name"></div>
+    <div class="field"><label>Title / Designation *</label><input type="text" id="rev-title"></div>
+    <div class="field"><label>Password *</label><input type="text" id="rev-pwd"></div>
+    <div class="error-banner" id="rev-err"></div>
     <div class="modal-footer">
-      <button class="btn" onclick="closeModal('sup-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveSupervisor()">Save</button>
+      <button class="btn" onclick="closeModal('rev-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReviewer()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CRITERIA MODAL (role default) -->
+<div class="modal-bg" id="crit-modal">
+  <div class="modal">
+    <h3 id="crit-modal-title">Edit Criteria</h3>
+    <p style="font-size:11px;color:#888;margin-bottom:12px">These are the default criteria for this role. Drag to reorder. Changes apply to all employees in this role who don't have custom criteria.</p>
+    <div class="crit-list" id="crit-list"></div>
+    <div class="crit-add-row">
+      <input class="crit-add-input" type="text" id="crit-new-input" placeholder="New criterion name..." onkeydown="if(event.key==='Enter')addCritItem()">
+      <button class="btn btn-primary" onclick="addCritItem()">+ Add</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('crit-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCriteria()">Save Criteria</button>
+    </div>
+  </div>
+</div>
+
+<!-- EMP CRITERIA MODAL (individual) -->
+<div class="modal-bg" id="empcrit-modal">
+  <div class="modal">
+    <h3 id="empcrit-modal-title">Customise Criteria</h3>
+    <div class="info-box" id="empcrit-info"></div>
+    <p style="font-size:11px;color:#888;margin-bottom:12px">Loaded from role defaults. Add, remove or reorder as needed for this employee specifically.</p>
+    <div class="crit-list" id="empcrit-list"></div>
+    <div class="crit-add-row">
+      <input class="crit-add-input" type="text" id="empcrit-new-input" placeholder="New criterion name..." onkeydown="if(event.key==='Enter')addEmpCritItem()">
+      <button class="btn btn-primary" onclick="addEmpCritItem()">+ Add</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('empcrit-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEmpCriteria()">Save</button>
     </div>
   </div>
 </div>
@@ -154,403 +200,675 @@ tr:hover td{background:#f8fafc}
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwrrLexkBy52pBtYWj424UXqK9by1N5aCLtlz1kHuIAByUB_sVpnLJhmBtEDhJKOF8P/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwTrLkFdYg3Azi4L6KYUKezGyNezWbR3mmmw8vaVJZH9xCb-Uq2tOJupeZAXu-qfL5Vxw/exec";
 const ADMIN_PASSWORD="RaigadAdmin@2025";
 
-// ── ROLE GROUPS ───────────────────────────────────────────────────
-const RAIGAD_ROLES={"Ropeway Operator":"Ropeway Operations","Cabin Boy":"Ropeway Operations","Folio Line Boy":"Ropeway Operations","Ticket Vendor":"Ropeway Operations","Ticket Scanner":"Ropeway Operations","Foreman Mechanical":"Technical & Maintenance","Supervisor Mechanical":"Technical & Maintenance","Electrician":"Technical & Maintenance","Engineer - Civil":"Technical & Maintenance","In-Charge (Lower Station)":"Management & Supervision","Joint In-Charge":"Management & Supervision","In-Charge (Upper Station)":"Management & Supervision","Restaurant Supervisor":"Restaurant Operations","Cook":"Restaurant Operations","Sub-Cook":"Restaurant Operations","Cook Helper":"Restaurant Operations","Waiter":"Restaurant Operations","Restaurant Billing":"Restaurant Operations","Restaurant Front Desk":"Restaurant Operations","Souvenir Shop":"Retail & Visitor Experience","Museum":"Retail & Visitor Experience","Hirkani Stall":"Retail & Visitor Experience","Room Attendant":"Accommodation","Chief Accountant":"Back Office & Support","Jr. Accountant":"Back Office & Support","Store Keeper":"Back Office & Support","Driver":"Back Office & Support","Night Watchman":"Facility & Sanitation","Site Cleaner / Sweeper":"Facility & Sanitation","Bio Toilet Cleaner":"Facility & Sanitation"};
+// ── DEFAULT CRITERIA ──────────────────────────────────────────────
+const DEFAULT_CRITERIA={
+  raigad:{
+    "Ropeway Operator":["Pre-Shift Safety Checks","Signal Discipline","Emergency Response Handling","System Knowledge & Control Understanding","Problem Solving Ability & Willingness","Operational Log Accuracy","Communication with Stations","Composure During Peak Hours","Attendance & Punctuality"],
+    "Cabin Boy":["Boarding Safety Control","Passenger Assistance","Signal to Operator","Station Discipline","Behaviour with Visitors","Rush Hour Contribution","Trolley Cleanliness & Upkeep","Attendance & Punctuality"],
+    "Folio Line Boy":["Queue Management","Visitor Communication","Guidance for Folio Writing","Behaviour Under Pressure","Attendance & Punctuality"],
+    "Ticket Vendor":["Ticket & Cash Accuracy","Speed at Counter","Visitor Interaction","Fraud Prevention & Vigilance","Discrepancy Reporting","Attendance & Punctuality"],
+    "Ticket Scanner":["Scanning Consistency","Invalid Ticket Handling","Throughput Speed","Coordination with Queue","Visitor Communication on Waiting Time","Attendance & Punctuality"],
+    "Foreman Mechanical":["System Knowledge & Operational Understanding","Continuous Improvement in Maintenance & Efficiency","Innovation & Practical Problem Solving","Scheduled Maintenance Execution","Team Supervision & Teamwork","Issue Detection & Reporting","Maintenance Log Quality","Compliance & SOP Adherence","Attendance & Punctuality"],
+    "Supervisor Mechanical":["Task Completion Quality","Team Leadership & Direction","Safety Protocol Adherence","Issue Escalation","Preventive Maintenance","Tool & Equipment Care","Attendance & Punctuality"],
+    "Electrician":["System Knowledge & Electrical Understanding","Electrical Maintenance Execution","Fault Response Time","Continuous Improvement & Recurring Issue Prevention","Safety Compliance","Documentation","Emergency Handling","Attendance & Punctuality"],
+    "Engineer - Civil":["Inspection Regularity","Issue Reporting & Follow-up","Budgeting & Estimation of Civil Work","Coordination with Teams","Documentation Quality","Post-Event Inspection (Weather / Incident)","Attendance & Punctuality"],
+    "In-Charge (Lower Station)":["Operational Flow Management","Team Management","Continuous Improvement in Visitor Flow Management","Visitor Complaint Handling","Peak Hour Readiness","Incident & Safety Management","Communication with Management","Inter-Department Coordination","Attendance, Availability & Operational Control"],
+    "Joint In-Charge":["Operational Support","Deputising Ability","Team Coordination","Problem Solving","Attendance & Punctuality"],
+    "In-Charge (Upper Station)":["Upper Station Flow","Multi-Department Coordination","Continuous Improvement in Visitor Flow Management","Visitor Experience Oversight","Facility Readiness","Communication with Lower Station","Attendance & Punctuality"],
+    "Restaurant Supervisor":["Service Flow Management","Kitchen-Floor Coordination","Billing Supervision & Accuracy Control","Hygiene & Cleanliness","Order Accuracy & Service Control","Issue Escalation & Resolution Control","Inventory & Wastage Oversight","Visitor Complaint Handling","Staff Meal Monitoring, Verification & Control","Staff Meal Inventory & Wastage Control","Staff Attendance Management","Attendance & Punctuality"],
+    "Cook":["Food Quality & Consistency","Speed of Preparation","Kitchen Hygiene","Food Wastage Control & Material Handling","Ingredient Management","Personal Hygiene & Grooming Standards","Attendance & Punctuality"],
+    "Sub-Cook":["Preparation Quality","Support During Service","Kitchen Hygiene","Learning & Improvement","Attendance & Punctuality"],
+    "Cook Helper":["Cleaning & Washing","Preparation Support","Material Handling & Care","Speed & Responsiveness","Attendance & Punctuality"],
+    "Waiter":["Order Accuracy","Speed of Service","Visitor Interaction","Table Cleanliness","Attendance & Punctuality"],
+    "Restaurant Billing":["Billing Accuracy","Speed at Billing Counter","Payment Handling, Recording & Reconciliation","Visitor Interaction","Attendance & Punctuality"],
+    "Restaurant Front Desk":["Visitor Welcome","Seating Management","Wait Time Communication","Coordination with Floor Staff","Attendance & Punctuality"],
+    "Souvenir Shop":["Sales & Cash Accuracy","Visitor & Sales Engagement & Upselling","Shop Presentation","Inventory Control & Stock Accuracy","Attendance & Punctuality"],
+    "Museum":["Visitor Guidance","Exhibit Maintenance","Visitor Management","Attendance & Punctuality"],
+    "Hirkani Stall":["Food & Cash Accuracy","Stall Cleanliness","Visitor Interaction","Attendance & Punctuality"],
+    "Room Attendant":["Room Cleanliness & Readiness","Amenity Management","Linen & Upkeep","Guest Interaction","Attendance & Punctuality"],
+    "Chief Accountant":["Financial Record Accuracy","Payroll & Payment Timeliness","Reporting to Management","Compliance & Audit Readiness","Financial Control & Risk Oversight","Internal Control & Improvements","Cross-Department Coordination","Handling Complex Accounting Issues","Team Supervision & Capability Development","Attendance & Punctuality"],
+    "Jr. Accountant":["Data Entry Accuracy","Reconciliation Timeliness","Responsiveness to Requests","Data Reliability & Validation","Attendance & Punctuality"],
+    "Store Keeper":["Stock Accuracy","Issue & Receipt Management","Reorder Alertness","Store Organisation, Control & Inventory Safety","Department Support Responsiveness","Attendance & Punctuality"],
+    "Driver":["Safe Driving","Vehicle Maintenance","Punctuality & Reliability","Conduct & Professionalism","Attendance & Punctuality"],
+    "Night Watchman":["Patrol Regularity","Incident Reporting","Entry Point Monitoring","Alertness & Reliability","Attendance & Punctuality"],
+    "Site Cleaner / Sweeper":["Cleaning Coverage","Cleaning During Peak Hours","Waste Management","Attendance & Punctuality"],
+    "Bio Toilet Cleaner":["Toilet Cleanliness","Restocking of Supplies","Cleaning Frequency","Maintenance Reporting","Attendance & Punctuality"],
+  },
+  mripl:{
+    "Chief Operating Officer":["Operational Management","Maintenance Planning","Decision Making & Crisis Handling","Equipment & Tools Management","Safety & Regulatory Compliance","Team Management & Discipline","Emergency Preparedness","Process Improvement & Adaptability","Operational Coordination & Infrastructure Oversight","Vendor, Stakeholder & External Coordination"],
+    "General Manager":["Electrical Systems Management","Government Liaison & Coordination","MSAR Act & Permission Compliance","Payment Recovery & Vendor Coordination","Safety & Electrical Audit Compliance","Breakdown Response & Troubleshooting","Process Improvement & System Upgradation","Regulatory Compliance","Tender Identification & Submission Compliance","Ropeway Safety Systems & Emergency Readiness"],
+    "Manager — Operations":["Operations Management","Purchase & Vendor Development","Vehicle & Asset Management","Cost Efficiency & Budget Control","Supplier Relationship Management","Documentation & Insurance Compliance","Planning & Coordination","Emergency & Breakdown Support","Process Improvement & System Development","Ropeway Safety Audit & Lift Inspector Compliance"],
+    "Manager — Technical":["Product Development","Site Installation & Execution","Maintenance Planning & Technical Support","Vendor Development & Technical Coordination","Drawings & Documentation","Manufacturing Coordination","Safety & Technical Compliance","Breakdown Analysis & Troubleshooting","Resource & Manpower Planning","Innovation & System Improvement"],
+    "Quality Controller":["Quality Inspection","Documentation & Inspection Records","Preventive Safety Monitoring","Tyre Life Monitoring","Component Reliability Monitoring","Rescue Drill Coordination & Emergency Preparedness","Vendor Development","Inspection & Maintenance Coordination","Rescue Equipment & Safety Readiness Monitoring","Ropeway Component Inspection Coordination"],
+    "Jr. Engineer":["2D to 3D Drawing Conversion","Technical Drawing & Design Support","Support to Manager — Technical","Technical Learning & Skill Development","Drawing Accuracy & Documentation","Software & Design Tool Usage","Component Design Coordination","Task Responsibility & Timely Execution","Adaptability & Continuous Learning","Team Coordination & Technical Support"],
+    "Jr. Engineer — Civil":["Civil Works Execution & Site Development","Site Survey, Planning & Estimation","Procurement & Material Management","Vendor, Contractor & Labour Coordination","Project Monitoring, Quality & Safety Control","Billing, Labour Payment & Documentation","Progress Reporting & HO Coordination","Ropeway Operations Support & Passenger Coordination","Maintenance Inspection & Civil Safety Monitoring","Site Management, Emergency Handling & Problem Solving"],
+    "HOD — Accounts":["Accounts Finalisation & Financial Oversight","Statutory Compliance Management","Accounts Verification & Reconciliation","GST Compliance & Reporting","MIS & Financial Analysis","Audit Coordination & Documentation","Process Improvement & Internal Controls","Department Coordination & Responsibility Management","Financial Documentation & Compliance Record Management","Team Development & Coordination"],
+    "Jr. Accountant":["GST & TDS Returns","Bank Reconciliation","Audit & Taxation Support","Accounts Data Entry, Software Operations & Record Maintenance","Statutory Compliance","Invoice & Supporting Document Verification","Coordination & Administrative Support","Team Support & Responsiveness","Learning, Adaptability & Continuous Improvement","Initiative & Ownership"],
+    "Jr. Accountant (HO)":["Cash Handling","HO Billing & Bank Entries","Salary Sheet","Stock Verification","Record Keeping","Work Accuracy & Compliance Discipline","Coordination & Reporting Support","Document Verification & Filing Support","Learning, Adaptability & Continuous Improvement","Initiative & Ownership"],
+    "HR & Admin Manager":["Site HR Coordination","Operational Manpower Coordination","Attendance & Shift Coordination","Training & SOP Awareness","Site Visit Planning & Administrative Support","Emergency & Operational Support Coordination","HR Documentation & Record Management","Employee Grievance & Support Coordination","Procurement & Vendor Coordination","IOC Drafting & Compliance Monitoring"],
+    "Admin Assistant":["Salary Preparation & Disbursement","Statutory Compliance","Onboarding & Exits","Leave & Encashment Management","Procurement & Supply Coordination","Site Coordination & Administrative Support","Employee Documentation & Record Management","Supplier Coordination & Payment Follow-Up","Stock & Consumption Monitoring","Employee Grievance & HR Support Coordination"],
+    "Receptionist":["Front Office & Visitor Management","Customer Communication & Query Handling","Inward Correspondence Management","Bookings & Reservation Coordination","Online Customer Support","Coordination & Administrative Support","Document & Record Management","Professionalism & Service Responsiveness","Willingness, Adaptability & Service Support","Initiative & System Improvement Suggestions"],
+    "Graphic Designer":["Design Output","Website Maintenance","IT & Hardware","Email & Communication","Ticketing & Printing","Network & Connectivity Support","Software & System Support","Adaptability to New Technologies & System Improvements","Creative Initiative & Idea Development","Self-Motivation & Proactive Support"],
+    "Jr. Programmer":["Programming & Development","System Support","Bug Fixing & Troubleshooting","Software Testing & Debugging","Documentation & Record Maintenance","Task Coordination & Team Support","System Maintenance & Update Support","Learning & Development","Adaptability & Technology Learning","Responsibility & Timely Delivery"],
+    "Legal Consultant":["Litigation Management & Court Coordination","Agreement Drafting & Legal Documentation","Trust Compliance & Legal Filings","Legal Research & Opinion Support","Regulatory & Registration Compliance","Case Documentation & Record Management","Coordination & Stakeholder Communication","Compliance Monitoring & Follow-Up","Professional Responsibility & Timely Execution","Adaptability, Modern Tools & Work Responsiveness"],
+    "Driver":["Driving & Transport","Punctuality & Timely Reporting","Operational Support & Reliability","Vehicle Maintenance & Cleanliness","Vehicle Documentation & Compliance","Safety & Traffic Compliance","Trip Log & Record Maintenance","Emergency & Operational Travel Support","Coordination & Communication","Professional Conduct & Responsibility"],
+    "Peon / Office Boy":["Office Support & Assistance","Document & File Movement","Cleanliness & Workplace Upkeep","Tea, Water & Hospitality Support","Courier, Dispatch & External Errands","Material Handling & Office Supplies Support","Attendance, Discipline & Punctuality","Premises Safety, Security & Access Management","Reliability & Responsibility Handling","Willingness & Supportive Attitude"],
+    "Office Boy / Security":["Office Support & Assistance","Document & File Movement","Cleanliness & Workplace Upkeep","Tea, Water & Hospitality Support","Courier, Dispatch & External Errands","Material Handling & Office Supplies Support","Attendance, Discipline & Punctuality","Premises Safety, Security & Access Management","Reliability & Responsibility Handling","Willingness & Supportive Attitude"],
+  }
+};
 
-const MRIPL_ROLES={"Chief Operating Officer":"Leadership","General Manager":"Leadership","Manager — Operations":"Operations","Manager — Technical":"Technical","Quality Controller":"Technical","Jr. Engineer":"Technical","Jr. Engineer — Civil":"Technical","HOD — Accounts":"Accounts","Jr. Accountant":"Accounts","Jr. Accountant (HO)":"Accounts","HR & Admin Manager":"HR & Admin","Admin Assistant":"HR & Admin","Receptionist":"HR & Admin","Graphic Designer":"Design & IT","Jr. Programmer":"Design & IT","Legal Consultant":"Legal","Driver":"Support","Peon / Office Boy":"Support","Office Boy / Security":"Support"};
+const DEFAULT_SCALE=[
+  {score:1,label:"Poor",description:"Consistently fails to meet the basic requirements. Errors are frequent and the gap is visible.",bg:"#FCE4D6",fg:"#C00000"},
+  {score:2,label:"Needs Improvement",description:"Partially meets expectations. Some things are done well but key gaps remain. Needs regular follow-up.",bg:"#FEF0E0",fg:"#B8560A"},
+  {score:3,label:"Good",description:"Meets expectations consistently. Does the job as required — reliably and without major issues.",bg:"#FFF2CC",fg:"#7F6000"},
+  {score:4,label:"Very Good",description:"Regularly exceeds expectations. Takes initiative and adds value beyond the defined scope.",bg:"#E2EFDA",fg:"#375623"},
+  {score:5,label:"Excellent",description:"Outstanding performance. Sets the standard for others. Exceptional contribution in output and impact.",bg:"#DEEAF1",fg:"#1F4E79"},
+];
+
+const RAIGAD_ROLE_GROUPS={"Ropeway Operator":"Ropeway Operations","Cabin Boy":"Ropeway Operations","Folio Line Boy":"Ropeway Operations","Ticket Vendor":"Ropeway Operations","Ticket Scanner":"Ropeway Operations","Foreman Mechanical":"Technical & Maintenance","Supervisor Mechanical":"Technical & Maintenance","Electrician":"Technical & Maintenance","Engineer - Civil":"Technical & Maintenance","In-Charge (Lower Station)":"Management & Supervision","Joint In-Charge":"Management & Supervision","In-Charge (Upper Station)":"Management & Supervision","Restaurant Supervisor":"Restaurant Operations","Cook":"Restaurant Operations","Sub-Cook":"Restaurant Operations","Cook Helper":"Restaurant Operations","Waiter":"Restaurant Operations","Restaurant Billing":"Restaurant Operations","Restaurant Front Desk":"Restaurant Operations","Souvenir Shop":"Retail & Visitor Experience","Museum":"Retail & Visitor Experience","Hirkani Stall":"Retail & Visitor Experience","Room Attendant":"Accommodation","Chief Accountant":"Back Office & Support","Jr. Accountant":"Back Office & Support","Store Keeper":"Back Office & Support","Driver":"Back Office & Support","Night Watchman":"Facility & Sanitation","Site Cleaner / Sweeper":"Facility & Sanitation","Bio Toilet Cleaner":"Facility & Sanitation"};
+const MRIPL_ROLE_GROUPS={"Chief Operating Officer":"Leadership","General Manager":"Leadership","Manager — Operations":"Operations","Manager — Technical":"Technical","Quality Controller":"Technical","Jr. Engineer":"Technical","Jr. Engineer — Civil":"Technical","HOD — Accounts":"Accounts","Jr. Accountant":"Accounts","Jr. Accountant (HO)":"Accounts","HR & Admin Manager":"HR & Admin","Admin Assistant":"HR & Admin","Receptionist":"HR & Admin","Graphic Designer":"Design & IT","Jr. Programmer":"Design & IT","Legal Consultant":"Legal","Driver":"Support","Peon / Office Boy":"Support","Office Boy / Security":"Support"};
 
 // ── SEED DATA ─────────────────────────────────────────────────────
-const RAIGAD_SEED={
-  employees:[
-    {code:13,name:"Khaladkar Akshay",role:"Engineer - Civil",group:"Technical & Maintenance",station:"Lower"},
-    {code:103,name:"Shingte Rajesh",role:"Chief Accountant",group:"Back Office & Support",station:"Lower"},
-    {code:104,name:"Sanas Vijay",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
-    {code:105,name:"Bhosale Santosh",role:"Driver",group:"Back Office & Support",station:"Lower"},
-    {code:106,name:"Aukirkar Balaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
-    {code:107,name:"Aukirkar Baliram",role:"Cook",group:"Restaurant Operations",station:"Upper"},
-    {code:108,name:"Aukirkar Motiram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
-    {code:109,name:"Aukirkar Raju",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
-    {code:110,name:"Aukirkar Ramchandra",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
-    {code:111,name:"Aukirkar Sakharam",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:112,name:"Aukirkar Shushila",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
-    {code:113,name:"Bendugade Mahesh",role:"Restaurant Supervisor",group:"Restaurant Operations",station:"Lower"},
-    {code:114,name:"Gangan Sandeep",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
-    {code:115,name:"Gangan Santosh",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
-    {code:116,name:"Shinde Suman",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
-    {code:117,name:"Aukirkar Gangaram",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
-    {code:118,name:"Aukirkar Jagan",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
-    {code:119,name:"Aukirkar Mahadev",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:120,name:"Aukirkar Maloji",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
-    {code:121,name:"Aukirkar Motiram",role:"Cook Helper",group:"Restaurant Operations",station:"Upper"},
-    {code:123,name:"Aukirkar Ram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:124,name:"Aukirkar Dhaktu",role:"Night Watchman",group:"Facility & Sanitation",station:"Upper"},
-    {code:125,name:"Aukirkar Umesh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:126,name:"Aukirkar Vasant",role:"Souvenir Shop",group:"Retail & Visitor Experience",station:"Upper"},
-    {code:127,name:"Gaikwad Rajendra",role:"Ticket Vendor",group:"Ropeway Operations",station:"Upper"},
-    {code:128,name:"Gore Tukaram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Upper"},
-    {code:129,name:"Ningdalli Manikappa",role:"Cook",group:"Restaurant Operations",station:"Lower"},
-    {code:130,name:"Shinde Baburao",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
-    {code:131,name:"Aukirkar Deepak",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
-    {code:132,name:"Paswan Dilip",role:"Supervisor Mechanical",group:"Technical & Maintenance",station:"Upper"},
-    {code:133,name:"Railkar Suryakant",role:"Night Watchman",group:"Facility & Sanitation",station:"Lower"},
-    {code:135,name:"Kachare Balaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:136,name:"Salunkhe Pratik",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
-    {code:137,name:"Aukirkar Santosh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:138,name:"Mahadik Anil",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
-    {code:139,name:"Sadhu Saran",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
-    {code:140,name:"Raju Prasad",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
-    {code:141,name:"Dighe Sanket",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
-    {code:142,name:"Bhosale Rohit",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
-    {code:143,name:"Kadam Roshan",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
-    {code:144,name:"Lamje Ankush",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
-    {code:407,name:"Khopkar Vijay",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
-    {code:410,name:"Gore Akshay",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:411,name:"Aukirkar Dattaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
-    {code:413,name:"Aukirkar Parvatibai",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
-    {code:414,name:"Kokare Dipak",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
-    {code:415,name:"Gore Pratik",role:"Cabin Boy",group:"Ropeway Operations",station:"Upper"},
-    {code:503,name:"Shedge Rakesh",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
-    {code:505,name:"Shelar Dinesh",role:"Museum",group:"Retail & Visitor Experience",station:"Lower"},
-    {code:507,name:"Mandavkar Yogesh",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
-    {code:509,name:"Hogade Gangaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:510,name:"Hirve Ganesh",role:"Sub-Cook",group:"Restaurant Operations",station:"Lower"},
-    {code:511,name:"Jadhav Sushil",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Lower"},
-    {code:512,name:"Gaikwad Devendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:513,name:"Gaikwad Rutik",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
-    {code:514,name:"Aukirkar Sitaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:515,name:"Dhebe Suresh",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
-    {code:516,name:"Pasawan Indrajit",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:517,name:"Pasawan Krushna",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:518,name:"Aukirkar Balkrushna",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
-    {code:519,name:"Aukirkar Satish",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
-    {code:520,name:"Shinde Raju",role:"Cook",group:"Restaurant Operations",station:"Upper"},
-    {code:521,name:"Aniket Aukirkar",role:"Room Attendant",group:"Accommodation",station:"Upper"},
-    {code:522,name:"Kadam Anand",role:"Sub-Cook",group:"Restaurant Operations",station:"Upper"},
-    {code:523,name:"Pasawan Dilip Kumar",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:524,name:"Aukirkar Rushikesh",role:"Hirkani Stall",group:"Retail & Visitor Experience",station:"Lower"},
-    {code:606,name:"Shinde Tanaji",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:607,name:"Shinde Rajendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
-    {code:611,name:"Khabre Sarika",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
-    {code:614,name:"Chipade Pralhad",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
-    {code:615,name:"Kadu Vasant",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
-    {code:616,name:"Sangurde Kajal",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
-    {code:617,name:"Gore Vanita",role:"Cook",group:"Restaurant Operations",station:"Upper"},
-    {code:618,name:"Sakpal Riya",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
-    {code:619,name:"Gore Mangesh",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
-  ],
-  supervisors:{
-    "Khatu Rajendra":{pwd:"Raigad@KR",title:"In-Charge",team:[13,103,105,136,141,614]},
-    "Phondke Uday":{pwd:"Raigad@PU",title:"Joint In-Charge",team:[106,113,124,133,137]},
-    "Salunkhe Pratik":{pwd:"Raigad@SP",title:"In-Charge (Upper Station)",team:[110,118,143,503,509,521,524,615]},
-    "Bendugade Mahesh":{pwd:"Raigad@BM",title:"Restaurant Supervisor",team:[107,109,112,116,120,121,129,130,131,413,507,510,522,611,617]},
-    "Chipade Pralhad":{pwd:"Raigad@CP",title:"Electrician",team:[411,515,516,517,520]},
-    "Dighe Sanket":{pwd:"Raigad@DS",title:"In-Charge (TB)",team:[616,618]},
-    "Khaladkar Akshay":{pwd:"Raigad@KA",title:"Jr. Engineer",team:[142,410,415]},
-    "Sanas Vijay":{pwd:"Raigad@SV",title:"Store Keeper",team:[505,514,518,606,619]},
-    "Shingate Rajesh":{pwd:"Raigad@SR",title:"Chief Accountant",team:[108,114,115,117,126,127,128,138,144,407,511,513,519]},
-    "Umaratkar Santosh":{pwd:"Raigad@US",title:"Foreman Mechanical",team:[104,111,119,123,125,132,135,139,140,414,512,523,607]},
-  }
-};
-
-const MRIPL_SEED={
-  employees:[
-    {code:18,name:"Jawale Ravindra",role:"Chief Operating Officer",group:"Leadership",station:"HO"},
-    {code:7, name:"Bhalerao Narendra",role:"General Manager",group:"Leadership",station:"HO"},
-    {code:2, name:"Chinchanikar Bhalchandra",role:"Manager — Operations",group:"Operations",station:"HO"},
-    {code:11,name:"Ubale Nilesh",role:"Manager — Technical",group:"Technical",station:"HO"},
-    {code:6, name:"Bhosale Raghavendra",role:"Quality Controller",group:"Technical",station:"HO"},
-    {code:27,name:"Borse Yogesh",role:"Jr. Engineer",group:"Technical",station:"HO"},
-    {code:13,name:"Khaladkar Akshay",role:"Jr. Engineer — Civil",group:"Technical",station:"Raigad"},
-    {code:20,name:"Bhagwat Surashree",role:"HOD — Accounts",group:"Accounts",station:"HO"},
-    {code:19,name:"Mulye Deepti",role:"Jr. Accountant",group:"Accounts",station:"HO"},
-    {code:14,name:"Pataki Sucheta",role:"Jr. Accountant",group:"Accounts",station:"HO"},
-    {code:23,name:"Biradar Vishal",role:"Jr. Accountant",group:"Accounts",station:"HO"},
-    {code:25,name:"Dnyaneshwar Khaladkar",role:"Jr. Accountant (HO)",group:"Accounts",station:"HO"},
-    {code:12,name:"Malwadkar Satish",role:"HR & Admin Manager",group:"HR & Admin",station:"HO"},
-    {code:10,name:"Kulkarni Radhika",role:"Admin Assistant",group:"HR & Admin",station:"HO"},
-    {code:17,name:"Udas Swapna",role:"Receptionist",group:"HR & Admin",station:"HO"},
-    {code:5, name:"Jagtap Ganesh",role:"Graphic Designer",group:"Design & IT",station:"HO"},
-    {code:26,name:"Joshi Sayali",role:"Jr. Programmer",group:"Design & IT",station:"HO"},
-    {code:3, name:"Rupali",role:"Legal Consultant",group:"Legal",station:"HO"},
-    {code:4, name:"Admane Pravin",role:"Driver",group:"Support",station:"HO"},
-    {code:21,name:"Haldankar Hemant",role:"Driver",group:"Support",station:"HO"},
-    {code:22,name:"Jadhav Adesh",role:"Driver",group:"Support",station:"HO"},
-    {code:9, name:"Joshi Rajendra",role:"Peon / Office Boy",group:"Support",station:"HO"},
-    {code:24,name:"Chitre Kishor",role:"Peon / Office Boy",group:"Support",station:"HO"},
-  ],
-  supervisors:{
-    "Jawale Ravindra":{pwd:"MRIPL@JR",title:"Chief Operating Officer",team:[2,11,12,3]},
-    "Bhalerao Narendra":{pwd:"MRIPL@BN",title:"General Manager",team:[17,5]},
-    "Chinchanikar Bhalchandra":{pwd:"MRIPL@CB",title:"Manager — Operations",team:[6]},
-    "Ubale Nilesh":{pwd:"MRIPL@UN",title:"Manager — Technical",team:[27,26]},
-    "Bhagwat Surashree":{pwd:"MRIPL@BS",title:"HOD — Accounts",team:[19,14,23,25]},
-    "Bhosale Raghavendra":{pwd:"MRIPL@BR",title:"Quality Controller",team:[4,21,22]},
-    "Malwadkar Satish":{pwd:"MRIPL@MS",title:"HR & Admin Manager",team:[10,9,24]},
-  }
-};
+const RAIGAD_EMP_SEED=[
+  {code:13,name:"Khaladkar Akshay",role:"Engineer - Civil",group:"Technical & Maintenance",station:"Lower"},
+  {code:103,name:"Shingte Rajesh",role:"Chief Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:104,name:"Sanas Vijay",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:105,name:"Bhosale Santosh",role:"Driver",group:"Back Office & Support",station:"Lower"},
+  {code:106,name:"Aukirkar Balaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
+  {code:107,name:"Aukirkar Baliram",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:108,name:"Aukirkar Motiram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:109,name:"Aukirkar Raju",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:110,name:"Aukirkar Ramchandra",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
+  {code:111,name:"Aukirkar Sakharam",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:112,name:"Aukirkar Shushila",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:113,name:"Bendugade Mahesh",role:"Restaurant Supervisor",group:"Restaurant Operations",station:"Lower"},
+  {code:114,name:"Gangan Sandeep",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:115,name:"Gangan Santosh",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:116,name:"Shinde Suman",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:117,name:"Aukirkar Gangaram",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:118,name:"Aukirkar Jagan",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
+  {code:119,name:"Aukirkar Mahadev",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:120,name:"Aukirkar Maloji",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:121,name:"Aukirkar Motiram",role:"Cook Helper",group:"Restaurant Operations",station:"Upper"},
+  {code:123,name:"Aukirkar Ram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:124,name:"Aukirkar Dhaktu",role:"Night Watchman",group:"Facility & Sanitation",station:"Upper"},
+  {code:125,name:"Aukirkar Umesh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:126,name:"Aukirkar Vasant",role:"Souvenir Shop",group:"Retail & Visitor Experience",station:"Upper"},
+  {code:127,name:"Gaikwad Rajendra",role:"Ticket Vendor",group:"Ropeway Operations",station:"Upper"},
+  {code:128,name:"Gore Tukaram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Upper"},
+  {code:129,name:"Ningdalli Manikappa",role:"Cook",group:"Restaurant Operations",station:"Lower"},
+  {code:130,name:"Shinde Baburao",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
+  {code:131,name:"Aukirkar Deepak",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
+  {code:132,name:"Paswan Dilip",role:"Supervisor Mechanical",group:"Technical & Maintenance",station:"Upper"},
+  {code:133,name:"Railkar Suryakant",role:"Night Watchman",group:"Facility & Sanitation",station:"Lower"},
+  {code:135,name:"Kachare Balaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:136,name:"Salunkhe Pratik",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
+  {code:137,name:"Aukirkar Santosh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:138,name:"Mahadik Anil",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:139,name:"Sadhu Saran",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:140,name:"Raju Prasad",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:141,name:"Dighe Sanket",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
+  {code:142,name:"Bhosale Rohit",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+  {code:143,name:"Kadam Roshan",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:144,name:"Lamje Ankush",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:407,name:"Khopkar Vijay",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:410,name:"Gore Akshay",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:411,name:"Aukirkar Dattaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
+  {code:413,name:"Aukirkar Parvatibai",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:414,name:"Kokare Dipak",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
+  {code:415,name:"Gore Pratik",role:"Cabin Boy",group:"Ropeway Operations",station:"Upper"},
+  {code:503,name:"Shedge Rakesh",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:505,name:"Shelar Dinesh",role:"Museum",group:"Retail & Visitor Experience",station:"Lower"},
+  {code:507,name:"Mandavkar Yogesh",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:509,name:"Hogade Gangaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:510,name:"Hirve Ganesh",role:"Sub-Cook",group:"Restaurant Operations",station:"Lower"},
+  {code:511,name:"Jadhav Sushil",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Lower"},
+  {code:512,name:"Gaikwad Devendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:513,name:"Gaikwad Rutik",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:514,name:"Aukirkar Sitaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:515,name:"Dhebe Suresh",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
+  {code:516,name:"Pasawan Indrajit",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:517,name:"Pasawan Krushna",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:518,name:"Aukirkar Balkrushna",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+  {code:519,name:"Aukirkar Satish",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:520,name:"Shinde Raju",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:521,name:"Aniket Aukirkar",role:"Room Attendant",group:"Accommodation",station:"Upper"},
+  {code:522,name:"Kadam Anand",role:"Sub-Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:523,name:"Pasawan Dilip Kumar",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:524,name:"Aukirkar Rushikesh",role:"Hirkani Stall",group:"Retail & Visitor Experience",station:"Lower"},
+  {code:606,name:"Shinde Tanaji",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:607,name:"Shinde Rajendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:611,name:"Khabre Sarika",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:614,name:"Chipade Pralhad",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:615,name:"Kadu Vasant",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:616,name:"Sangurde Kajal",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
+  {code:617,name:"Gore Vanita",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:618,name:"Sakpal Riya",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
+  {code:619,name:"Gore Mangesh",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+];
+const RAIGAD_SUP_SEED={"Khatu Rajendra":{pwd:"Raigad@KR",title:"In-Charge",team:[13,103,105,136,141,614]},"Phondke Uday":{pwd:"Raigad@PU",title:"Joint In-Charge",team:[106,113,124,133,137]},"Salunkhe Pratik":{pwd:"Raigad@SP",title:"In-Charge (Upper Station)",team:[110,118,143,503,509,521,524,615]},"Bendugade Mahesh":{pwd:"Raigad@BM",title:"Restaurant Supervisor",team:[107,109,112,116,120,121,129,130,131,413,507,510,522,611,617]},"Chipade Pralhad":{pwd:"Raigad@CP",title:"Electrician",team:[411,515,516,517,520]},"Dighe Sanket":{pwd:"Raigad@DS",title:"In-Charge (TB)",team:[616,618]},"Khaladkar Akshay":{pwd:"Raigad@KA",title:"Jr. Engineer",team:[142,410,415]},"Sanas Vijay":{pwd:"Raigad@SV",title:"Store Keeper",team:[505,514,518,606,619]},"Shingate Rajesh":{pwd:"Raigad@SR",title:"Chief Accountant",team:[108,114,115,117,126,127,128,138,144,407,511,513,519]},"Umaratkar Santosh":{pwd:"Raigad@US",title:"Foreman Mechanical",team:[104,111,119,123,125,132,135,139,140,414,512,523,607]}};
+const MRIPL_EMP_SEED=[{code:18,name:"Jawale Ravindra",role:"Chief Operating Officer",group:"Leadership",station:"HO"},{code:7,name:"Bhalerao Narendra",role:"General Manager",group:"Leadership",station:"HO"},{code:2,name:"Chinchanikar Bhalchandra",role:"Manager — Operations",group:"Operations",station:"HO"},{code:11,name:"Ubale Nilesh",role:"Manager — Technical",group:"Technical",station:"HO"},{code:6,name:"Bhosale Raghavendra",role:"Quality Controller",group:"Technical",station:"HO"},{code:27,name:"Borse Yogesh",role:"Jr. Engineer",group:"Technical",station:"HO"},{code:13,name:"Khaladkar Akshay",role:"Jr. Engineer — Civil",group:"Technical",station:"Raigad"},{code:20,name:"Bhagwat Surashree",role:"HOD — Accounts",group:"Accounts",station:"HO"},{code:19,name:"Mulye Deepti",role:"Jr. Accountant",group:"Accounts",station:"HO"},{code:14,name:"Pataki Sucheta",role:"Jr. Accountant",group:"Accounts",station:"HO"},{code:23,name:"Biradar Vishal",role:"Jr. Accountant",group:"Accounts",station:"HO"},{code:25,name:"Dnyaneshwar Khaladkar",role:"Jr. Accountant (HO)",group:"Accounts",station:"HO"},{code:12,name:"Malwadkar Satish",role:"HR & Admin Manager",group:"HR & Admin",station:"HO"},{code:10,name:"Kulkarni Radhika",role:"Admin Assistant",group:"HR & Admin",station:"HO"},{code:17,name:"Udas Swapna",role:"Receptionist",group:"HR & Admin",station:"HO"},{code:5,name:"Jagtap Ganesh",role:"Graphic Designer",group:"Design & IT",station:"HO"},{code:26,name:"Joshi Sayali",role:"Jr. Programmer",group:"Design & IT",station:"HO"},{code:3,name:"Rupali",role:"Legal Consultant",group:"Legal",station:"HO"},{code:4,name:"Admane Pravin",role:"Driver",group:"Support",station:"HO"},{code:21,name:"Haldankar Hemant",role:"Driver",group:"Support",station:"HO"},{code:22,name:"Jadhav Adesh",role:"Driver",group:"Support",station:"HO"},{code:9,name:"Joshi Rajendra",role:"Peon / Office Boy",group:"Support",station:"HO"},{code:24,name:"Chitre Kishor",role:"Peon / Office Boy",group:"Support",station:"HO"}];
+const MRIPL_SUP_SEED={"Jawale Ravindra":{pwd:"MRIPL@JR",title:"Chief Operating Officer",team:[2,11,12,3]},"Bhalerao Narendra":{pwd:"MRIPL@BN",title:"General Manager",team:[17,5]},"Chinchanikar Bhalchandra":{pwd:"MRIPL@CB",title:"Manager — Operations",team:[6]},"Ubale Nilesh":{pwd:"MRIPL@UN",title:"Manager — Technical",team:[27,26]},"Bhagwat Surashree":{pwd:"MRIPL@BS",title:"HOD — Accounts",team:[19,14,23,25]},"Bhosale Raghavendra":{pwd:"MRIPL@BR",title:"Quality Controller",team:[4,21,22]},"Malwadkar Satish":{pwd:"MRIPL@MS",title:"HR & Admin Manager",team:[10,9,24]}};
 
 // ── STATE ─────────────────────────────────────────────────────────
-let currentSystem='raigad';
-let DATA={raigad:{employees:[],supervisors:{}},mripl:{employees:[],supervisors:{}}};
-let filtered=[];
+let sys='raigad';
+let D={
+  raigad:{employees:[],supervisors:{},criteria:{},empCriteria:{},ratingScale:[]},
+  mripl: {employees:[],supervisors:{},criteria:{},empCriteria:{},ratingScale:[]}
+};
+let filteredEmps=[];
+let activeInnerTab='employees';
+let editingCritRole=null;
+let editingEmpCode=null;
+let editingRevName=null;
+let editingEmpIdx=null;
 
 // ── AUTH ──────────────────────────────────────────────────────────
 function adminLogin(){
-  const pwd=document.getElementById('admin-pwd').value;
-  if(pwd!==ADMIN_PASSWORD){document.getElementById('login-err').style.display='block';return;}
+  if(document.getElementById('admin-pwd').value!==ADMIN_PASSWORD){document.getElementById('login-err').style.display='block';return;}
   document.getElementById('login-err').style.display='none';
   document.getElementById('admin-badge').style.display='';
   document.getElementById('admin-logout').style.display='';
   showScreen('screen-admin');
-  loadBoth();
+  loadAll();
 }
 function adminLogout(){
   document.getElementById('admin-pwd').value='';
-  document.getElementById('admin-badge').style.display='none';
-  document.getElementById('admin-logout').style.display='none';
+  ['admin-badge','admin-logout'].forEach(id=>document.getElementById(id).style.display='none');
   showScreen('screen-login');
 }
 
-// ── LOAD BOTH SYSTEMS ─────────────────────────────────────────────
-function loadBoth(){
-  renderContent();
-  // Load Raigad
-  fetch(APPS_SCRIPT_URL+'?action=getConfig')
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.employees&&d.employees.length>0){DATA.raigad.employees=d.employees;DATA.raigad.supervisors=d.supervisors||{};}
-      else{DATA.raigad=JSON.parse(JSON.stringify(RAIGAD_SEED));saveSystem('raigad');}
-      filtered=DATA.raigad.employees;
-      renderContent();
-    }).catch(()=>{DATA.raigad=JSON.parse(JSON.stringify(RAIGAD_SEED));renderContent();});
-
-  // Load MRIPL
-  fetch(APPS_SCRIPT_URL+'?action=getConfig&client=mripl')
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.employees&&d.employees.length>0){DATA.mripl.employees=d.employees;DATA.mripl.supervisors=d.supervisors||{};}
-      else{DATA.mripl=JSON.parse(JSON.stringify(MRIPL_SEED));saveSystem('mripl');}
-      if(currentSystem==='mripl'){filtered=DATA.mripl.employees;renderContent();}
-    }).catch(()=>{DATA.mripl=JSON.parse(JSON.stringify(MRIPL_SEED));if(currentSystem==='mripl')renderContent();});
+// ── LOAD ──────────────────────────────────────────────────────────
+function loadAll(){
+  ['raigad','mripl'].forEach(s=>{
+    const url=APPS_SCRIPT_URL+'?action=getConfig'+(s==='mripl'?'&client=mripl':'');
+    fetch(url).then(r=>r.json()).then(data=>{
+      if(data.employees&&data.employees.length>0){
+        D[s].employees=data.employees;
+        D[s].supervisors=data.supervisors||{};
+        D[s].criteria=data.criteria||{};
+        D[s].empCriteria=data.empCriteria||{};
+        D[s].ratingScale=data.ratingScale&&data.ratingScale.length?data.ratingScale:[...DEFAULT_SCALE];
+      } else {
+        // Seed defaults
+        D[s].employees=s==='raigad'?[...RAIGAD_EMP_SEED]:[...MRIPL_EMP_SEED];
+        D[s].supervisors=JSON.parse(JSON.stringify(s==='raigad'?RAIGAD_SUP_SEED:MRIPL_SUP_SEED));
+        D[s].criteria=JSON.parse(JSON.stringify(DEFAULT_CRITERIA[s]));
+        D[s].empCriteria={};
+        D[s].ratingScale=[...DEFAULT_SCALE];
+        saveSystem(s,false);
+      }
+      if(s===sys){filteredEmps=[...D[s].employees];renderAll();}
+    }).catch(()=>{
+      D[s].employees=s==='raigad'?[...RAIGAD_EMP_SEED]:[...MRIPL_EMP_SEED];
+      D[s].supervisors=JSON.parse(JSON.stringify(s==='raigad'?RAIGAD_SUP_SEED:MRIPL_SUP_SEED));
+      D[s].criteria=JSON.parse(JSON.stringify(DEFAULT_CRITERIA[s]));
+      D[s].empCriteria={};
+      D[s].ratingScale=[...DEFAULT_SCALE];
+      if(s===sys){filteredEmps=[...D[s].employees];renderAll();}
+    });
+  });
 }
 
-// ── SWITCH SYSTEM ─────────────────────────────────────────────────
-function switchSystem(sys){
-  currentSystem=sys;
-  document.getElementById('sys-raigad').className='sys-tab'+(sys==='raigad'?' active':'');
-  document.getElementById('sys-mripl').className='sys-tab'+(sys==='mripl'?' active':'');
-  filtered=[...DATA[sys].employees];
-  document.getElementById('emp-search-input')&&(document.getElementById('emp-search-input').value='');
-  renderContent();
+// ── SYSTEM SWITCH ─────────────────────────────────────────────────
+function switchSystem(s){
+  sys=s;
+  document.getElementById('sys-raigad').className='sys-tab'+(s==='raigad'?' active':'');
+  document.getElementById('sys-mripl').className='sys-tab'+(s==='mripl'?' active':'');
+  filteredEmps=[...D[s].employees];
+  activeInnerTab='employees';
+  renderAll();
 }
 
 // ── RENDER ────────────────────────────────────────────────────────
-function renderContent(){
-  const d=DATA[currentSystem];
-  const sysLabel=currentSystem==='raigad'?'Raigad Ropeways':'MRIPL Head Office';
-  document.getElementById('system-content').innerHTML=`
-    <div class="tabs">
-      <div class="tab active" id="inner-tab-emp">Employees (${d.employees.length})</div>
-      <div class="tab" id="inner-tab-sup">Reviewers / Supervisors (${Object.keys(d.supervisors).length})</div>
-    </div>
-    <div id="inner-emp">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-        <input class="search-bar" id="emp-search-input" type="text" placeholder="Search name, role, department..." oninput="filterEmps(this.value)" style="margin-bottom:0">
-        <button class="btn btn-primary" onclick="openAddEmployee()">+ Add Employee</button>
-      </div>
-      <div class="card"><table><thead><tr><th>Code</th><th>Name</th><th>Role</th><th>Dept / Station</th><th>Reviewer</th><th>Actions</th></tr></thead>
-      <tbody id="emp-tbody">${renderEmpRows(filtered.length?filtered:d.employees,d.supervisors)}</tbody></table></div>
-    </div>
-    <div id="inner-sup" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-        <h3 style="font-size:14px;color:#555">Reviewers &amp; Passwords — ${sysLabel}</h3>
-        <button class="btn btn-primary" onclick="openAddSupervisor()">+ Add Reviewer</button>
-      </div>
-      <div class="card"><table><thead><tr><th>Name</th><th>Title</th><th>Password</th><th>Team</th><th>Actions</th></tr></thead>
-      <tbody>${renderSupRows(d.supervisors,d.employees)}</tbody></table></div>
-    </div>`;
+const TABS=[
+  {id:'employees',label:'Employees'},
+  {id:'reviewers',label:'Reviewers'},
+  {id:'criteria',label:'Criteria Master'},
+  {id:'empcriteria',label:'Employee Criteria'},
+  {id:'scale',label:'Rating Scale'},
+];
 
-  document.getElementById('inner-tab-emp').onclick=()=>{document.getElementById('inner-emp').style.display='';document.getElementById('inner-sup').style.display='none';document.getElementById('inner-tab-emp').className='tab active';document.getElementById('inner-tab-sup').className='tab';};
-  document.getElementById('inner-tab-sup').onclick=()=>{document.getElementById('inner-sup').style.display='';document.getElementById('inner-emp').style.display='none';document.getElementById('inner-tab-sup').className='tab active';document.getElementById('inner-tab-emp').className='tab';};
+function renderAll(){
+  // Nav
+  document.getElementById('inner-nav').innerHTML=TABS.map(t=>`<div class="inner-tab${activeInnerTab===t.id?' active':''}" onclick="switchInner('${t.id}')">${t.label}</div>`).join('');
+  // Content
+  const fns={employees:renderEmployees,reviewers:renderReviewers,criteria:renderCriteriaMaster,empcriteria:renderEmpCriteria,scale:renderScale};
+  (fns[activeInnerTab]||renderEmployees)();
 }
 
-function renderEmpRows(emps,sups){
-  if(!emps.length)return'<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">No employees found</td></tr>';
-  return emps.map((e,i)=>{
-    const actualIdx=DATA[currentSystem].employees.indexOf(e);
-    const sup=Object.entries(sups).find(([,v])=>v.team&&v.team.includes(e.code));
-    const supName=sup?sup[0]:'<span style="color:#C00000">Unassigned</span>';
-    return`<tr><td><span class="tag">${e.code}</span></td><td><strong>${e.name}</strong></td><td style="font-size:12px;color:#555">${e.role}</td><td style="font-size:12px">${e.station||e.group||''}</td><td style="font-size:12px">${supName}</td><td><button class="btn btn-sm" onclick="openEditEmployee(${actualIdx})" style="margin-right:6px">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteEmployee(${actualIdx})">Delete</button></td></tr>`;
-  }).join('');
-}
+function switchInner(tab){activeInnerTab=tab;renderAll();}
 
-function renderSupRows(sups,emps){
-  const entries=Object.entries(sups);
-  if(!entries.length)return'<tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No reviewers found</td></tr>';
-  return entries.map(([name,info])=>`<tr><td><strong>${name}</strong></td><td style="font-size:12px;color:#555">${info.title||''}</td><td><code style="background:#f5f5f5;padding:2px 8px;border-radius:4px;font-size:12px">${info.pwd||''}</code></td><td><span class="tag">${(info.team||[]).length} employees</span></td><td><button class="btn btn-sm" onclick="openEditSupervisor('${name}')" style="margin-right:6px">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteSupervisor('${name}')">Delete</button></td></tr>`).join('');
+// ── EMPLOYEES TAB ─────────────────────────────────────────────────
+function renderEmployees(){
+  const d=D[sys];
+  const emps=filteredEmps.length||document.getElementById('emp-search-inp')?.value?filteredEmps:d.employees;
+  document.getElementById('tab-content').innerHTML=`
+    <div class="search-row">
+      <input class="search-input" id="emp-search-inp" type="text" placeholder="Search name, role, code..." oninput="filterEmps(this.value)">
+      <button class="btn btn-primary" onclick="openAddEmp()">+ Add Employee</button>
+    </div>
+    <div class="card"><table>
+      <thead><tr><th>Code</th><th>Name</th><th>Role</th><th>Station/Dept</th><th>Reviewer</th><th>Custom Criteria</th><th>Actions</th></tr></thead>
+      <tbody>${emps.map((e,i)=>{
+        const actualIdx=d.employees.indexOf(e);
+        const sup=Object.entries(d.supervisors).find(([,v])=>v.team&&v.team.includes(e.code));
+        const supName=sup?sup[0]:'<span style="color:#C00000">Unassigned</span>';
+        const hasCustom=d.empCriteria&&d.empCriteria[e.code]&&d.empCriteria[e.code].length>0;
+        return`<tr>
+          <td><span class="tag">${e.code}</span></td>
+          <td><strong>${e.name}</strong></td>
+          <td style="font-size:11px;color:#555">${e.role}</td>
+          <td style="font-size:11px">${e.station||''}</td>
+          <td style="font-size:11px">${supName}</td>
+          <td><span class="tag ${hasCustom?'tag-green':''}">${hasCustom?'Custom ('+d.empCriteria[e.code].length+')':'Role default'}</span></td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-sm" onclick="openEditEmp(${actualIdx})" style="margin-right:4px">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteEmp(${actualIdx})">Delete</button>
+          </td>
+        </tr>`;
+      }).join('')||'<tr><td colspan="7" style="text-align:center;color:#888;padding:20px">No employees</td></tr>'}</tbody>
+    </table></div>`;
 }
 
 function filterEmps(q){
   const v=q.toLowerCase();
-  const d=DATA[currentSystem];
-  filtered=d.employees.filter(e=>e.name.toLowerCase().includes(v)||e.role.toLowerCase().includes(v)||String(e.code).includes(v)||(e.station||'').toLowerCase().includes(v)||(e.group||'').toLowerCase().includes(v));
-  document.getElementById('emp-tbody').innerHTML=renderEmpRows(filtered,d.supervisors);
+  filteredEmps=D[sys].employees.filter(e=>e.name.toLowerCase().includes(v)||e.role.toLowerCase().includes(v)||String(e.code).includes(v)||(e.station||'').toLowerCase().includes(v));
+  renderEmployees();
 }
 
-// ── ADD / EDIT EMPLOYEE ───────────────────────────────────────────
-function openAddEmployee(){
+// ── REVIEWERS TAB ─────────────────────────────────────────────────
+function renderReviewers(){
+  const sups=D[sys].supervisors;
+  document.getElementById('tab-content').innerHTML=`
+    <div class="search-row">
+      <div></div>
+      <button class="btn btn-primary" onclick="openAddRev()">+ Add Reviewer</button>
+    </div>
+    <div class="card"><table>
+      <thead><tr><th>Name</th><th>Title</th><th>Password</th><th>Team Size</th><th>Team</th><th>Actions</th></tr></thead>
+      <tbody>${Object.entries(sups).map(([name,info])=>{
+        const team=(info.team||[]).map(code=>{const e=D[sys].employees.find(x=>x.code===code);return e?e.name:code;}).join(', ');
+        return`<tr>
+          <td><strong>${name}</strong></td>
+          <td style="font-size:11px;color:#555">${info.title||''}</td>
+          <td><code style="background:#f5f5f5;padding:2px 7px;border-radius:4px;font-size:11px">${info.pwd||''}</code></td>
+          <td><span class="tag">${(info.team||[]).length}</span></td>
+          <td style="font-size:11px;color:#555;max-width:200px">${team||'—'}</td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-sm" onclick="openEditRev('${name}')" style="margin-right:4px">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteRev('${name}')">Delete</button>
+          </td>
+        </tr>`;
+      }).join('')||'<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">No reviewers</td></tr>'}</tbody>
+    </table></div>`;
+}
+
+// ── CRITERIA MASTER TAB ───────────────────────────────────────────
+function renderCriteriaMaster(){
+  const roleGroups=sys==='raigad'?RAIGAD_ROLE_GROUPS:MRIPL_ROLE_GROUPS;
+  const crit=D[sys].criteria;
+  document.getElementById('tab-content').innerHTML=`
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Default criteria per role. Click Edit to add, remove or reorder criteria. These apply to all employees in a role unless they have custom criteria set.</p>
+    <div class="card"><table>
+      <thead><tr><th>Role</th><th>Group</th><th>Criteria Count</th><th>Criteria</th><th>Actions</th></tr></thead>
+      <tbody>${Object.keys(roleGroups).map(role=>{
+        const roleCrit=crit[role]||DEFAULT_CRITERIA[sys][role]||[];
+        return`<tr>
+          <td><strong>${role}</strong></td>
+          <td style="font-size:11px;color:#555">${roleGroups[role]}</td>
+          <td><span class="tag">${roleCrit.length}</span></td>
+          <td style="font-size:11px;color:#555;max-width:250px">${roleCrit.slice(0,3).join(', ')}${roleCrit.length>3?'...':''}</td>
+          <td><button class="btn btn-sm" onclick="openCritModal('${role.replace(/'/g,"\\'")}')">Edit</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+}
+
+// ── EMPLOYEE CRITERIA TAB ─────────────────────────────────────────
+function renderEmpCriteria(){
+  const d=D[sys];
+  document.getElementById('tab-content').innerHTML=`
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Set custom criteria for individual employees. If no custom criteria are set, the role default is used.</p>
+    <div class="search-row">
+      <input class="search-input" id="ec-search" type="text" placeholder="Search employee..." oninput="filterEmpCrit(this.value)">
+    </div>
+    <div class="card"><table>
+      <thead><tr><th>Code</th><th>Name</th><th>Role</th><th>Criteria</th><th>Actions</th></tr></thead>
+      <tbody id="ec-tbody">${renderEmpCritRows(d.employees)}</tbody>
+    </table></div>`;
+}
+
+function renderEmpCritRows(emps){
+  const d=D[sys];
+  return emps.map(e=>{
+    const custom=d.empCriteria&&d.empCriteria[e.code];
+    const roleCrit=d.criteria[e.role]||DEFAULT_CRITERIA[sys][e.role]||[];
+    const activeCrit=custom&&custom.length?custom:roleCrit;
+    const isCustom=custom&&custom.length>0;
+    return`<tr>
+      <td><span class="tag">${e.code}</span></td>
+      <td><strong>${e.name}</strong></td>
+      <td style="font-size:11px;color:#555">${e.role}</td>
+      <td><span class="tag ${isCustom?'tag-green':''}">${isCustom?'Custom ('+activeCrit.length+')':'Default ('+activeCrit.length+')'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="openEmpCritModal(${e.code})" style="margin-right:4px">Edit Criteria</button>
+        ${isCustom?`<button class="btn btn-sm btn-danger" onclick="resetEmpCrit(${e.code})">Reset to Default</button>`:''}
+      </td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="5" style="text-align:center;color:#888;padding:20px">No employees</td></tr>';
+}
+
+function filterEmpCrit(q){
+  const v=q.toLowerCase();
+  const emps=D[sys].employees.filter(e=>e.name.toLowerCase().includes(v)||e.role.toLowerCase().includes(v)||String(e.code).includes(v));
+  const tbody=document.getElementById('ec-tbody');
+  if(tbody)tbody.innerHTML=renderEmpCritRows(emps);
+}
+
+// ── RATING SCALE TAB ──────────────────────────────────────────────
+function renderScale(){
+  const scale=D[sys].ratingScale&&D[sys].ratingScale.length?D[sys].ratingScale:[...DEFAULT_SCALE];
+  document.getElementById('tab-content').innerHTML=`
+    <p style="font-size:12px;color:#666;margin-bottom:12px">Edit the rating scale labels and descriptions. Changes apply to the review form for this system.</p>
+    <div class="card">
+      <div style="padding:16px">
+        ${scale.map((s,i)=>`
+          <div class="scale-row">
+            <div class="scale-num" style="background:${s.bg};color:${s.fg}">${s.score}</div>
+            <div style="flex:1;display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:center">
+              <input type="text" value="${s.label}" class="field input" style="padding:6px 10px;border:1.5px solid #e0e0e0;border-radius:6px;font-size:12px;font-weight:600" onchange="updateScale(${i},'label',this.value)">
+              <input type="text" value="${s.description}" style="padding:6px 10px;border:1.5px solid #e0e0e0;border-radius:6px;font-size:12px;" onchange="updateScale(${i},'description',this.value)">
+            </div>
+          </div>`).join('')}
+        <div style="margin-top:14px;text-align:right">
+          <button class="btn btn-primary" onclick="saveScale()">Save Rating Scale</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function updateScale(idx,field,val){
+  if(!D[sys].ratingScale||!D[sys].ratingScale.length)D[sys].ratingScale=[...DEFAULT_SCALE];
+  D[sys].ratingScale[idx][field]=val;
+}
+
+function saveScale(){saveSystem(sys);showToast('Rating scale saved \u2713');}
+
+// ── EMPLOYEE MODAL ────────────────────────────────────────────────
+function openAddEmp(){
+  editingEmpIdx=null;
   document.getElementById('emp-modal-title').textContent='Add Employee';
-  document.getElementById('emp-edit-idx').value='';
-  document.getElementById('emp-system').value=currentSystem;
-  document.getElementById('emp-code').value='';
-  document.getElementById('emp-name').value='';
-  document.getElementById('emp-role').value='';
+  ['emp-code','emp-name','emp-station'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('emp-group').value='';
-  document.getElementById('emp-station').value='';
+  populateRoleDD();
+  document.getElementById('emp-role').value='';
+  populateSupDD();
   document.getElementById('emp-supervisor').value='';
-  document.getElementById('emp-modal-err').style.display='none';
-  populateRoleDropdown();
-  populateSupDropdown();
+  document.getElementById('emp-err').style.display='none';
   document.getElementById('emp-modal').classList.add('active');
 }
 
-function openEditEmployee(idx){
-  const e=DATA[currentSystem].employees[idx];
+function openEditEmp(idx){
+  editingEmpIdx=idx;
+  const e=D[sys].employees[idx];
   document.getElementById('emp-modal-title').textContent='Edit Employee';
-  document.getElementById('emp-edit-idx').value=idx;
-  document.getElementById('emp-system').value=currentSystem;
   document.getElementById('emp-code').value=e.code;
   document.getElementById('emp-name').value=e.name;
-  populateRoleDropdown();
-  document.getElementById('emp-role').value=e.role;
-  document.getElementById('emp-group').value=e.group||'';
   document.getElementById('emp-station').value=e.station||'';
-  populateSupDropdown();
-  const sup=Object.entries(DATA[currentSystem].supervisors).find(([,v])=>v.team&&v.team.includes(e.code));
+  document.getElementById('emp-group').value=e.group||'';
+  populateRoleDD();
+  document.getElementById('emp-role').value=e.role;
+  populateSupDD();
+  const sup=Object.entries(D[sys].supervisors).find(([,v])=>v.team&&v.team.includes(e.code));
   document.getElementById('emp-supervisor').value=sup?sup[0]:'';
-  document.getElementById('emp-modal-err').style.display='none';
+  document.getElementById('emp-err').style.display='none';
   document.getElementById('emp-modal').classList.add('active');
 }
 
-function populateRoleDropdown(){
-  const roles=currentSystem==='raigad'?RAIGAD_ROLES:MRIPL_ROLES;
+function populateRoleDD(){
+  const roles=sys==='raigad'?RAIGAD_ROLE_GROUPS:MRIPL_ROLE_GROUPS;
   const sel=document.getElementById('emp-role');
   sel.innerHTML='<option value="">Select role...</option>';
   Object.keys(roles).sort().forEach(r=>sel.innerHTML+=`<option value="${r}">${r}</option>`);
 }
 
-function populateSupDropdown(){
+function populateSupDD(){
   const sel=document.getElementById('emp-supervisor');
   sel.innerHTML='<option value="">Select reviewer...</option>';
-  Object.keys(DATA[currentSystem].supervisors).sort().forEach(s=>sel.innerHTML+=`<option value="${s}">${s}</option>`);
+  Object.keys(D[sys].supervisors).sort().forEach(s=>sel.innerHTML+=`<option value="${s}">${s}</option>`);
 }
 
 function onRoleChange(){
-  const roles=currentSystem==='raigad'?RAIGAD_ROLES:MRIPL_ROLES;
+  const roles=sys==='raigad'?RAIGAD_ROLE_GROUPS:MRIPL_ROLE_GROUPS;
   document.getElementById('emp-group').value=roles[document.getElementById('emp-role').value]||'';
 }
 
 function saveEmployee(){
-  const sys=document.getElementById('emp-system').value;
-  const idx=document.getElementById('emp-edit-idx').value;
   const code=parseInt(document.getElementById('emp-code').value);
   const name=document.getElementById('emp-name').value.trim();
   const role=document.getElementById('emp-role').value;
   const station=document.getElementById('emp-station').value.trim();
-  const roles=sys==='raigad'?RAIGAD_ROLES:MRIPL_ROLES;
+  const roles=sys==='raigad'?RAIGAD_ROLE_GROUPS:MRIPL_ROLE_GROUPS;
   const group=roles[role]||document.getElementById('emp-group').value;
   const supervisor=document.getElementById('emp-supervisor').value;
-  const errEl=document.getElementById('emp-modal-err');
+  const errEl=document.getElementById('emp-err');
   if(!code||!name||!role||!supervisor){errEl.textContent='Please fill in all required fields.';errEl.style.display='block';return;}
+  const d=D[sys];
   const emp={code,name,role,group,station};
-  const d=DATA[sys];
-  if(idx===''){
+  if(editingEmpIdx===null){
     if(d.employees.find(e=>e.code===code)){errEl.textContent='Employee code already exists.';errEl.style.display='block';return;}
     d.employees.push(emp);
   } else {
-    const oldCode=d.employees[parseInt(idx)].code;
+    const oldCode=d.employees[editingEmpIdx].code;
     Object.values(d.supervisors).forEach(s=>{if(s.team)s.team=s.team.filter(c=>c!==oldCode);});
-    d.employees[parseInt(idx)]=emp;
+    // Migrate custom criteria if code changed
+    if(oldCode!==code&&d.empCriteria&&d.empCriteria[oldCode]){
+      d.empCriteria[code]=d.empCriteria[oldCode];
+      delete d.empCriteria[oldCode];
+    }
+    d.employees[editingEmpIdx]=emp;
   }
   Object.values(d.supervisors).forEach(s=>{if(s.team)s.team=s.team.filter(c=>c!==code);});
   if(!d.supervisors[supervisor].team)d.supervisors[supervisor].team=[];
   d.supervisors[supervisor].team.push(code);
-  filtered=[...d.employees];
+  filteredEmps=[...d.employees];
   closeModal('emp-modal');
-  renderContent();
+  renderAll();
   saveSystem(sys);
 }
 
-function deleteEmployee(idx){
-  const e=DATA[currentSystem].employees[idx];
-  if(!confirm(`Delete ${e.name}?`))return;
-  Object.values(DATA[currentSystem].supervisors).forEach(s=>{if(s.team)s.team=s.team.filter(c=>c!==e.code);});
-  DATA[currentSystem].employees.splice(idx,1);
-  filtered=[...DATA[currentSystem].employees];
-  renderContent();
-  saveSystem(currentSystem);
+function deleteEmp(idx){
+  const e=D[sys].employees[idx];
+  if(!confirm(`Delete ${e.name}? This cannot be undone.`))return;
+  Object.values(D[sys].supervisors).forEach(s=>{if(s.team)s.team=s.team.filter(c=>c!==e.code);});
+  if(D[sys].empCriteria)delete D[sys].empCriteria[e.code];
+  D[sys].employees.splice(idx,1);
+  filteredEmps=[...D[sys].employees];
+  renderAll();
+  saveSystem(sys);
 }
 
-// ── ADD / EDIT SUPERVISOR ─────────────────────────────────────────
-function openAddSupervisor(){
-  document.getElementById('sup-modal-title').textContent='Add Reviewer';
-  document.getElementById('sup-edit-name').value='';
-  document.getElementById('sup-system').value=currentSystem;
-  document.getElementById('sup-name').value='';
-  document.getElementById('sup-title').value='';
-  document.getElementById('sup-pwd').value='';
-  document.getElementById('sup-modal-err').style.display='none';
-  document.getElementById('sup-modal').classList.add('active');
+// ── REVIEWER MODAL ────────────────────────────────────────────────
+function openAddRev(){
+  editingRevName=null;
+  document.getElementById('rev-modal-title').textContent='Add Reviewer';
+  ['rev-name','rev-title','rev-pwd'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rev-err').style.display='none';
+  document.getElementById('rev-modal').classList.add('active');
 }
 
-function openEditSupervisor(name){
-  const s=DATA[currentSystem].supervisors[name];
-  document.getElementById('sup-modal-title').textContent='Edit Reviewer';
-  document.getElementById('sup-edit-name').value=name;
-  document.getElementById('sup-system').value=currentSystem;
-  document.getElementById('sup-name').value=name;
-  document.getElementById('sup-title').value=s.title||'';
-  document.getElementById('sup-pwd').value=s.pwd||'';
-  document.getElementById('sup-modal-err').style.display='none';
-  document.getElementById('sup-modal').classList.add('active');
+function openEditRev(name){
+  editingRevName=name;
+  const s=D[sys].supervisors[name];
+  document.getElementById('rev-modal-title').textContent='Edit Reviewer';
+  document.getElementById('rev-name').value=name;
+  document.getElementById('rev-title').value=s.title||'';
+  document.getElementById('rev-pwd').value=s.pwd||'';
+  document.getElementById('rev-err').style.display='none';
+  document.getElementById('rev-modal').classList.add('active');
 }
 
-function saveSupervisor(){
-  const sys=document.getElementById('sup-system').value;
-  const oldName=document.getElementById('sup-edit-name').value;
-  const name=document.getElementById('sup-name').value.trim();
-  const title=document.getElementById('sup-title').value.trim();
-  const pwd=document.getElementById('sup-pwd').value.trim();
-  const errEl=document.getElementById('sup-modal-err');
+function saveReviewer(){
+  const name=document.getElementById('rev-name').value.trim();
+  const title=document.getElementById('rev-title').value.trim();
+  const pwd=document.getElementById('rev-pwd').value.trim();
+  const errEl=document.getElementById('rev-err');
   if(!name||!title||!pwd){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
-  const d=DATA[sys];
-  if(oldName&&oldName!==name){const team=d.supervisors[oldName]?.team||[];delete d.supervisors[oldName];d.supervisors[name]={pwd,title,team};}
-  else if(!oldName){d.supervisors[name]={pwd,title,team:[]};}
-  else{d.supervisors[name].pwd=pwd;d.supervisors[name].title=title;}
-  closeModal('sup-modal');
-  renderContent();
+  const d=D[sys];
+  if(editingRevName&&editingRevName!==name){
+    const team=d.supervisors[editingRevName]?.team||[];
+    delete d.supervisors[editingRevName];
+    d.supervisors[name]={pwd,title,team};
+  } else if(!editingRevName){
+    d.supervisors[name]={pwd,title,team:[]};
+  } else {
+    d.supervisors[name].pwd=pwd;
+    d.supervisors[name].title=title;
+  }
+  closeModal('rev-modal');
+  renderAll();
   saveSystem(sys);
 }
 
-function deleteSupervisor(name){
-  const size=DATA[currentSystem].supervisors[name]?.team?.length||0;
-  if(!confirm(`Delete ${name}?${size>0?' Their '+size+' employees will become unassigned.':''}`))return;
-  delete DATA[currentSystem].supervisors[name];
-  renderContent();
-  saveSystem(currentSystem);
+function deleteRev(name){
+  const size=D[sys].supervisors[name]?.team?.length||0;
+  if(!confirm(`Delete ${name}?${size?` Their ${size} employees will become unassigned.`:''}`))return;
+  delete D[sys].supervisors[name];
+  renderAll();
+  saveSystem(sys);
+}
+
+// ── CRITERIA MODAL ────────────────────────────────────────────────
+function openCritModal(role){
+  editingCritRole=role;
+  document.getElementById('crit-modal-title').textContent='Criteria — '+role;
+  const existing=D[sys].criteria[role]||DEFAULT_CRITERIA[sys][role]||[];
+  renderCritList([...existing]);
+  document.getElementById('crit-new-input').value='';
+  document.getElementById('crit-modal').classList.add('active');
+}
+
+function renderCritList(items){
+  document.getElementById('crit-list').innerHTML=items.map((name,i)=>`
+    <div class="crit-item" id="ci-${i}">
+      <span class="crit-drag">⋮⋮</span>
+      <input class="crit-name-input" value="${name}" id="cin-${i}">
+      <span class="crit-remove" onclick="removeCritItem(${i})">✕</span>
+    </div>`).join('');
+}
+
+function getCritItems(){
+  const items=[];
+  let i=0;
+  while(document.getElementById('cin-'+i)){
+    const val=document.getElementById('cin-'+i).value.trim();
+    if(val)items.push(val);
+    i++;
+  }
+  return items;
+}
+
+function addCritItem(){
+  const inp=document.getElementById('crit-new-input');
+  const val=inp.value.trim();
+  if(!val)return;
+  const current=getCritItems();
+  current.push(val);
+  renderCritList(current);
+  inp.value='';
+}
+
+function removeCritItem(idx){
+  const items=getCritItems();
+  items.splice(idx,1);
+  renderCritList(items);
+}
+
+function saveCriteria(){
+  const items=getCritItems();
+  if(!D[sys].criteria)D[sys].criteria={};
+  D[sys].criteria[editingCritRole]=items;
+  closeModal('crit-modal');
+  renderAll();
+  saveSystem(sys);
+  showToast('Criteria saved \u2713');
+}
+
+// ── EMP CRITERIA MODAL ────────────────────────────────────────────
+function openEmpCritModal(code){
+  editingEmpCode=code;
+  const emp=D[sys].employees.find(e=>e.code===code);
+  if(!emp)return;
+  document.getElementById('empcrit-modal-title').textContent=emp.name+' — Custom Criteria';
+  document.getElementById('empcrit-info').textContent='Role: '+emp.role+'. Start from role defaults and customise as needed.';
+  // Load: custom if exists, else role default
+  const custom=D[sys].empCriteria&&D[sys].empCriteria[code];
+  const roleDef=D[sys].criteria[emp.role]||DEFAULT_CRITERIA[sys][emp.role]||[];
+  const items=custom&&custom.length?[...custom]:[...roleDef];
+  renderEmpCritList(items);
+  document.getElementById('empcrit-new-input').value='';
+  document.getElementById('empcrit-modal').classList.add('active');
+}
+
+function renderEmpCritList(items){
+  document.getElementById('empcrit-list').innerHTML=items.map((name,i)=>`
+    <div class="crit-item">
+      <span class="crit-drag">⋮⋮</span>
+      <input class="crit-name-input" value="${name}" id="ecin-${i}">
+      <span class="crit-remove" onclick="removeEmpCritItem(${i})">✕</span>
+    </div>`).join('');
+}
+
+function getEmpCritItems(){
+  const items=[];let i=0;
+  while(document.getElementById('ecin-'+i)){
+    const val=document.getElementById('ecin-'+i).value.trim();
+    if(val)items.push(val);i++;
+  }
+  return items;
+}
+
+function addEmpCritItem(){
+  const inp=document.getElementById('empcrit-new-input');
+  const val=inp.value.trim();if(!val)return;
+  const current=getEmpCritItems();current.push(val);
+  renderEmpCritList(current);inp.value='';
+}
+
+function removeEmpCritItem(idx){
+  const items=getEmpCritItems();items.splice(idx,1);renderEmpCritList(items);
+}
+
+function saveEmpCriteria(){
+  const items=getEmpCritItems();
+  if(!D[sys].empCriteria)D[sys].empCriteria={};
+  D[sys].empCriteria[editingEmpCode]=items;
+  closeModal('empcrit-modal');
+  renderAll();
+  saveSystem(sys);
+  showToast('Employee criteria saved \u2713');
+}
+
+function resetEmpCrit(code){
+  if(!confirm('Reset to role default? Custom criteria will be removed.'))return;
+  if(D[sys].empCriteria)delete D[sys].empCriteria[code];
+  renderAll();
+  saveSystem(sys);
+  showToast('Reset to role default \u2713');
 }
 
 // ── SAVE ──────────────────────────────────────────────────────────
-function saveSystem(sys){
-  showToast('Saving...');
-  const payload={action:'saveConfig',employees:DATA[sys].employees,supervisors:DATA[sys].supervisors};
-  if(sys==='mripl')payload.client='mripl';
+function saveSystem(s,toast=true){
+  const d=D[s];
+  const payload={action:'saveConfig',employees:d.employees,supervisors:d.supervisors,criteria:d.criteria,empCriteria:d.empCriteria||{},ratingScale:d.ratingScale||[]};
+  if(s==='mripl')payload.client='mripl';
   const url=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
   const img=new Image();
-  img.onload=img.onerror=function(){showToast('Saved \u2713');};
+  img.onload=img.onerror=function(){if(toast)showToast('Saved \u2713');};
   img.src=url;
 }
 
