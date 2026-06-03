@@ -200,7 +200,7 @@ tr:hover td{background:#f8fafc}
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwTrLkFdYg3Azi4L6KYUKezGyNezWbR3mmmw8vaVJZH9xCb-Uq2tOJupeZAXu-qfL5Vxw/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbw-6C6M-8fqZBFRLiWAqtUwvjEn3E2XT04iPtWzZF3gu9mzbv1LlIVDysJwhSkMbZsPwg/exec";
 const ADMIN_PASSWORD="RaigadAdmin@2025";
 
 // ── DEFAULT CRITERIA ──────────────────────────────────────────────
@@ -866,10 +866,13 @@ function saveSystem(s,toast=true){
   const d=D[s];
   const payload={action:'saveConfig',employees:d.employees,supervisors:d.supervisors,criteria:d.criteria,empCriteria:d.empCriteria||{},ratingScale:d.ratingScale||[]};
   if(s==='mripl')payload.client='mripl';
-  const url=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
-  const img=new Image();
-  img.onload=img.onerror=function(){if(toast)showToast('Saved \u2713');};
-  img.src=url;
+  fetch(APPS_SCRIPT_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify(payload)
+  }).then(()=>{if(toast)showToast('Saved ✓');})
+  .catch(()=>{if(toast)showToast('Save failed - check connection');});
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────
