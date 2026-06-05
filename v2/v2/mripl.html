@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raigad Ropeways — Performance Review</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;color:#1a1a1a}
+.topbar{background:#1F4E79;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.topbar h1{color:#fff;font-size:15px;font-weight:600}
+.sup-badge{background:rgba(255,255,255,0.15);color:#fff;padding:5px 12px;border-radius:99px;font-size:12px}
+.logout-btn{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
+.screen{display:none;max-width:700px;margin:32px auto;padding:0 16px 48px}
+.screen.active{display:block}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px}
+.card-header{background:#1F4E79;padding:16px 20px}
+.card-header h2{color:#fff;font-size:16px;font-weight:600}
+.card-header p{color:rgba(255,255,255,0.7);font-size:12px;margin-top:4px}
+.card-body{padding:20px}
+/* Login */
+.login-logo{text-align:center;margin-bottom:24px}
+.login-logo .org{font-size:22px;font-weight:700;color:#1F4E79}
+.login-logo .sub{font-size:13px;color:#666;margin-top:4px}
+.sup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sup-btn{padding:14px 12px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;transition:all 0.15s}
+.sup-btn:hover{border-color:#2E75B6;background:#EBF4FB}
+.sup-btn.selected{border-color:#1F4E79;background:#D6E4F0}
+.sup-btn .name{font-size:13px;font-weight:600;color:#1F4E79}
+.sup-btn .team{font-size:11px;color:#888;margin-top:3px}
+.login-btn{width:100%;padding:13px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.login-btn:hover{background:#16396b}
+.login-btn:disabled{background:#aaa;cursor:not-allowed}
+/* Spinner */
+.spinner-wrap{text-align:center;padding:32px 20px}
+.spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1F4E79;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-wrap p{font-size:13px;color:#888}
+.error-box{background:#FCE4D6;color:#C00000;padding:12px 16px;border-radius:8px;font-size:13px;text-align:center}
+/* Fields */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
+.field input,.field select{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:7px;font-size:13px}
+.field input:focus,.field select:focus{outline:none;border-color:#2E75B6}
+.field input[readonly]{background:#f5f7fa;color:#888}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+/* Employee list */
+.emp-search{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:12px}
+.emp-search:focus{outline:none;border-color:#2E75B6}
+.emp-list{max-height:340px;overflow-y:auto}
+.emp-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;margin-bottom:6px}
+.emp-item:hover{background:#f0f4f8}
+.emp-item.selected{background:#D6E4F0;border-color:#2E75B6}
+.emp-item .emp-name{font-size:13px;font-weight:600}
+.emp-item .emp-meta{font-size:11px;color:#888;margin-top:2px}
+.emp-item .emp-code{font-size:11px;color:#2E75B6;font-weight:600}
+/* Step bar */
+.step-bar{display:flex;border-bottom:1px solid #e8edf2;background:#fafbfc}
+.step-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;color:#999;border-bottom:2px solid transparent}
+.step-tab.active{color:#1F4E79;border-bottom-color:#1F4E79;font-weight:600;background:#fff}
+.step-tab.done{color:#375623}
+/* Progress */
+.prog-wrap{margin-bottom:16px}
+.prog-label{font-size:12px;color:#666;margin-bottom:6px;display:flex;justify-content:space-between}
+.prog-track{height:6px;background:#e8edf2;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#1F4E79;border-radius:3px;transition:width 0.3s}
+/* Criteria cards */
+.crit-card{border:1.5px solid #e8edf2;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.crit-card.scored{border-color:#2E75B6;background:#fafcff}
+.crit-card.error{border-color:#C00000!important;background:#fff8f8}
+.crit-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:8px}
+.score-row{display:flex;gap:7px;margin-bottom:10px}
+.score-btn{flex:1;padding:10px 4px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;text-align:center;background:#fff;min-width:0}
+.score-btn:hover{border-color:#2E75B6;background:#EBF4FB}
+.score-btn .snum{font-size:18px;font-weight:700;display:block}
+.score-btn .slbl{font-size:9px;display:block;margin-top:2px;color:#888}
+.score-btn.s1{background:#FCE4D6;border-color:#C00000}.score-btn.s1 .snum,.score-btn.s1 .slbl{color:#C00000}
+.score-btn.s2{background:#FEF0E0;border-color:#B8560A}.score-btn.s2 .snum,.score-btn.s2 .slbl{color:#B8560A}
+.score-btn.s3{background:#FFF2CC;border-color:#7F6000}.score-btn.s3 .snum,.score-btn.s3 .slbl{color:#7F6000}
+.score-btn.s4{background:#E2EFDA;border-color:#375623}.score-btn.s4 .snum,.score-btn.s4 .slbl{color:#375623}
+.score-btn.s5{background:#DEEAF1;border-color:#1F4E79}.score-btn.s5 .snum,.score-btn.s5 .slbl{color:#1F4E79}
+.note-label{font-size:11px;font-weight:600;color:#555;margin-bottom:4px}
+.req-star{color:#C00000;margin-left:3px}
+.note-area{width:100%;padding:8px 10px;border:1.5px solid #e8edf2;border-radius:7px;font-size:12px;resize:vertical;min-height:56px;font-family:inherit;color:#333}
+.note-area:focus{outline:none;border-color:#2E75B6}
+.note-area.err{border-color:#C00000}
+.note-err{font-size:11px;color:#C00000;margin-top:3px;display:none}
+/* Nav */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e8edf2}
+.btn{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#333}
+.btn:hover{background:#f5f5f5}
+.btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
+.btn-primary:hover{background:#16396b}
+.btn-success{background:#375623;color:#fff;border-color:#375623}
+.btn-danger{background:#C00000;color:#fff;border-color:#C00000}
+/* Summary */
+.summary-box{border:1px solid #e8edf2;border-radius:10px;padding:16px;margin-bottom:12px}
+.summary-emp{font-size:15px;font-weight:700;color:#1F4E79;margin-bottom:4px}
+.summary-meta{font-size:12px;color:#666}
+.crit-row{display:flex;align-items:flex-start;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;gap:12px}
+.crit-row:last-child{border-bottom:none}
+.crit-row-left{flex:1}
+.crit-row-name{font-size:12px;font-weight:600;color:#1a1a1a}
+.crit-row-note{font-size:11px;color:#666;margin-top:3px;font-style:italic;line-height:1.4}
+.score-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+/* Done */
+.done-state{text-align:center;padding:40px 20px}
+.done-state .check{font-size:48px;margin-bottom:16px}
+.done-state h2{font-size:18px;font-weight:700;color:#375623;margin-bottom:8px}
+.done-state p{font-size:13px;color:#666;margin-bottom:20px;line-height:1.6}
+.error-banner{background:#FCE4D6;color:#C00000;padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:14px;display:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:500px){.two-col,.three-col,.sup-grid{grid-template-columns:1fr}.score-btn .slbl{display:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>Raigad Ropeways &#8212; Performance Review System</h1>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="sup-badge" id="sup-badge" style="display:none"></span>
+    <button class="logout-btn" id="logout-btn" style="display:none" onclick="logout()">Change reviewer</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="screen active" id="screen-login">
+  <div style="max-width:480px;margin:0 auto">
+    <div class="login-logo">
+      <div class="org">Millennium Ropeways &amp; Infra Pvt. Ltd.</div>
+      <div class="sub">Head Office Performance Review &middot; 2026</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Reviewer Login</h2><p>Select your name to begin reviewing</p></div>
+      <div class="card-body" id="login-body">
+        <div class="spinner-wrap" id="login-spinner">
+          <div class="spinner"></div>
+          <p>Loading supervisors...</p>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:12px">
+      MRIPL &middot; Confidential &middot;
+      <a href="admin.html" style="color:#aaa">Admin</a>
+    </p>
+  </div>
+</div>
+
+<!-- EMPLOYEES -->
+<div class="screen" id="screen-employees">
+  <div class="card">
+    <div class="card-header"><h2>Select Employee</h2><p id="emp-screen-sub"></p></div>
+    <div class="card-body">
+      <input class="emp-search" type="text" id="emp-search" placeholder="Search by name or role..." oninput="filterEmps(this.value)">
+      <div class="emp-list" id="emp-list"></div>
+      <div class="nav-row">
+        <div></div>
+        <button class="btn btn-primary" id="start-btn" onclick="goToForm()" disabled>Start Review &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="screen" id="screen-form">
+  <div class="card">
+    <div class="card-header">
+      <h2 id="form-title">Performance Review</h2>
+      <p id="form-sub"></p>
+    </div>
+    <div class="step-bar">
+      <div class="step-tab active" id="tab-1">1. Details</div>
+      <div class="step-tab" id="tab-2">2. Score Criteria</div>
+      <div class="step-tab" id="tab-3">3. Review &amp; Submit</div>
+    </div>
+    <!-- Step 1 -->
+    <div class="card-body" id="step-1">
+      <div class="two-col">
+        <div class="field"><label>Employee Name</label><input type="text" id="ff-name" readonly></div>
+        <div class="field"><label>Employee Code</label><input type="text" id="ff-code" readonly></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Role</label><input type="text" id="ff-role" readonly></div>
+        <div class="field"><label>Group</label><input type="text" id="ff-group" readonly></div>
+      </div>
+      <div class="three-col">
+        <div class="field"><label>Department</label><input type="text" id="ff-station" readonly></div>
+        <div class="field">
+          <label>Quarter *</label>
+          <select id="ff-quarter">
+            <option value="">Select...</option>
+            <option value="Q1">Q1 &mdash; April</option>
+            <option value="Q2">Q2 &mdash; July</option>
+            <option value="Q3">Q3 &mdash; October</option>
+            <option value="Q4">Q4 &mdash; January</option>
+          </select>
+        </div>
+        <div class="field"><label>Year</label><input type="text" id="ff-year" value="2026"></div>
+      </div>
+      <div class="field"><label>Reviewer</label><input type="text" id="ff-supervisor" readonly></div>
+      <div class="error-banner" id="step1-err">Please select a quarter before continuing.</div>
+      <div class="nav-row">
+        <button class="btn" onclick="showScreen('screen-employees')">&larr; Change employee</button>
+        <button class="btn btn-primary" onclick="goStep(2)">Next: Score Criteria &rarr;</button>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div class="card-body" id="step-2" style="display:none">
+      <div class="prog-wrap">
+        <div class="prog-label"><span id="prog-text">0 of 0 scored</span><span id="prog-pct">0%</span></div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <p style="font-size:11px;color:#888;margin-bottom:14px">Score each criterion and add a mandatory observation note.</p>
+      <div id="criteria-list"></div>
+      <div class="nav-row">
+        <button class="btn" onclick="goStep(1)">&larr; Back</button>
+        <button class="btn btn-primary" onclick="tryStep3()">Review &amp; Submit &rarr;</button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div class="card-body" id="step-3" style="display:none">
+      <div id="summary-content"></div>
+      <div class="nav-row">
+        <button class="btn" onclick="goStep(2)">&larr; Edit scores</button>
+        <button class="btn btn-success" onclick="submitReview()">Submit Review &#10003;</button>
+      </div>
+    </div>
+    <!-- Submitting -->
+    <div class="card-body spinner-wrap" id="step-submitting" style="display:none">
+      <div class="spinner"></div>
+      <p id="submit-msg">Saving review...</p>
+    </div>
+  </div>
+</div>
+
+<!-- DONE -->
+<div class="screen" id="screen-done">
+  <div class="card">
+    <div class="card-body done-state">
+      <div class="check">&#10003;</div>
+      <h2>Review submitted successfully</h2>
+      <p id="done-detail"></p>
+      <a id="email-btn" href="#" target="_blank" class="btn btn-primary" style="display:none;margin-bottom:12px;text-decoration:none">
+        &#128231; Attach a supporting document via email
+      </a><br>
+      <button class="btn" style="margin-top:8px" onclick="reviewAnother()">Review another employee</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_URL = "https://script.google.com/macros/s/AKfycbx0F8Kc5kS-hHnRfBEEsroJUZ8vAdA7TTEuwIY-xPQm6ZZHJr65I4QvOeUKFkJVlT5iuQ/exec";
+const CLIENT  = "mripl";
+
+// ── STATE ─────────────────────────────────────────────────────────
+let CONFIG   = {employees:[],supervisors:{},criteria:{},empCriteria:{},ratingScale:[]};
+let currentSup = null;
+let selectedEmp = null;
+let scores = {};
+let notes  = {};
+let currentPayload = null;
+
+// ── BOOT ──────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", loadConfig);
+
+function loadConfig() {
+  fetch(APPS_URL + "?action=getConfig&client=" + CLIENT)
+    .then(r => r.json())
+    .then(data => {
+      if (!data.employees || data.employees.length === 0) {
+        showLoginError("No configuration found. Please contact the admin.");
+        return;
+      }
+      CONFIG = data;
+      buildLoginGrid();
+    })
+    .catch(() => showLoginError("Unable to connect to the server. Please check your internet connection and refresh."));
+}
+
+function showLoginError(msg) {
+  document.getElementById("login-body").innerHTML =
+    '<div class="error-box">' + msg + '</div>';
+}
+
+function buildLoginGrid() {
+  const sups = CONFIG.supervisors;
+  let html = '<div class="sup-grid">';
+  Object.entries(sups).forEach(([n, i]) => {
+    html += '<div class="sup-btn" onclick="selectSup(\''+ n +'\')">' +
+            '<div class="name">' + n + '</div>' +
+            '<div class="team">' + i.title + '</div></div>';
+  });
+  html += '</div>';
+  html += '<div class="field" style="margin-top:4px"><label>Password</label>' +
+          '<input type="password" id="login-pwd" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">' +
+          '</div>';
+  html += '<div class="error-banner" id="login-error">Please select your name and enter your password.</div>';
+  html += '<button class="login-btn" onclick="doLogin()">Continue &rarr;</button>';
+  document.getElementById("login-body").innerHTML = html;
+}
+
+function selectSup(name) {
+  currentSup = name;
+  document.querySelectorAll(".sup-btn").forEach(b => b.classList.remove("selected"));
+  event.currentTarget.classList.add("selected");
+}
+
+function doLogin() {
+  const errEl = document.getElementById("login-error");
+  const pwd   = document.getElementById("login-pwd").value.trim();
+  if (!currentSup) { errEl.textContent = "Please select your name first."; errEl.style.display = "block"; return; }
+  if (!pwd)        { errEl.textContent = "Please enter your password.";    errEl.style.display = "block"; return; }
+  if (pwd !== CONFIG.supervisors[currentSup].pwd) {
+    errEl.textContent = "Incorrect password. Please try again.";
+    errEl.style.display = "block"; return;
+  }
+  errEl.style.display = "none";
+  document.getElementById("sup-badge").textContent = currentSup;
+  document.getElementById("sup-badge").style.display = "";
+  document.getElementById("logout-btn").style.display = "";
+  buildEmpList();
+  showScreen("screen-employees");
+}
+
+function logout() {
+  currentSup = null; selectedEmp = null; scores = {}; notes = {};
+  document.getElementById("sup-badge").style.display = "none";
+  document.getElementById("logout-btn").style.display = "none";
+  showScreen("screen-login");
+}
+
+// ── EMPLOYEES ─────────────────────────────────────────────────────
+function buildEmpList() {
+  const team = CONFIG.supervisors[currentSup].team || [];
+  const emps = CONFIG.employees.filter(e => team.includes(e.code));
+  document.getElementById("emp-screen-sub").textContent =
+    emps.length + " team members — " + CONFIG.supervisors[currentSup].title;
+  renderEmpList(emps);
+}
+
+function renderEmpList(emps) {
+  document.getElementById("emp-list").innerHTML = emps.map(e =>
+    '<div class="emp-item" id="ei-' + e.code + '" onclick="selectEmp(' + e.code + ')">' +
+    '<div><div class="emp-name">' + e.name + '</div>' +
+    '<div class="emp-meta">' + e.role + ' &middot; ' + e.station + ' Station</div></div>' +
+    '<span class="emp-code">' + e.code + '</span></div>'
+  ).join("");
+}
+
+function filterEmps(q) {
+  const v = q.toLowerCase();
+  const team = CONFIG.supervisors[currentSup].team || [];
+  const res = CONFIG.employees.filter(e =>
+    team.includes(e.code) &&
+    (e.name.toLowerCase().includes(v) || e.role.toLowerCase().includes(v))
+  );
+  renderEmpList(res);
+  if (selectedEmp && !res.find(e => e.code === selectedEmp.code)) {
+    selectedEmp = null;
+    document.getElementById("start-btn").disabled = true;
+  }
+}
+
+function selectEmp(code) {
+  document.querySelectorAll(".emp-item").forEach(el => el.classList.remove("selected"));
+  const el = document.getElementById("ei-" + code);
+  if (el) el.classList.add("selected");
+  selectedEmp = CONFIG.employees.find(e => e.code === code);
+  document.getElementById("start-btn").disabled = false;
+}
+
+function goToForm() {
+  if (!selectedEmp) return;
+  scores = {}; notes = {};
+  document.getElementById("ff-name").value      = selectedEmp.name;
+  document.getElementById("ff-code").value      = selectedEmp.code;
+  document.getElementById("ff-role").value      = selectedEmp.role;
+  document.getElementById("ff-group").value     = selectedEmp.group;
+  document.getElementById("ff-station").value   = selectedEmp.station;
+  document.getElementById("ff-supervisor").value= currentSup;
+  document.getElementById("ff-quarter").value   = "";
+  document.getElementById("form-title").textContent = "Performance Review — " + selectedEmp.name;
+  document.getElementById("form-sub").textContent   = selectedEmp.role + " · " + selectedEmp.group;
+  goStep(1);
+  showScreen("screen-form");
+}
+
+// ── FORM STEPS ────────────────────────────────────────────────────
+function goStep(n) {
+  if (n === 2) {
+    if (!document.getElementById("ff-quarter").value) {
+      document.getElementById("step1-err").style.display = "block"; return;
+    }
+    document.getElementById("step1-err").style.display = "none";
+  }
+  [1,2,3].forEach(i => {
+    document.getElementById("step-" + i).style.display = i === n ? "block" : "none";
+    const t = document.getElementById("tab-" + i);
+    t.className = "step-tab" + (i === n ? " active" : i < n ? " done" : "");
+  });
+  document.getElementById("step-submitting").style.display = "none";
+  if (n === 2) buildCriteria();
+  if (n === 3) buildSummary();
+  window.scrollTo(0, 0);
+}
+
+function tryStep3() {
+  getCriteria().forEach((name, i) => {
+    const el = document.getElementById("note-" + i);
+    if (el) notes[name] = el.value;
+  });
+  if (!validateStep2()) return;
+  goStep(3);
+}
+
+function getCriteria() {
+  const ec = CONFIG.empCriteria && CONFIG.empCriteria[selectedEmp.code];
+  if (ec && ec.length) return ec;
+  const rc = CONFIG.criteria && CONFIG.criteria[selectedEmp.role];
+  if (rc && rc.length) return rc;
+  return [];
+}
+
+function getScale() {
+  return CONFIG.ratingScale && CONFIG.ratingScale.length ? CONFIG.ratingScale : [
+    {score:1,label:"Poor",       bg:"#FCE4D6",fg:"#C00000"},
+    {score:2,label:"Needs Impr.",bg:"#FEF0E0",fg:"#B8560A"},
+    {score:3,label:"Good",       bg:"#FFF2CC",fg:"#7F6000"},
+    {score:4,label:"Very Good",  bg:"#E2EFDA",fg:"#375623"},
+    {score:5,label:"Excellent",  bg:"#DEEAF1",fg:"#1F4E79"},
+  ];
+}
+
+function buildCriteria() {
+  const criteria = getCriteria();
+  const scale    = getScale();
+  const total    = criteria.length;
+  document.getElementById("criteria-list").innerHTML = criteria.map((name, i) => {
+    const btns = scale.map(sc => {
+      const s   = sc.score;
+      const lbl = (sc.label || String(s)).substring(0, 9);
+      const sel = scores[name] === s ? " s" + s : "";
+      return '<div class="score-btn' + sel + '" id="sb-' + i + '-' + s + '" ' +
+             'onclick="setScore(' + i + ',\'' + name.replace(/'/g,"\\'") + '\',' + s + ',' + total + ')">' +
+             '<span class="snum">' + s + '</span><span class="slbl">' + lbl + '</span></div>';
+    }).join("");
+    return '<div class="crit-card' + (scores[name] !== undefined ? " scored" : "") + '" id="cc-' + i + '">' +
+           '<div class="crit-name">' + name + '</div>' +
+           '<div class="score-row">' + btns + '</div>' +
+           '<div class="note-label">Observation Note<span class="req-star">*</span></div>' +
+           '<textarea class="note-area" id="note-' + i + '" placeholder="Write a specific observation about this criterion...">' +
+           (notes[name] || "") + '</textarea>' +
+           '<div class="note-err" id="ne-' + i + '">Please add an observation note.</div></div>';
+  }).join("");
+  updateProgress(total);
+}
+
+function setScore(idx, name, score, total) {
+  scores[name] = score;
+  getScale().forEach(sc => {
+    const b = document.getElementById("sb-" + idx + "-" + sc.score);
+    if (b) b.className = "score-btn" + (sc.score === score ? " s" + sc.score : "");
+  });
+  document.getElementById("cc-" + idx).classList.add("scored");
+  document.getElementById("cc-" + idx).classList.remove("error");
+  updateProgress(total);
+}
+
+function updateProgress(total) {
+  const done = getCriteria().filter(n => scores[n] !== undefined).length;
+  const pct  = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById("prog-fill").style.width = pct + "%";
+  document.getElementById("prog-text").textContent  = done + " of " + total + " scored";
+  document.getElementById("prog-pct").textContent   = pct + "%";
+}
+
+function validateStep2() {
+  const criteria = getCriteria();
+  let valid = true;
+  criteria.forEach((name, i) => {
+    const noteVal = (notes[name] || "").trim();
+    const card = document.getElementById("cc-" + i);
+    const err  = document.getElementById("ne-" + i);
+    const ta   = document.getElementById("note-" + i);
+    let ok = true;
+    if (scores[name] === undefined) { card.classList.add("error"); ok = false; valid = false; }
+    if (!noteVal) {
+      card.classList.add("error");
+      err.style.display = "block";
+      if (ta) ta.classList.add("err");
+      ok = false; valid = false;
+    } else {
+      err.style.display = "none";
+      if (ta) ta.classList.remove("err");
+    }
+    if (ok) card.classList.remove("error");
+  });
+  if (!valid) {
+    showToast("Please score all criteria and add observation notes.");
+    const first = document.querySelector(".crit-card.error");
+    if (first) first.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+  return valid;
+}
+
+function buildSummary() {
+  const criteria = getCriteria();
+  const scale    = getScale();
+  const qEl      = document.getElementById("ff-quarter");
+  const qLabel   = qEl.options[qEl.selectedIndex] ? qEl.options[qEl.selectedIndex].text : "";
+  const year     = document.getElementById("ff-year").value;
+  const scMap    = {};
+  scale.forEach(sc => scMap[sc.score] = sc);
+  let html = '<div class="summary-box">' +
+    '<div class="summary-emp">' + selectedEmp.name + '</div>' +
+    '<div class="summary-meta">' + selectedEmp.role + ' &middot; ' +
+    selectedEmp.group + ' &middot; ' + qLabel + ' ' + year +
+    ' &middot; Reviewed by ' + currentSup + '</div></div>';
+  html += '<div class="summary-box"><div style="font-size:12px;font-weight:600;color:#555;margin-bottom:12px">Criteria &amp; Observations</div>';
+  criteria.forEach(name => {
+    const s    = scores[name] || 0;
+    const note = notes[name]  || "";
+    const sc   = scMap[s] || {bg:"#f5f5f5", fg:"#888"};
+    html += '<div class="crit-row">' +
+      '<div class="crit-row-left">' +
+      '<div class="crit-row-name">' + name + '</div>' +
+      (note ? '<div class="crit-row-note">&ldquo;' + note + '&rdquo;</div>' : "") +
+      '</div><div class="score-dot" style="background:' + sc.bg + ';color:' + sc.fg + '">' +
+      (s || "&mdash;") + '</div></div>';
+  });
+  html += '</div>';
+  document.getElementById("summary-content").innerHTML = html;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────
+function submitReview() {
+  const criteria = getCriteria();
+  const scored   = criteria.map(n => ({name:n, score:scores[n]||0, note:notes[n]||""}));
+  const total    = scored.reduce((a,b) => a + b.score, 0);
+  const maxScore = criteria.length * 5;
+  const pct      = maxScore > 0 ? Math.round(total / maxScore * 100) : 0;
+  const qEl      = document.getElementById("ff-quarter");
+  const qLabel   = qEl.options[qEl.selectedIndex] ? qEl.options[qEl.selectedIndex].text : qEl.value;
+  const payload  = {
+    action:       "writeSubmission",
+    timestamp:    new Date().toISOString(),
+    supervisor:   currentSup,
+    empCode:      selectedEmp.code,
+    empName:      selectedEmp.name,
+    role:         selectedEmp.role,
+    group:        selectedEmp.group,
+    station:      selectedEmp.station,
+    quarter:      qEl.value,
+    quarterLabel: qLabel,
+    year:         document.getElementById("ff-year").value,
+    criteria:     scored,
+    totalScore:   total,
+    maxScore:     maxScore,
+    percentScore: pct,
+    client:       CLIENT,
+  };
+  [1,2,3].forEach(i => document.getElementById("step-" + i).style.display = "none");
+  document.getElementById("step-submitting").style.display = "block";
+  checkDuplicate(payload);
+}
+
+function checkDuplicate(payload) {
+  const url = APPS_URL + "?action=checkDuplicate&client=" + CLIENT +
+    "&empCode=" + payload.empCode +
+    "&quarter=" + payload.quarter +
+    "&year="    + payload.year +
+    "&role="    + encodeURIComponent(payload.role);
+  fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      if (d.exists) {
+        currentPayload = payload;
+        document.getElementById("step-submitting").innerHTML =
+          '<div style="text-align:center;padding:24px">' +
+          '<p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already exists</p>' +
+          '<p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>' +
+          payload.empName + '</strong> for <strong>' + payload.quarterLabel + ' ' + payload.year +
+          '</strong> has already been submitted.</p>' +
+          '<button class="btn" onclick="goStep(3)" style="margin-right:10px">&larr; Go back</button>' +
+          '<button class="btn btn-danger" onclick="sendData(currentPayload)">Submit anyway</button></div>';
+      } else {
+        sendData(payload);
+      }
+    })
+    .catch(() => sendData(payload));
+}
+
+function sendData(payload) {
+  document.getElementById("step-submitting").innerHTML =
+    '<div class="spinner"></div><p id="submit-msg">Saving review...</p>';
+  fetch(APPS_URL, {
+    method:  "POST",
+    mode:    "no-cors",
+    headers: {"Content-Type":"text/plain"},
+    body:    JSON.stringify(payload),
+  }).then(() => showDone(payload))
+    .catch(() => showDone(payload));
+}
+
+function showDone(payload) {
+  document.getElementById("step-submitting").style.display = "none";
+  const det = '<strong>' + payload.empName + '</strong> &middot; ' + payload.role +
+    '<br>' + payload.quarterLabel + ' ' + payload.year + ' &middot; Reviewed by ' + payload.supervisor;
+  document.getElementById("done-detail").innerHTML = det;
+  const subj = encodeURIComponent("PMS Attachment: " + payload.empName + " | " + payload.role + " | " + payload.quarterLabel + " " + payload.year);
+  const body = encodeURIComponent("Supporting document for performance review:\n\nEmployee: " + payload.empName + "\nRole: " + payload.role + "\nQuarter: " + payload.quarterLabel + " " + payload.year + "\nReviewed by: " + payload.supervisor + "\n\nPlease attach the document before sending.");
+  const btn = document.getElementById("email-btn");
+  btn.href = "https://mail.google.com/mail/?view=cm&fs=1&su=" + subj + "&body=" + body;
+  btn.style.display = "inline-block";
+  showScreen("screen-done");
+}
+
+function reviewAnother() {
+  selectedEmp = null; scores = {}; notes = {};
+  document.querySelectorAll(".emp-item").forEach(el => el.classList.remove("selected"));
+  document.getElementById("start-btn").disabled = true;
+  document.getElementById("emp-search").value = "";
+  buildEmpList();
+  showScreen("screen-employees");
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3500);
+}
+</script>
+</body>
+</html>
