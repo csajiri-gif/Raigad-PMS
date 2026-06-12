@@ -252,11 +252,109 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_URL = "https://script.google.com/macros/s/AKfycbx0F8Kc5kS-hHnRfBEEsroJUZ8vAdA7TTEuwIY-xPQm6ZZHJr65I4QvOeUKFkJVlT5iuQ/exec";
+const APPS_URL = "https://script.google.com/macros/s/AKfycbx6YSF21Q-Wy8tNZBANRVbP_ZlxFLrp8cjroJ7y6hZ7BX7bfg7xlzuKVwQ4iYuKNKVFiw/exec";
 const CLIENT  = "raigad";
 
+// ── HARDCODED DEFAULTS (shown instantly, updated from sheet in background) ──
+const SUPERVISORS_DEFAULT = {
+  "Khatu Rajendra":{pwd:"Raigad@KR",title:"In-Charge",team:[13,103,105,136,141,614]},
+  "Phondke Uday":{pwd:"Raigad@PU",title:"Joint In-Charge",team:[106,113,124,133,137]},
+  "Salunkhe Pratik":{pwd:"Raigad@SP",title:"In-Charge (Upper Station)",team:[110,118,143,503,509,521,524,615]},
+  "Bendugade Mahesh":{pwd:"Raigad@BM",title:"Restaurant Supervisor",team:[107,109,112,116,120,121,129,130,131,413,507,510,522,611,617]},
+  "Chipade Pralhad":{pwd:"Raigad@CP",title:"Electrician",team:[411,515,516,517,520]},
+  "Dighe Sanket":{pwd:"Raigad@DS",title:"In-Charge (TB)",team:[616,618]},
+  "Khaladkar Akshay":{pwd:"Raigad@KA",title:"Jr. Engineer",team:[142,410,415]},
+  "Sanas Vijay":{pwd:"Raigad@SV",title:"Store Keeper",team:[505,514,518,606,619]},
+  "Shingate Rajesh":{pwd:"Raigad@SR",title:"Chief Accountant",team:[108,114,115,117,126,127,128,138,144,407,511,513,519]},
+  "Umaratkar Santosh":{pwd:"Raigad@US",title:"Foreman Mechanical",team:[104,111,119,123,125,132,135,139,140,414,512,523,607]},
+};
+
+const EMPLOYEES_DEFAULT = [
+  {code:13,name:"Khaladkar Akshay",role:"Engineer - Civil",group:"Technical & Maintenance",station:"Lower"},
+  {code:103,name:"Shingte Rajesh",role:"Chief Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:104,name:"Sanas Vijay",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:105,name:"Bhosale Santosh",role:"Driver",group:"Back Office & Support",station:"Lower"},
+  {code:106,name:"Aukirkar Balaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
+  {code:107,name:"Aukirkar Baliram",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:108,name:"Aukirkar Motiram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:109,name:"Aukirkar Raju",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:110,name:"Aukirkar Ramchandra",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
+  {code:111,name:"Aukirkar Sakharam",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:112,name:"Aukirkar Shushila",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:113,name:"Bendugade Mahesh",role:"Restaurant Supervisor",group:"Restaurant Operations",station:"Lower"},
+  {code:114,name:"Gangan Sandeep",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:115,name:"Gangan Santosh",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:116,name:"Shinde Suman",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:117,name:"Aukirkar Gangaram",role:"Ticket Vendor",group:"Ropeway Operations",station:"Lower"},
+  {code:118,name:"Aukirkar Jagan",role:"Ropeway Operator",group:"Ropeway Operations",station:"Upper"},
+  {code:119,name:"Aukirkar Mahadev",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:120,name:"Aukirkar Maloji",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:121,name:"Aukirkar Motiram",role:"Cook Helper",group:"Restaurant Operations",station:"Upper"},
+  {code:123,name:"Aukirkar Ram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:124,name:"Aukirkar Dhaktu",role:"Night Watchman",group:"Facility & Sanitation",station:"Upper"},
+  {code:125,name:"Aukirkar Umesh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:126,name:"Aukirkar Vasant",role:"Souvenir Shop",group:"Retail & Visitor Experience",station:"Upper"},
+  {code:127,name:"Gaikwad Rajendra",role:"Ticket Vendor",group:"Ropeway Operations",station:"Upper"},
+  {code:128,name:"Gore Tukaram",role:"Ticket Scanner",group:"Ropeway Operations",station:"Upper"},
+  {code:129,name:"Ningdalli Manikappa",role:"Cook",group:"Restaurant Operations",station:"Lower"},
+  {code:130,name:"Shinde Baburao",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
+  {code:131,name:"Aukirkar Deepak",role:"Restaurant Billing",group:"Restaurant Operations",station:"Upper"},
+  {code:132,name:"Paswan Dilip",role:"Supervisor Mechanical",group:"Technical & Maintenance",station:"Upper"},
+  {code:133,name:"Railkar Suryakant",role:"Night Watchman",group:"Facility & Sanitation",station:"Lower"},
+  {code:135,name:"Kachare Balaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:136,name:"Salunkhe Pratik",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
+  {code:137,name:"Aukirkar Santosh",role:"Folio Line Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:138,name:"Mahadik Anil",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:139,name:"Sadhu Saran",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:140,name:"Raju Prasad",role:"Store Keeper",group:"Back Office & Support",station:"Lower"},
+  {code:141,name:"Dighe Sanket",role:"In-Charge (Upper Station)",group:"Management & Supervision",station:"Upper"},
+  {code:142,name:"Bhosale Rohit",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+  {code:143,name:"Kadam Roshan",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:144,name:"Lamje Ankush",role:"Jr. Accountant",group:"Back Office & Support",station:"Lower"},
+  {code:407,name:"Khopkar Vijay",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:410,name:"Gore Akshay",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:411,name:"Aukirkar Dattaram",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
+  {code:413,name:"Aukirkar Parvatibai",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:414,name:"Kokare Dipak",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Upper"},
+  {code:415,name:"Gore Pratik",role:"Cabin Boy",group:"Ropeway Operations",station:"Upper"},
+  {code:503,name:"Shedge Rakesh",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:505,name:"Shelar Dinesh",role:"Museum",group:"Retail & Visitor Experience",station:"Lower"},
+  {code:507,name:"Mandavkar Yogesh",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:509,name:"Hogade Gangaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:510,name:"Hirve Ganesh",role:"Sub-Cook",group:"Restaurant Operations",station:"Lower"},
+  {code:511,name:"Jadhav Sushil",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Lower"},
+  {code:512,name:"Gaikwad Devendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:513,name:"Gaikwad Rutik",role:"Ticket Scanner",group:"Ropeway Operations",station:"Lower"},
+  {code:514,name:"Aukirkar Sitaram",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:515,name:"Dhebe Suresh",role:"Site Cleaner / Sweeper",group:"Facility & Sanitation",station:"Lower"},
+  {code:516,name:"Pasawan Indrajit",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:517,name:"Pasawan Krushna",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:518,name:"Aukirkar Balkrushna",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+  {code:519,name:"Aukirkar Satish",role:"Waiter",group:"Restaurant Operations",station:"Lower"},
+  {code:520,name:"Shinde Raju",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:521,name:"Aniket Aukirkar",role:"Room Attendant",group:"Accommodation",station:"Upper"},
+  {code:522,name:"Kadam Anand",role:"Sub-Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:523,name:"Pasawan Dilip Kumar",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:524,name:"Aukirkar Rushikesh",role:"Hirkani Stall",group:"Retail & Visitor Experience",station:"Lower"},
+  {code:606,name:"Shinde Tanaji",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:607,name:"Shinde Rajendra",role:"Cabin Boy",group:"Ropeway Operations",station:"Lower"},
+  {code:611,name:"Khabre Sarika",role:"Cook Helper",group:"Restaurant Operations",station:"Lower"},
+  {code:614,name:"Chipade Pralhad",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:615,name:"Kadu Vasant",role:"Electrician",group:"Technical & Maintenance",station:"Upper"},
+  {code:616,name:"Sangurde Kajal",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
+  {code:617,name:"Gore Vanita",role:"Cook",group:"Restaurant Operations",station:"Upper"},
+  {code:618,name:"Sakpal Riya",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
+  {code:619,name:"Gore Mangesh",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
+];
+
 // ── STATE ─────────────────────────────────────────────────────────
-let CONFIG   = {employees:[],supervisors:{},criteria:{},empCriteria:{},ratingScale:[]};
+let CONFIG = {
+  employees:   [...EMPLOYEES_DEFAULT],
+  supervisors: JSON.parse(JSON.stringify(SUPERVISORS_DEFAULT)),
+  criteria:    {},
+  empCriteria: {},
+  ratingScale: []
+};
 let currentSup = null;
 let selectedEmp = null;
 let scores = {};
@@ -264,20 +362,41 @@ let notes  = {};
 let currentPayload = null;
 
 // ── BOOT ──────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", loadConfig);
+document.addEventListener("DOMContentLoaded", function() {
+  // Show login grid immediately from hardcoded defaults
+  buildLoginGrid();
+  // Then try to update from sheet in background
+  loadConfigBackground();
+});
 
-function loadConfig() {
-  fetch(APPS_URL + "?action=getConfig&client=" + CLIENT)
-    .then(r => r.json())
-    .then(data => {
-      if (!data.employees || data.employees.length === 0) {
-        showLoginError("No configuration found. Please contact the admin.");
-        return;
+function loadConfigBackground() {
+  window._configCallback = function(data) {
+    if (data && data.employees && data.employees.length > 0) {
+      // Update live data silently
+      CONFIG.employees   = data.employees;
+      CONFIG.criteria    = data.criteria    || CONFIG.criteria;
+      CONFIG.empCriteria = data.empCriteria || {};
+      CONFIG.ratingScale = data.ratingScale || CONFIG.ratingScale;
+      // Preserve passwords from hardcoded defaults
+      if (data.supervisors && Object.keys(data.supervisors).length > 0) {
+        Object.entries(data.supervisors).forEach(([name, info]) => {
+          if (CONFIG.supervisors[name]) {
+            info.pwd = CONFIG.supervisors[name].pwd;
+          }
+          CONFIG.supervisors[name] = info;
+        });
+        buildLoginGrid();
       }
-      CONFIG = data;
-      buildLoginGrid();
-    })
-    .catch(() => showLoginError("Unable to connect to the server. Please check your internet connection and refresh."));
+      // If supervisor already logged in, refresh their team list
+      if (currentSup && CONFIG.supervisors[currentSup]) {
+        const empScreen = document.getElementById('screen-employees');
+        if (empScreen && empScreen.classList.contains('active')) buildEmpList();
+      }
+    }
+  };
+  const script = document.createElement('script');
+  script.src = APPS_URL + "?action=getConfig&client=" + CLIENT + "&callback=_configCallback";
+  document.head.appendChild(script);
 }
 
 function showLoginError(msg) {
@@ -287,21 +406,47 @@ function showLoginError(msg) {
 
 function buildLoginGrid() {
   const sups = CONFIG.supervisors;
-  let html = '<div class="sup-grid">';
+  const grid = document.createElement('div');
+  grid.className = 'sup-grid';
   Object.entries(sups).forEach(([n, i]) => {
-    html += '<div class="sup-btn" onclick="selectSup(\''+ n +'\')">' +
-            '<div class="name">' + n + '</div>' +
-            '<div class="team">' + i.title + '</div></div>';
+    const btn = document.createElement('div');
+    btn.className = 'sup-btn';
+    btn.innerHTML = '<div class="name">' + n + '</div><div class="team">' + i.title + '</div>';
+    btn.onclick = function() {
+      document.querySelectorAll('.sup-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentSup = n;
+    };
+    grid.appendChild(btn);
   });
-  html += '</div>';
-  html += '<div class="field" style="margin-top:4px"><label>Password</label>' +
-          '<input type="password" id="login-pwd" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">' +
-          '</div>';
-  html += '<div class="error-banner" id="login-error">Please select your name and enter your password.</div>';
-  html += '<button class="login-btn" onclick="doLogin()">Continue &rarr;</button>';
-  document.getElementById("login-body").innerHTML = html;
-}
 
+  const pwdField = document.createElement('div');
+  pwdField.className = 'field';
+  pwdField.style.marginTop = '4px';
+  pwdField.innerHTML = '<label>Password</label><input type="password" id="login-pwd" placeholder="Enter your password">';
+
+  const errBanner = document.createElement('div');
+  errBanner.className = 'error-banner';
+  errBanner.id = 'login-error';
+  errBanner.textContent = 'Please select your name and enter your password.';
+
+  const loginBtn = document.createElement('button');
+  loginBtn.className = 'login-btn';
+  loginBtn.textContent = 'Continue →';
+  loginBtn.onclick = doLogin;
+
+  const body = document.getElementById('login-body');
+  body.innerHTML = '';
+  body.appendChild(grid);
+  body.appendChild(pwdField);
+  body.appendChild(errBanner);
+  body.appendChild(loginBtn);
+
+  // Add Enter key listener
+  document.getElementById('login-pwd').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+}
 function selectSup(name) {
   currentSup = name;
   document.querySelectorAll(".sup-btn").forEach(b => b.classList.remove("selected"));
