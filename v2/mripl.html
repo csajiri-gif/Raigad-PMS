@@ -252,11 +252,54 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_URL = "https://script.google.com/macros/s/AKfycbx0F8Kc5kS-hHnRfBEEsroJUZ8vAdA7TTEuwIY-xPQm6ZZHJr65I4QvOeUKFkJVlT5iuQ/exec";
+const APPS_URL = "https://script.google.com/macros/s/AKfycbx6YSF21Q-Wy8tNZBANRVbP_ZlxFLrp8cjroJ7y6hZ7BX7bfg7xlzuKVwQ4iYuKNKVFiw/exec";
 const CLIENT  = "mripl";
 
+// ── HARDCODED DEFAULTS ───────────────────────────────────────────
+const SUPERVISORS_DEFAULT = {
+  "Jawale Ravindra":{pwd:"MRIPL@JR",title:"Chief Operating Officer",team:[2,11,12,3]},
+  "Bhalerao Narendra":{pwd:"MRIPL@BN",title:"General Manager",team:[17,5]},
+  "Chinchanikar Bhalchandra":{pwd:"MRIPL@CB",title:"Manager — Operations",team:[6]},
+  "Ubale Nilesh":{pwd:"MRIPL@UN",title:"Manager — Technical",team:[27,26]},
+  "Bhagwat Surashree":{pwd:"MRIPL@BS",title:"HOD — Accounts",team:[19,14,23,25]},
+  "Bhosale Raghavendra":{pwd:"MRIPL@BR",title:"Quality Controller",team:[4,21,22]},
+  "Malwadkar Satish":{pwd:"MRIPL@MS",title:"HR & Admin Manager",team:[10,9,24]},
+};
+
+const EMPLOYEES_DEFAULT = [
+  {code:18,name:"Jawale Ravindra",role:"Chief Operating Officer",group:"Leadership",station:"HO"},
+  {code:7,name:"Bhalerao Narendra",role:"General Manager",group:"Leadership",station:"HO"},
+  {code:2,name:"Chinchanikar Bhalchandra",role:"Manager — Operations",group:"Operations",station:"HO"},
+  {code:11,name:"Ubale Nilesh",role:"Manager — Technical",group:"Technical",station:"HO"},
+  {code:6,name:"Bhosale Raghavendra",role:"Quality Controller",group:"Technical",station:"HO"},
+  {code:27,name:"Borse Yogesh",role:"Jr. Engineer",group:"Technical",station:"HO"},
+  {code:13,name:"Khaladkar Akshay",role:"Jr. Engineer — Civil",group:"Technical",station:"Raigad"},
+  {code:20,name:"Bhagwat Surashree",role:"HOD — Accounts",group:"Accounts",station:"HO"},
+  {code:19,name:"Mulye Deepti",role:"Jr. Accountant",group:"Accounts",station:"HO"},
+  {code:14,name:"Pataki Sucheta",role:"Jr. Accountant",group:"Accounts",station:"HO"},
+  {code:23,name:"Biradar Vishal",role:"Jr. Accountant",group:"Accounts",station:"HO"},
+  {code:25,name:"Dnyaneshwar Khaladkar",role:"Jr. Accountant (HO)",group:"Accounts",station:"HO"},
+  {code:12,name:"Malwadkar Satish",role:"HR & Admin Manager",group:"HR & Admin",station:"HO"},
+  {code:10,name:"Kulkarni Radhika",role:"Admin Assistant",group:"HR & Admin",station:"HO"},
+  {code:17,name:"Udas Swapna",role:"Receptionist",group:"HR & Admin",station:"HO"},
+  {code:5,name:"Jagtap Ganesh",role:"Graphic Designer",group:"Design & IT",station:"HO"},
+  {code:26,name:"Joshi Sayali",role:"Jr. Programmer",group:"Design & IT",station:"HO"},
+  {code:3,name:"Rupali",role:"Legal Consultant",group:"Legal",station:"HO"},
+  {code:4,name:"Admane Pravin",role:"Driver",group:"Support",station:"HO"},
+  {code:21,name:"Haldankar Hemant",role:"Driver",group:"Support",station:"HO"},
+  {code:22,name:"Jadhav Adesh",role:"Driver",group:"Support",station:"HO"},
+  {code:9,name:"Joshi Rajendra",role:"Peon / Office Boy",group:"Support",station:"HO"},
+  {code:24,name:"Chitre Kishor",role:"Peon / Office Boy",group:"Support",station:"HO"},
+];
+
 // ── STATE ─────────────────────────────────────────────────────────
-let CONFIG   = {employees:[],supervisors:{},criteria:{},empCriteria:{},ratingScale:[]};
+let CONFIG = {
+  employees:   [...EMPLOYEES_DEFAULT],
+  supervisors: JSON.parse(JSON.stringify(SUPERVISORS_DEFAULT)),
+  criteria:    {},
+  empCriteria: {},
+  ratingScale: []
+};
 let currentSup = null;
 let selectedEmp = null;
 let scores = {};
@@ -264,20 +307,34 @@ let notes  = {};
 let currentPayload = null;
 
 // ── BOOT ──────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", loadConfig);
+document.addEventListener("DOMContentLoaded", function() {
+  buildLoginGrid();
+  loadConfigBackground();
+});
 
-function loadConfig() {
-  fetch(APPS_URL + "?action=getConfig&client=" + CLIENT)
-    .then(r => r.json())
-    .then(data => {
-      if (!data.employees || data.employees.length === 0) {
-        showLoginError("No configuration found. Please contact the admin.");
-        return;
+function loadConfigBackground() {
+  window._configCallbackMripl = function(data) {
+    if (data && data.employees && data.employees.length > 0) {
+      CONFIG.employees   = data.employees;
+      CONFIG.criteria    = data.criteria    || CONFIG.criteria;
+      CONFIG.empCriteria = data.empCriteria || {};
+      CONFIG.ratingScale = data.ratingScale || CONFIG.ratingScale;
+      if (data.supervisors && Object.keys(data.supervisors).length > 0) {
+        Object.entries(data.supervisors).forEach(([name, info]) => {
+          if (CONFIG.supervisors[name]) info.pwd = CONFIG.supervisors[name].pwd;
+          CONFIG.supervisors[name] = info;
+        });
+        buildLoginGrid();
       }
-      CONFIG = data;
-      buildLoginGrid();
-    })
-    .catch(() => showLoginError("Unable to connect to the server. Please check your internet connection and refresh."));
+      if (currentSup && CONFIG.supervisors[currentSup]) {
+        const empScreen = document.getElementById('screen-employees');
+        if (empScreen && empScreen.classList.contains('active')) buildEmpList();
+      }
+    }
+  };
+  const script = document.createElement('script');
+  script.src = APPS_URL + "?action=getConfig&client=" + CLIENT + "&callback=_configCallbackMripl";
+  document.head.appendChild(script);
 }
 
 function showLoginError(msg) {
@@ -287,21 +344,46 @@ function showLoginError(msg) {
 
 function buildLoginGrid() {
   const sups = CONFIG.supervisors;
-  let html = '<div class="sup-grid">';
+  const grid = document.createElement('div');
+  grid.className = 'sup-grid';
   Object.entries(sups).forEach(([n, i]) => {
-    html += '<div class="sup-btn" onclick="selectSup(\''+ n +'\')">' +
-            '<div class="name">' + n + '</div>' +
-            '<div class="team">' + i.title + '</div></div>';
+    const btn = document.createElement('div');
+    btn.className = 'sup-btn';
+    btn.innerHTML = '<div class="name">' + n + '</div><div class="team">' + i.title + '</div>';
+    btn.onclick = function() {
+      document.querySelectorAll('.sup-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentSup = n;
+    };
+    grid.appendChild(btn);
   });
-  html += '</div>';
-  html += '<div class="field" style="margin-top:4px"><label>Password</label>' +
-          '<input type="password" id="login-pwd" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">' +
-          '</div>';
-  html += '<div class="error-banner" id="login-error">Please select your name and enter your password.</div>';
-  html += '<button class="login-btn" onclick="doLogin()">Continue &rarr;</button>';
-  document.getElementById("login-body").innerHTML = html;
-}
 
+  const pwdField = document.createElement('div');
+  pwdField.className = 'field';
+  pwdField.style.marginTop = '4px';
+  pwdField.innerHTML = '<label>Password</label><input type="password" id="login-pwd" placeholder="Enter your password">';
+
+  const errBanner = document.createElement('div');
+  errBanner.className = 'error-banner';
+  errBanner.id = 'login-error';
+  errBanner.textContent = 'Please select your name and enter your password.';
+
+  const loginBtn = document.createElement('button');
+  loginBtn.className = 'login-btn';
+  loginBtn.textContent = 'Continue →';
+  loginBtn.onclick = doLogin;
+
+  const body = document.getElementById('login-body');
+  body.innerHTML = '';
+  body.appendChild(grid);
+  body.appendChild(pwdField);
+  body.appendChild(errBanner);
+  body.appendChild(loginBtn);
+
+  document.getElementById('login-pwd').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+}
 function selectSup(name) {
   currentSup = name;
   document.querySelectorAll(".sup-btn").forEach(b => b.classList.remove("selected"));
