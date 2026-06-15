@@ -231,7 +231,7 @@ const SUPERVISORS_DEFAULT={
   "Chipade Pralhad":{pwd:"Raigad@CP",title:"Electrician",team:[411,515,516,517,520]},
   "Dighe Sanket":{pwd:"Raigad@DS",title:"In-Charge (TB)",team:[616,618]},
   "Khaladkar Akshay":{pwd:"Raigad@KA",title:"Jr. Engineer",team:[142,410,415]},
-  "Sanas Vijay":{pwd:"Raigad@SV",title:"Store Keeper",team:[505,514,518,606,619]},
+  "Sanas Vijay":{pwd:"Raigad@SV",title:"Store Keeper",team:[505,514,518,606]},
   "Shingate Rajesh":{pwd:"Raigad@SR",title:"Chief Accountant",team:[108,114,115,117,126,127,128,138,144,407,511,513,519]},
   "Umaratkar Santosh":{pwd:"Raigad@US",title:"Foreman Mechanical",team:[104,111,119,123,125,132,135,139,140,414,512,523,607]},
 };
@@ -312,7 +312,6 @@ const EMPLOYEES_DEFAULT=[
   {code:616,name:"Sangurde Kajal",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
   {code:617,name:"Gore Vanita",role:"Cook",group:"Restaurant Operations",station:"Upper"},
   {code:618,name:"Sakpal Riya",role:"Bio Toilet Cleaner",group:"Facility & Sanitation",station:"Lower"},
-  {code:619,name:"Gore Mangesh",role:"Restaurant Front Desk",group:"Restaurant Operations",station:"Upper"},
 ];
 let EMPLOYEES=[...EMPLOYEES_DEFAULT];
 
@@ -584,7 +583,7 @@ function loadConfig(){
   fetch(APPS_SCRIPT_URL+'?action=getConfig')
     .then(r=>r.json())
     .then(data=>{
-      if(data.employees&&data.employees.length>0)EMPLOYEES=data.employees;
+      if(data.employees&&data.employees.length>0) EMPLOYEES=data.employees;
       if(data.supervisors&&Object.keys(data.supervisors).length>0){
         Object.entries(data.supervisors).forEach(([name,info])=>{
           SUPERVISORS[name]=Object.assign({},SUPERVISORS_DEFAULT[name]||{},info);
@@ -592,9 +591,16 @@ function loadConfig(){
         });
         buildGrid();
       }
-      if(data.criteria&&Object.keys(data.criteria).length>0)CRITERIA_LIVE=data.criteria;
-      if(data.empCriteria)EMP_CRITERIA_LIVE=data.empCriteria;
-      if(data.ratingScale&&data.ratingScale.length)RATING_SCALE_LIVE=data.ratingScale;
+      if(data.criteria&&Object.keys(data.criteria).length>0) CRITERIA_LIVE=data.criteria;
+      if(data.empCriteria) EMP_CRITERIA_LIVE=data.empCriteria;
+      if(data.ratingScale&&data.ratingScale.length) RATING_SCALE_LIVE=data.ratingScale;
+      // KEY FIX: if supervisor already logged in, refresh their employee list
+      if(currentSup && SUPERVISORS[currentSup]){
+        buildEmpList();
+        // Also refresh supervisor mapping in case it changed
+        const badge = document.getElementById('sup-badge');
+        if(badge) badge.textContent = currentSup;
+      }
     })
     .catch(()=>{});
 }
