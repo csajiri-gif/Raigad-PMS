@@ -583,28 +583,24 @@ function loadConfig(){
   fetch(APPS_SCRIPT_URL+'?action=getConfig')
     .then(r=>r.json())
     .then(data=>{
-      if(data.employees&&data.employees.length>0) EMPLOYEES=data.employees;
-      if(data.supervisors&&Object.keys(data.supervisors).length>0){
+      // Only use sheet data if it has MORE employees than hardcoded defaults
+      if(data.employees&&data.employees.length>EMPLOYEES_DEFAULT.length)
+        EMPLOYEES=data.employees;
+      // Only use sheet supervisors if more than hardcoded defaults
+      if(data.supervisors&&Object.keys(data.supervisors).length>Object.keys(SUPERVISORS_DEFAULT).length){
         Object.entries(data.supervisors).forEach(([name,info])=>{
           SUPERVISORS[name]=Object.assign({},SUPERVISORS_DEFAULT[name]||{},info);
           if(SUPERVISORS_DEFAULT[name])SUPERVISORS[name].pwd=SUPERVISORS_DEFAULT[name].pwd;
         });
         buildGrid();
       }
-      if(data.criteria&&Object.keys(data.criteria).length>0) CRITERIA_LIVE=data.criteria;
-      if(data.empCriteria) EMP_CRITERIA_LIVE=data.empCriteria;
-      if(data.ratingScale&&data.ratingScale.length) RATING_SCALE_LIVE=data.ratingScale;
-      // KEY FIX: if supervisor already logged in, refresh their employee list
-      if(currentSup && SUPERVISORS[currentSup]){
-        buildEmpList();
-        // Also refresh supervisor mapping in case it changed
-        const badge = document.getElementById('sup-badge');
-        if(badge) badge.textContent = currentSup;
-      }
+      if(data.criteria&&Object.keys(data.criteria).length>0)CRITERIA_LIVE=data.criteria;
+      if(data.empCriteria)EMP_CRITERIA_LIVE=data.empCriteria;
+      if(data.ratingScale&&data.ratingScale.length)RATING_SCALE_LIVE=data.ratingScale;
+      if(currentSup&&SUPERVISORS[currentSup])buildEmpList();
     })
     .catch(()=>{});
 }
-
 document.addEventListener('DOMContentLoaded',function(){buildGrid();loadConfig();});
 </script>
 </body>
