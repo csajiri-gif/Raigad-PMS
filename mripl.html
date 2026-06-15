@@ -226,13 +226,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbw-6C6M-8fqZBFRLiWAqtUwvjEn3E2XT04iPtWzZF3gu9mzbv1LlIVDysJwhSkMbZsPwg/exec";
 
 const SUPERVISORS_DEFAULT={
-  "Jawale Ravindra":{pwd:"MRIPL@JR",title:"Chief Operating Officer",team:[2,11,12,3]},
+  "Jawale Ravindra":{pwd:"MRIPL@JR",title:"Chief Operating Officer",team:[2,11,12,3,101,134]},
   "Bhalerao Narendra":{pwd:"MRIPL@BN",title:"General Manager",team:[17,5]},
   "Chinchanikar Bhalchandra":{pwd:"MRIPL@CB",title:"Manager — Operations",team:[6]},
   "Ubale Nilesh":{pwd:"MRIPL@UN",title:"Manager — Technical",team:[27,26]},
   "Bhagwat Surashree":{pwd:"MRIPL@BS",title:"HOD — Accounts",team:[19,14,23,25]},
   "Bhosale Raghavendra":{pwd:"MRIPL@BR",title:"Quality Controller",team:[4,21,22]},
   "Malwadkar Satish":{pwd:"MRIPL@MS",title:"HR & Admin Manager",team:[10,9,24]},
+  "Jog Revati":{pwd:"MRIPL@JR",title:"Director",team:[20]},
+  "Chandavarkar Devdutta":{pwd:"MRIPL@CD",title:"Reviewing Authority",team:[7]},
 };
 let SUPERVISORS={...SUPERVISORS_DEFAULT};
 
@@ -260,6 +262,10 @@ const EMPLOYEES_DEFAULT=[
   {code:22,name:"Jadhav Adesh",role:"Driver",group:"Support",station:"HO"},
   {code:9,name:"Joshi Rajendra",role:"Peon / Office Boy",group:"Support",station:"HO"},
   {code:24,name:"Chitre Kishor",role:"Peon / Office Boy",group:"Support",station:"HO"},
+  {code:20, name:"Bhagwat Surashree",       role:"HOD — Accounts",        group:"Accounts",  station:"HO"},
+  {code:7,  name:"Bhalerao Narendra",        role:"General Manager",        group:"Leadership",station:"HO"},
+  {code:101,name:"Khatu Rajendra",           role:"In-Charge",             group:"Management",station:"Raigad"},
+  {code:134,name:"Phondke Uday",             role:"Joint In-Charge",       group:"Management",station:"Raigad"},
 ];
 let EMPLOYEES=[...EMPLOYEES_DEFAULT];
 
@@ -523,7 +529,7 @@ function loadConfig(){
   fetch(APPS_SCRIPT_URL+'?action=getConfig&client=mripl')
     .then(r=>r.json())
     .then(data=>{
-      if(data.employees&&data.employees.length>0)EMPLOYEES=data.employees;
+      if(data.employees&&data.employees.length>0) EMPLOYEES=data.employees;
       if(data.supervisors&&Object.keys(data.supervisors).length>0){
         Object.entries(data.supervisors).forEach(([name,info])=>{
           SUPERVISORS[name]=Object.assign({},SUPERVISORS_DEFAULT[name]||{},info);
@@ -531,9 +537,16 @@ function loadConfig(){
         });
         buildGrid();
       }
-      if(data.criteria&&Object.keys(data.criteria).length>0)CRITERIA_LIVE=data.criteria;
-      if(data.empCriteria)EMP_CRITERIA_LIVE=data.empCriteria;
-      if(data.ratingScale&&data.ratingScale.length)RATING_SCALE_LIVE=data.ratingScale;
+      if(data.criteria&&Object.keys(data.criteria).length>0) CRITERIA_LIVE=data.criteria;
+      if(data.empCriteria) EMP_CRITERIA_LIVE=data.empCriteria;
+      if(data.ratingScale&&data.ratingScale.length) RATING_SCALE_LIVE=data.ratingScale;
+      // KEY FIX: if supervisor already logged in, refresh their employee list
+      if(currentSup && SUPERVISORS[currentSup]){
+        buildEmpList();
+        // Also refresh supervisor mapping in case it changed
+        const badge = document.getElementById('sup-badge');
+        if(badge) badge.textContent = currentSup;
+      }
     })
     .catch(()=>{});
 }
