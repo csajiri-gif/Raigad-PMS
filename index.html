@@ -221,7 +221,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbw-6C6M-8fqZBFRLiWAqtUwvjEn3E2XT04iPtWzZF3gu9mzbv1LlIVDysJwhSkMbZsPwg/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbx6YSF21Q-Wy8tNZBANRVbP_ZlxFLrp8cjroJ7y6hZ7BX7bfg7xlzuKVwQ4iYuKNKVFiw/exec";
 
 const SUPERVISORS_DEFAULT={
   "Khatu Rajendra":{pwd:"Raigad@KR",title:"In-Charge",team:[13,103,105,136,141,614]},
@@ -553,10 +553,15 @@ function checkDuplicateAndSubmit(payload){
 }
 
 function sendData(payload){
-  const img=new Image();
-  img.onload=img.onerror=function(){showDone(payload);};
-  img.src=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
-  setTimeout(function(){showDone(payload);},3000);
+  fetch(APPS_SCRIPT_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify(payload)
+  }).then(()=>showDone(payload))
+    .catch(()=>showDone(payload));
+  // Fallback in case fetch hangs
+  setTimeout(function(){showDone(payload);},5000);
 }
 
 function showDone(payload){
