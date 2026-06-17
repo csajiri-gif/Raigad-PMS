@@ -346,6 +346,7 @@ const ROLES={
   "Night Watchman":[["Patrol Regularity","S, D"],["Incident Reporting","S, D"],["Entry Point Monitoring","S"],["Alertness & Reliability","D, S"],["Attendance & Punctuality","D"]],
   "Site Cleaner / Sweeper":[["Cleaning Coverage","WR, S"],["Cleaning During Peak Hours","WR, D"],["Waste Management","S, D"],["Attendance & Punctuality","D"]],
   "Bio Toilet Cleaner":[["Toilet Cleanliness","S, WR"],["Restocking of Supplies","WR, D"],["Cleaning Frequency","WR, D"],["Maintenance Reporting","S, D"],["Attendance & Punctuality","D"]],
+  "Welder":[["Weld Quality & Workmanship"],["Job Completion Timeliness"],["Safety Practices (PPE, Fire & Equipment Handling)"],["Material & Equipment Usage"],["Structural Repair Judgment"],["Issue Reporting"],["Attendance & Punctuality"]],
 };
 
 const SL={1:"Poor",2:"Needs Impr.",3:"Good",4:"Very Good",5:"Excellent"};
@@ -580,16 +581,8 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
 function loadConfig(){
-  fetch(APPS_SCRIPT_URL+'?action=getConfig')
-    .then(r=>r.json())
-    .then(data=>{
-      // Always use hardcoded employee/supervisor data — sheet is for submissions only
-      // Sheet criteria and rating scale still apply
-      if(data.criteria&&Object.keys(data.criteria).length>0)CRITERIA_LIVE=data.criteria;
-      if(data.empCriteria)EMP_CRITERIA_LIVE=data.empCriteria;
-      if(data.ratingScale&&data.ratingScale.length)RATING_SCALE_LIVE=data.ratingScale;
-    })
-    .catch(()=>{});
+  // All data is hardcoded in HTML — no sheet fetch needed for form data
+  // Submissions still go to the sheet via sendData()
 }
 document.addEventListener('DOMContentLoaded',function(){buildGrid();loadConfig();});
 </script>
