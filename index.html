@@ -583,21 +583,11 @@ function loadConfig(){
   fetch(APPS_SCRIPT_URL+'?action=getConfig')
     .then(r=>r.json())
     .then(data=>{
-      // Only use sheet data if it has MORE employees than hardcoded defaults
-      if(data.employees&&data.employees.length>EMPLOYEES_DEFAULT.length)
-        EMPLOYEES=data.employees;
-      // Only use sheet supervisors if more than hardcoded defaults
-      if(data.supervisors&&Object.keys(data.supervisors).length>Object.keys(SUPERVISORS_DEFAULT).length){
-        Object.entries(data.supervisors).forEach(([name,info])=>{
-          SUPERVISORS[name]=Object.assign({},SUPERVISORS_DEFAULT[name]||{},info);
-          if(SUPERVISORS_DEFAULT[name])SUPERVISORS[name].pwd=SUPERVISORS_DEFAULT[name].pwd;
-        });
-        buildGrid();
-      }
+      // Always use hardcoded employee/supervisor data — sheet is for submissions only
+      // Sheet criteria and rating scale still apply
       if(data.criteria&&Object.keys(data.criteria).length>0)CRITERIA_LIVE=data.criteria;
       if(data.empCriteria)EMP_CRITERIA_LIVE=data.empCriteria;
       if(data.ratingScale&&data.ratingScale.length)RATING_SCALE_LIVE=data.ratingScale;
-      if(currentSup&&SUPERVISORS[currentSup])buildEmpList();
     })
     .catch(()=>{});
 }
