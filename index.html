@@ -1,12 +1,245 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="refresh" content="0;url=form_v1.html">
-<title>Raigad Ropeways — Performance Review System</title>
-</head>
-<body>
-<script>window.location.replace("form_v1.html");</script>
-<p>Loading... <a href="form_v1.html">Click here if not redirected</a></p>
-</body>
-</html>
+const SHEET_ID = "1qjKvOzzgSeEORH3HPwiPKXZ6b2r3m0Kxo9SKnbntZ9g";
+const CFG = { raigad: "Config", mripl: "Config_MRIPL" };
+
+// ── ROUTING ───────────────────────────────────────────────────────
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+    const client = e.parameter.client || "raigad";
+    if (action === "getConfig")      return getConfig(client, e.parameter.callback);
+    if (action === "checkDuplicate") return checkDuplicate(e.parameter);
+    if (action === "getReportData")  return getReportData(e.parameter);
+    return ok("unknown get action");
+  } catch(err) { return ok("error: " + err.toString()); }
+}
+
+function doPost(e) {
+  try {
+    let data;
+    try { data = JSON.parse(e.postData.contents); }
+    catch(x) { data = JSON.parse(decodeURIComponent(e.parameter.data||"")); }
+    if (data.action === "saveConfig")     return saveConfig(data);
+    if (data.action === "writeSubmission") return writeSubmission(data);
+    return ok("unknown post action");
+  } catch(err) { return ok("error: " + err.toString()); }
+}
+
+// ── CONFIG ────────────────────────────────────────────────────────
+function getConfig(client, callback) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName(CFG[client] || CFG.raigad);
+  const empty = JSON.stringify({employees:[], supervisors:{}, criteria:{}, empCriteria:{}, ratingScale:[]});
+  let val = empty;
+  if (sheet && sheet.getLastRow() >= 2) {
+    const raw = sheet.getRange(2,1).getValue();
+    if (raw) val = raw;
+  }
+  // Support JSONP callback for cross-origin requests
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + val + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(val).setMimeType(ContentService.MimeType.JSON);
+}
+
+function saveConfig(data) {
+  const client = data.client || "raigad";
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheetName = CFG[client] || CFG.raigad;
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.getRange(1,1).setValue("Config JSON (do not edit manually)");
+    sheet.getRange(1,1).setBackground("#1F4E79").setFontColor("#FFFFFF").setFontWeight("bold");
+  }
+  const config = {
+    employees:   data.employees   || [],
+    supervisors: data.supervisors || {},
+    criteria:    data.criteria    || {},
+    empCriteria: data.empCriteria || {},
+    ratingScale: data.ratingScale || [],
+    lastUpdated: new Date().toISOString()
+  };
+  if (sheet.getLastRow() < 2) sheet.appendRow([JSON.stringify(config)]);
+  else sheet.getRange(2,1).setValue(JSON.stringify(config));
+  sheet.setColumnWidth(1, 800);
+  return ok("saved");
+}
+
+// ── WRITE SUBMISSION ──────────────────────────────────────────────
+function writeSubmission(data) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const tabName = (data.role || "Reviews").replace(/[\/\\?\*\[\]:]/g,"").substring(0,30).trim();
+  let sheet = ss.getSheetByName(tabName);
+  const isNew = !sheet;
+  if (!sheet) sheet = ss.insertSheet(tabName);
+  if (isNew || sheet.getLastRow() === 0) setupSubmissionHeaders(sheet, data);
+  sheet.appendRow(buildSubmissionRow(data));
+  formatSubmissionRow(sheet, data);
+  return ok("saved");
+}
+
+function buildSubmissionRow(data) {
+  const row = [
+    data.timestamp,
+    data.reviewer || data.supervisor,
+    data.empCode,
+    data.empName,
+    data.role,
+    data.quarter,
+    data.year,
+    data.totalScore,
+    data.maxScore,
+    data.percentScore,
+  ];
+  // Score + Note pairs for each criterion
+  (data.criteria || []).forEach(c => {
+    row.push(c.score || 0);
+    row.push(c.note  || "");
+  });
+  return row;
+}
+
+function setupSubmissionHeaders(sheet, data) {
+  const headers = [
+    "Timestamp","Reviewer","Emp Code","Employee Name","Role",
+    "Quarter","Year","Total Score","Max Score","% Score"
+  ];
+  (data.criteria || []).forEach(c => {
+    headers.push(c.name + " (Score)");
+    headers.push(c.name + " (Note)");
+  });
+  sheet.appendRow(headers);
+  const hr = sheet.getRange(1,1,1,headers.length);
+  hr.setBackground("#1F4E79").setFontColor("#FFFFFF").setFontWeight("bold")
+    .setFontSize(10).setWrap(true);
+  sheet.setFrozenRows(1);
+  // Column widths
+  [160,130,70,150,160,65,55,80,70,70].forEach((w,i) => sheet.setColumnWidth(i+1,w));
+  for (let i=11; i<=headers.length; i++) {
+    // Score cols narrow, note cols wide
+    sheet.setColumnWidth(i, (i % 2 === 1) ? 60 : 200);
+  }
+}
+
+function formatSubmissionRow(sheet, data) {
+  const lr = sheet.getLastRow();
+  const cols = 10 + (data.criteria||[]).length * 2;
+  const range = sheet.getRange(lr, 1, 1, cols);
+  range.setBackground(lr%2===0 ? "#F5F7FA" : "#FFFFFF");
+  // Colour % score
+  const pctCell = sheet.getRange(lr, 10);
+  const pct = data.percentScore || 0;
+  pctCell.setNumberFormat("0\"%\"");
+  if(pct>=85)      pctCell.setBackground("#DEEAF1").setFontColor("#1F4E79").setFontWeight("bold");
+  else if(pct>=70) pctCell.setBackground("#E2EFDA").setFontColor("#375623").setFontWeight("bold");
+  else if(pct>=50) pctCell.setBackground("#FFF2CC").setFontColor("#7F6000").setFontWeight("bold");
+  else             pctCell.setBackground("#FCE4D6").setFontColor("#C00000").setFontWeight("bold");
+  // Colour score cells
+  (data.criteria||[]).forEach((c,i) => {
+    const s = c.score || 0;
+    const cell = sheet.getRange(lr, 11 + i*2);
+    if(s===1)      cell.setBackground("#FCE4D6");
+    else if(s===2) cell.setBackground("#FEF0E0");
+    else if(s===3) cell.setBackground("#FFF2CC");
+    else if(s===4) cell.setBackground("#E2EFDA");
+    else if(s===5) cell.setBackground("#DEEAF1");
+  });
+  range.setFontFamily("Arial").setFontSize(10).setVerticalAlignment("top");
+  range.setBorder(true,true,true,true,true,true,"#E0E0E0",SpreadsheetApp.BorderStyle.SOLID);
+  // Note cells wrap
+  for (let i=0; i<(data.criteria||[]).length; i++) {
+    sheet.getRange(lr, 12+i*2).setWrap(true);
+  }
+}
+
+// ── CHECK DUPLICATE ───────────────────────────────────────────────
+function checkDuplicate(params) {
+  const role = params.role || "";
+  const tabName = role.replace(/[\/\\?\*\[\]:]/g,"").substring(0,30).trim();
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName(tabName);
+  if (!sheet || sheet.getLastRow() < 2)
+    return ContentService.createTextOutput(JSON.stringify({exists:false})).setMimeType(ContentService.MimeType.JSON);
+  const data = sheet.getDataRange().getValues();
+  const h = data[0];
+  const codeCol = h.indexOf("Emp Code");
+  const qCol    = h.indexOf("Quarter");
+  const yCol    = h.indexOf("Year");
+  for (let i=1; i<data.length; i++) {
+    if (String(data[i][codeCol])===String(params.empCode) &&
+        String(data[i][qCol])   ===String(params.quarter) &&
+        String(data[i][yCol])   ===String(params.year)) {
+      return ContentService.createTextOutput(JSON.stringify({exists:true})).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify({exists:false})).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ── GET REPORT DATA ───────────────────────────────────────────────
+function getReportData(params) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const filterType  = params.filterType  || "all";   // all, employee, manager, role
+  const filterValue = params.filterValue || "";
+  const quarter     = params.quarter     || "";
+  const year        = params.year        || "";
+  const client      = params.client      || "raigad";
+
+  // Get config to resolve manager→team mapping
+  const cfgSheet = ss.getSheetByName(CFG[client]);
+  let config = {};
+  if (cfgSheet && cfgSheet.getLastRow() >= 2) {
+    try { config = JSON.parse(cfgSheet.getRange(2,1).getValue()); } catch(x){}
+  }
+
+  // Get all submission tabs
+  const allSheets = ss.getSheets();
+  const skipTabs = ["Config","Config_MRIPL","Dashboard","PMS Submissions","PMS Submissions v2","Sheet1"];
+  
+  let allRows = [];
+  allSheets.forEach(sh => {
+    if (skipTabs.includes(sh.getName())) return;
+    if (sh.getLastRow() < 2) return;
+    const data = sh.getDataRange().getValues();
+    const headers = data[0];
+    for (let i=1; i<data.length; i++) {
+      const row = {};
+      headers.forEach((h,j) => row[h] = data[i][j]);
+      row["_tab"] = sh.getName();
+      allRows.push(row);
+    }
+  });
+
+  // Apply filters
+  let filtered = allRows;
+
+  if (quarter) filtered = filtered.filter(r => String(r["Quarter"]) === quarter);
+  if (year)    filtered = filtered.filter(r => String(r["Year"])    === year);
+
+  if (filterType === "employee" && filterValue) {
+    filtered = filtered.filter(r =>
+      String(r["Emp Code"]) === filterValue ||
+      (r["Employee Name"]||"").toLowerCase().includes(filterValue.toLowerCase())
+    );
+  } else if (filterType === "role" && filterValue) {
+    filtered = filtered.filter(r =>
+      (r["Role"]||r["_tab"]||"").toLowerCase().includes(filterValue.toLowerCase())
+    );
+  } else if (filterType === "manager" && filterValue && config.supervisors) {
+    const sup = config.supervisors[filterValue];
+    if (sup && sup.team) {
+      const teamCodes = sup.team.map(String);
+      filtered = filtered.filter(r => teamCodes.includes(String(r["Emp Code"])));
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    rows: filtered,
+    total: filtered.length
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function ok(msg) {
+  return ContentService.createTextOutput(JSON.stringify({status:msg}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
