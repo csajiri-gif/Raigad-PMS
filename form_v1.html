@@ -563,16 +563,14 @@ function checkDuplicateAndSubmit(payload){
 // FIX: switched from POST/no-cors to GET image-pixel method so submissions
 // work for ALL users regardless of Google login session
 function sendData(payload){
-  doneShown=false;
-  const img=new Image();
-  img.onload=img.onerror=function(){
-    if(!doneShown){doneShown=true;showDone(payload);}
-  };
-  img.src=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
-  // FIX: fallback timer — only fires showDone if image callback hasn't already
-  setTimeout(function(){
-    if(!doneShown){doneShown=true;showDone(payload);}
-  },4000);
+  fetch(APPS_SCRIPT_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify(payload)
+  }).then(()=>showDone(payload))
+    .catch(()=>showDone(payload));
+  setTimeout(()=>showDone(payload),5000);
 }
 
 function showDone(payload){
