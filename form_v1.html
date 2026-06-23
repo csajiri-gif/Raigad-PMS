@@ -535,6 +535,7 @@ function submitReview(){
   const qEl=document.getElementById('ff-quarter');
   const qLabel=qEl.options[qEl.selectedIndex]?qEl.options[qEl.selectedIndex].text:qEl.value;
   const payload={
+    action:'writeSubmission',
     timestamp:new Date().toISOString(),supervisor:currentSup,empCode:selectedEmp.code,
     empName:selectedEmp.name,role:selectedEmp.role,group:selectedEmp.group,
     station:selectedEmp.station,quarter:qEl.value,quarterLabel:qLabel,
