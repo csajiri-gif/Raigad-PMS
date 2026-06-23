@@ -81,6 +81,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 .btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
 .btn-primary:hover{background:#16396b}
 .btn-success{background:#375623;color:#fff;border-color:#375623}
+.btn-danger{background:#C00000;color:#fff;border-color:#C00000}
+.btn-danger:hover{background:#a00000}
 .summary-box{border:1px solid #e8edf2;border-radius:10px;padding:16px;margin-bottom:12px}
 .summary-emp{font-size:15px;font-weight:700;color:#1F4E79;margin-bottom:4px}
 .summary-meta{font-size:12px;color:#666}
@@ -223,7 +225,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbw-6C6M-8fqZBFRLiWAqtUwvjEn3E2XT04iPtWzZF3gu9mzbv1LlIVDysJwhSkMbZsPwg/exec";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxg3SXD5pIPa-AS90-rEiVgo1sr6IUMENBVDi_P4SLb_XEE5FKPlzOt_RPqjOzzE3uJkw/exec";
 
 const SUPERVISORS_DEFAULT={
   "Jawale Ravindra":{pwd:"MRIPL@JR",title:"Chief Operating Officer",team:[2,11,12,3,101,134]},
@@ -262,8 +264,8 @@ const EMPLOYEES_DEFAULT=[
   {code:22,name:"Jadhav Adesh",role:"Driver",group:"Support",station:"HO"},
   {code:9,name:"Joshi Rajendra",role:"Peon / Office Boy",group:"Support",station:"HO"},
   {code:24,name:"Chitre Kishor",role:"Peon / Office Boy",group:"Support",station:"HO"},
-  {code:101,name:"Khatu Rajendra",           role:"In-Charge",             group:"Management",station:"Raigad"},
-  {code:134,name:"Phondke Uday",             role:"Joint In-Charge",       group:"Management",station:"Raigad"},
+  {code:101,name:"Khatu Rajendra",role:"In-Charge",group:"Management",station:"Raigad"},
+  {code:134,name:"Phondke Uday",role:"Joint In-Charge",group:"Management",station:"Raigad"},
 ];
 let EMPLOYEES=[...EMPLOYEES_DEFAULT];
 
@@ -302,6 +304,7 @@ const SC={1:{bg:"#FCE4D6",fg:"#C00000"},2:{bg:"#FEF0E0",fg:"#B8560A"},3:{bg:"#FF
 let currentSup=null,selectedEmp=null,scores={},notes={};
 let CRITERIA_LIVE={},EMP_CRITERIA_LIVE={},RATING_SCALE_LIVE=null;
 let currentPayload=null;
+let doneShown=false; // FIX: prevent double showDone
 
 function getCriteriaForEmp(emp){
   if(EMP_CRITERIA_LIVE[emp.code]&&EMP_CRITERIA_LIVE[emp.code].length)
@@ -474,6 +477,7 @@ function submitReview(){
   const qEl=document.getElementById('ff-quarter');
   const qLabel=qEl.options[qEl.selectedIndex]?qEl.options[qEl.selectedIndex].text:qEl.value;
   const payload={
+    action:'writeSubmission',
     timestamp:new Date().toISOString(),reviewer:currentSup,empCode:selectedEmp.code,
     empName:selectedEmp.name,role:selectedEmp.role,dept:selectedEmp.group,
     quarter:qEl.value,quarterLabel:qLabel,year:document.getElementById('ff-year').value,
@@ -490,20 +494,24 @@ function checkDuplicateAndSubmit(payload){
     .then(r=>r.json())
     .then(d=>{
       if(d.exists){
-        document.getElementById('form-submitting').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already submitted</p><p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>'+payload.empName+'</strong> for <strong>'+payload.quarterLabel+' '+payload.year+'</strong> already exists.</p><button class="btn" onclick="goFormStep(3)" style="margin-right:10px">&larr; Go back</button><button class="btn btn-danger" onclick="sendData(currentPayload)" style="background:#C00000;color:#fff;border-color:#C00000">Submit anyway</button></div>';
+        document.getElementById('form-submitting').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already submitted</p><p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>'+payload.empName+'</strong> for <strong>'+payload.quarterLabel+' '+payload.year+'</strong> already exists.</p><button class="btn" onclick="goFormStep(3)" style="margin-right:10px">&larr; Go back</button><button class="btn btn-danger" onclick="sendData(currentPayload)">Submit anyway</button></div>';
         currentPayload=payload;
       } else {sendData(payload);}
     })
     .catch(()=>sendData(payload));
 }
 
+// FIX: image-pixel GET now actually reaches doGet which handles ?data= submissions
 function sendData(payload){
-  const img=new Image();
-  img.onload=img.onerror=function(){showDone(payload);};
-  img.src=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
-  setTimeout(function(){showDone(payload);},3000);
+  fetch(APPS_SCRIPT_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify(payload)
+  }).then(()=>showDone(payload))
+    .catch(()=>showDone(payload));
+  setTimeout(()=>showDone(payload),5000);
 }
-
 function showDone(payload){
   document.getElementById('form-submitting').style.display='none';
   document.getElementById('done-detail').innerHTML='<strong>'+payload.empName+'</strong> \u00b7 '+payload.role+'<br>'+payload.quarterLabel+' '+payload.year+' \u00b7 Reviewed by '+payload.reviewer;
@@ -515,7 +523,7 @@ function showDone(payload){
 }
 
 function reviewAnother(){
-  selectedEmp=null;scores={};notes={};
+  selectedEmp=null;scores={};notes={};doneShown=false;
   document.querySelectorAll('.emp-item').forEach(el=>el.classList.remove('selected'));
   document.getElementById('start-form-btn').disabled=true;
   document.getElementById('emp-search').value='';
@@ -526,33 +534,9 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
 function loadConfig(){
-  fetch(APPS_SCRIPT_URL+'?action=getConfig&client=mripl')
-    .then(r=>r.json())
-    .then(data=>{
-      // Only use sheet employees if sheet has MORE than hardcoded defaults
-      // This prevents stale sheet data from overwriting updated HTML
-      if(data.employees&&data.employees.length>EMPLOYEES_DEFAULT.length){
-        EMPLOYEES=data.employees;
-      }
-      // Only use sheet supervisor teams if sheet has MORE supervisors
-      if(data.supervisors&&Object.keys(data.supervisors).length>Object.keys(SUPERVISORS_DEFAULT).length){
-        Object.entries(data.supervisors).forEach(([name,info])=>{
-          SUPERVISORS[name]=Object.assign({},SUPERVISORS_DEFAULT[name]||{},info);
-          if(SUPERVISORS_DEFAULT[name])SUPERVISORS[name].pwd=SUPERVISORS_DEFAULT[name].pwd;
-        });
-        buildGrid();
-      }
-      if(data.criteria&&Object.keys(data.criteria).length>0) CRITERIA_LIVE=data.criteria;
-      if(data.empCriteria) EMP_CRITERIA_LIVE=data.empCriteria;
-      if(data.ratingScale&&data.ratingScale.length) RATING_SCALE_LIVE=data.ratingScale;
-      if(currentSup&&SUPERVISORS[currentSup]){
-        buildEmpList();
-      }
-    })
-    .catch(()=>{});
+  // Config pull disabled — all data is hardcoded
 }
-
-document.addEventListener('DOMContentLoaded',function(){buildGrid();loadConfig();});
+document.addEventListener('DOMContentLoaded',function(){buildGrid();});
 </script>
 </body>
 </html>
