@@ -84,6 +84,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 .btn-primary{background:#1F4E79;color:#fff;border-color:#1F4E79}
 .btn-primary:hover{background:#16396b}
 .btn-success{background:#375623;color:#fff;border-color:#375623}
+.btn-danger{background:#C00000;color:#fff;border-color:#C00000}
+.btn-danger:hover{background:#a00000}
 .summary-box{border:1px solid #e8edf2;border-radius:10px;padding:16px;margin-bottom:12px}
 .summary-emp{font-size:15px;font-weight:700;color:#1F4E79;margin-bottom:4px}
 .summary-meta{font-size:12px;color:#666}
@@ -117,7 +119,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 
 <div class="screen active" id="screen-login">
   <div style="max-width:460px;margin:0 auto">
-    <div class="login-logo"><div class="org">Raigad Ropeways</div><div class="sub">Performance Review System &middot; 2025</div></div>
+    <div class="login-logo"><div class="org">Raigad Ropeways</div><div class="sub">Performance Review System &middot; 2026</div></div>
     <div class="card">
       <div class="card-header"><h2>Supervisor Login</h2><p>Select your name to begin reviewing your team</p></div>
       <div class="card-body">
@@ -174,7 +176,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
             <option value="Q4">Q4 &mdash; January</option>
           </select>
         </div>
-        <div class="field"><label>Year</label><input type="text" id="ff-year" value="2025"></div>
+        <div class="field"><label>Year</label><input type="text" id="ff-year" value="2026"></div>
       </div>
       <div class="field"><label>Supervisor</label><input type="text" id="ff-supervisor" readonly></div>
       <div class="error-banner" id="step1-error">Please select a quarter before continuing.</div>
@@ -224,7 +226,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh
 <div class="toast" id="toast"></div>
 
 <script>
-const VERSION="2026-06-17";
+const VERSION="2026-06-22";
 const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbx6YSF21Q-Wy8tNZBANRVbP_ZlxFLrp8cjroJ7y6hZ7BX7bfg7xlzuKVwQ4iYuKNKVFiw/exec";
 
 const SUPERVISORS_DEFAULT={
@@ -359,6 +361,7 @@ const SC={1:{bg:"#FCE4D6",fg:"#C00000"},2:{bg:"#FEF0E0",fg:"#B8560A"},3:{bg:"#FF
 let currentSup=null,selectedEmp=null,scores={},notes={};
 let CRITERIA_LIVE={},EMP_CRITERIA_LIVE={},RATING_SCALE_LIVE=null;
 let currentPayload=null;
+let doneShown=false; // FIX: prevent double showDone
 
 function getCriteriaForEmp(emp){
   if(EMP_CRITERIA_LIVE[emp.code]&&EMP_CRITERIA_LIVE[emp.code].length)
@@ -544,28 +547,32 @@ function submitReview(){
 }
 
 function checkDuplicateAndSubmit(payload){
-  const url=APPS_SCRIPT_URL+'?action=checkDuplicate&client=raigad&empCode='+payload.empCode+'&quarter='+payload.quarter+'&year='+payload.year;
+  // FIX: role now included so checkDuplicate looks in the correct sheet tab
+  const url=APPS_SCRIPT_URL+'?action=checkDuplicate&client=raigad&empCode='+payload.empCode+'&quarter='+payload.quarter+'&year='+payload.year+'&role='+encodeURIComponent(payload.role);
   fetch(url)
     .then(r=>r.json())
     .then(d=>{
       if(d.exists){
-        document.getElementById('form-submitting').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already submitted</p><p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>'+payload.empName+'</strong> for <strong>'+payload.quarterLabel+' '+payload.year+'</strong> already exists.</p><button class="btn" onclick="goFormStep(3)" style="margin-right:10px">&larr; Go back</button><button class="btn btn-danger" onclick="sendData(currentPayload)" style="background:#C00000;color:#fff;border-color:#C00000">Submit anyway</button></div>';
+        document.getElementById('form-submitting').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#C00000;font-weight:700;font-size:14px;margin-bottom:10px">&#9888; Review already submitted</p><p style="font-size:13px;color:#666;margin-bottom:20px">A review for <strong>'+payload.empName+'</strong> for <strong>'+payload.quarterLabel+' '+payload.year+'</strong> already exists.</p><button class="btn" onclick="goFormStep(3)" style="margin-right:10px">&larr; Go back</button><button class="btn btn-danger" onclick="sendData(currentPayload)">Submit anyway</button></div>';
         currentPayload=payload;
       } else {sendData(payload);}
     })
     .catch(()=>sendData(payload));
 }
 
+// FIX: switched from POST/no-cors to GET image-pixel method so submissions
+// work for ALL users regardless of Google login session
 function sendData(payload){
-  fetch(APPS_SCRIPT_URL,{
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify(payload)
-  }).then(()=>showDone(payload))
-    .catch(()=>showDone(payload));
-  // Fallback in case fetch hangs
-  setTimeout(function(){showDone(payload);},5000);
+  doneShown=false;
+  const img=new Image();
+  img.onload=img.onerror=function(){
+    if(!doneShown){doneShown=true;showDone(payload);}
+  };
+  img.src=APPS_SCRIPT_URL+'?data='+encodeURIComponent(JSON.stringify(payload));
+  // FIX: fallback timer — only fires showDone if image callback hasn't already
+  setTimeout(function(){
+    if(!doneShown){doneShown=true;showDone(payload);}
+  },4000);
 }
 
 function showDone(payload){
@@ -579,7 +586,7 @@ function showDone(payload){
 }
 
 function reviewAnother(){
-  selectedEmp=null;scores={};notes={};
+  selectedEmp=null;scores={};notes={};doneShown=false;
   document.querySelectorAll('.emp-item').forEach(el=>el.classList.remove('selected'));
   document.getElementById('start-form-btn').disabled=true;
   document.getElementById('emp-search').value='';
@@ -590,8 +597,7 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
 function loadConfig(){
-  // All data is hardcoded in HTML — no sheet fetch needed for form data
-  // Submissions still go to the sheet via sendData()
+  // All data is hardcoded in HTML — submissions go to sheet via sendData()
 }
 document.addEventListener('DOMContentLoaded',function(){buildGrid();loadConfig();});
 </script>
